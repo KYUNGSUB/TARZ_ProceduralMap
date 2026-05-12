@@ -22,15 +22,26 @@ MonoBehaviour:
   - {fileID: 1754605587894940570, guid: 418ef00eb2adda24e8f285784146e2cb, type: 3}
   treePrefabs:
   - {fileID: 3727841032907832747, guid: 058f6996bc4df284eada2ae9afba9f0e, type: 3}
-  facilityPrefabs: []
-  debrisPrefabs: []
-  throwObjectPrefabs: []
-  startPrefabs: []
-  combatPrefabs: []
-  secretPrefabs: []
-  rewardPrefabs: []
-  bossPrefabs: []
-  enemyPrefab: {fileID: 0}
+  facilityPrefabs:
+  - {fileID: 7489336605327535295, guid: 36c57b0ed85566545ac15fac419ec54c, type: 3}
+  - {fileID: 1824599713845831165, guid: 49020c4eaff3d1844a8e959927926811, type: 3}
+  debrisPrefabs:
+  - {fileID: 8646108271082140247, guid: 4ccec6f7b180b844184b0374b596f255, type: 3}
+  throwObjectPrefabs:
+  - {fileID: 3907745847316420186, guid: f9532befbd06c024bb66ee8331b40ee6, type: 3}
+  - {fileID: 1337715560574783645, guid: 2fff9cff1b92fbb4dae2ed50928ea03e, type: 3}
+  startPrefabs:
+  - {fileID: 2559699376245064879, guid: bc1b50684c6b3004fbc1f578de9807e2, type: 3}
+  combatPrefabs:
+  - {fileID: 5846361170111251742, guid: a47b94b7e4ed0d843ac2d517d912a627, type: 3}
+  secretPrefabs:
+  - {fileID: 1732785951058065525, guid: 425a58b59a19970419deb849b417974d, type: 3}
+  rewardPrefabs:
+  - {fileID: 8147785111393225985, guid: b61ddf478b0e78a4bbc7017eba43942d, type: 3}
+  bossPrefabs:
+  - {fileID: 5048030741778686749, guid: 422c7820caad75b428f63126aedc85b0, type: 3}
+  enemyPrefab: {fileID: 1979143788180314665, guid: c46ccbcb6afc8474387622b27fb4ae33,
+    type: 3}
   buildingDensity: 0.7
   environmentDensity: 0.6
-  throwObjectDensity: 0.8
+  throwObjectDensity: 0.9
