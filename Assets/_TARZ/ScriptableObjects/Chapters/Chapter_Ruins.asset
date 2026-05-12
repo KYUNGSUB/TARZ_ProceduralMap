@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2ac6f6285cd6084dad2245cb165573b, type: 3}
+  m_Name: Chapter_Ruins
+  m_EditorClassIdentifier: 
+  chapterId: chapter_01_ruins
+  chapterName: "\uD3D0\uD5C8"
+  roadPrefabs:
+  - {fileID: 2027547638819069183, guid: a24140c04d86f0c43b44b92a531d94f1, type: 3}
+  buildingPrefabs:
+  - {fileID: 2559432405022361438, guid: 1173cb49c557ae046835ce5285b8f371, type: 3}
+  - {fileID: 1121737385989866733, guid: 0b03cddfe9057c64db271e5080b1c635, type: 3}
+  - {fileID: 1754605587894940570, guid: 418ef00eb2adda24e8f285784146e2cb, type: 3}
+  treePrefabs:
+  - {fileID: 3727841032907832747, guid: 058f6996bc4df284eada2ae9afba9f0e, type: 3}
+  facilityPrefabs: []
+  debrisPrefabs: []
+  throwObjectPrefabs: []
+  startPrefabs: []
+  combatPrefabs: []
+  secretPrefabs: []
+  rewardPrefabs: []
+  bossPrefabs: []
+  enemyPrefab: {fileID: 0}
+  buildingDensity: 0.7
+  environmentDensity: 0.6
+  throwObjectDensity: 0.8
