@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.AI.Navigation;
 
 public class MapContext
 {
@@ -28,6 +29,8 @@ public class MapContext
 
     // 추가: POI 영역 관리
     public List<POIArea> poiAreas = new List<POIArea>();
+
+    public NavMeshSurface navMeshSurface;
 
     public Vector3 GridToWorld(Vector2Int grid)
     {

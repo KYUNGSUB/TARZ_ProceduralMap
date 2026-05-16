@@ -1,7 +1,13 @@
 using UnityEngine;
+using Unity.AI.Navigation;
 
 public class ProceduralMapManager : MonoBehaviour
 {
+    [Header("Validation")]
+    public NavMeshSurface navMeshSurface;
+    public MapValidator mapValidator;
+    public int maxGenerationRetry = 10;
+
     [Header("Data")]
     public ChapterThemeData chapterTheme;
     public MapGenerationSettings settings;
@@ -75,6 +81,7 @@ public class ProceduralMapManager : MonoBehaviour
         return Random.Range(1, int.MaxValue);
     }
 
+    /*
     [ContextMenu("Generate Map")]
     public void Generate()
     {
@@ -90,7 +97,8 @@ public class ProceduralMapManager : MonoBehaviour
             settings = settings,
             mapRoot = mapRoot,
             runtimeRoot = runtimeRoot,
-            debugRoot = debugRoot
+            debugRoot = debugRoot,
+            navMeshSurface = navMeshSurface
         };
 
         if (!ValidateReferences())
@@ -107,6 +115,62 @@ public class ProceduralMapManager : MonoBehaviour
             playerSpawnManager.SpawnPlayer(currentContext.startPosition);
 
         Debug.Log($"Map generated. Chapter={chapterTheme.chapterName}, Seed={seed}");
+    }
+    */
+
+    [ContextMenu("Generate Map")]
+    public void Generate()
+    {
+        for (int attempt = 0; attempt < maxGenerationRetry; attempt++)
+        {
+            ClearChildren(mapRoot);
+            ClearChildren(runtimeRoot);
+            ClearChildren(debugRoot);
+
+            int attemptSeed = seed + attempt;
+
+            currentContext = new MapContext
+            {
+                seed = attemptSeed,
+                random = new System.Random(attemptSeed),
+                theme = chapterTheme,
+                settings = settings,
+                mapRoot = mapRoot,
+                runtimeRoot = runtimeRoot,
+                debugRoot = debugRoot,
+                navMeshSurface = navMeshSurface
+            };
+
+            if (!ValidateReferences())
+                return;
+
+            roadNetworkGenerator.Generate(currentContext);
+            buildingPlacer.Place(currentContext);
+            poiPlacer.Place(currentContext);
+            environmentObjectPlacer.Place(currentContext);
+            throwObjectPlacer.Place(currentContext);
+            spawnPointGenerator.GenerateEnemySpawns(currentContext);
+
+            bool valid = true;
+
+            if (mapValidator != null)
+                valid = mapValidator.Validate(currentContext);
+
+            if (!valid)
+            {
+                Debug.LogWarning($"Map validation failed. Retry {attempt + 1}/{maxGenerationRetry}");
+                continue;
+            }
+
+            if (playerSpawnManager != null)
+                playerSpawnManager.SpawnPlayer(currentContext.startPosition);
+
+            Debug.Log($"Map generated. Chapter={chapterTheme.chapterName}, Seed={attemptSeed}");
+
+            return;
+        }
+
+        Debug.LogError("Map generation failed after max retry.");
     }
 
     private bool ValidateReferences()
@@ -162,6 +226,18 @@ public class ProceduralMapManager : MonoBehaviour
         if (spawnPointGenerator == null)
         {
             Debug.LogError("SpawnPointGenerator is missing.");
+            return false;
+        }
+
+        if (navMeshSurface == null)
+        {
+            Debug.LogError("NavMeshSurface is missing.");
+            return false;
+        }
+
+        if (mapValidator == null)
+        {
+            Debug.LogError("MapValidator is missing.");
             return false;
         }
 
