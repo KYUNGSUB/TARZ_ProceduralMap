@@ -36,13 +36,16 @@ public class RoadNetworkGenerator : MonoBehaviour
 
             AddRoad(context, current);
 
-            if (i % 3 == 0)
+            if (i % 3 == 0 && i < context.settings.mainPathLength - 2)
+            {
                 context.combatPositions.Add(context.GridToWorld(current));
+            }
 
             if (context.random.NextDouble() < context.settings.branchChance)
                 TryCreateBranch(context, current, direction);
         }
 
+        /*
         Vector2Int bossGrid = current + direction;
 
         if (!roadSet.Contains(bossGrid) && CanPlaceRoad(context, bossGrid, current))
@@ -54,6 +57,9 @@ public class RoadNetworkGenerator : MonoBehaviour
         {
             context.bossPosition = context.GridToWorld(current);
         }
+        */
+        context.bossPosition = context.GridToWorld(current);
+        Debug.Log($"Boss position set to last road: {current}");
     }
 
     private void AddRoad(MapContext context, Vector2Int grid)

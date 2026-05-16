@@ -633,9 +633,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d2d985df70384940876d0f934737f8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  navMeshSurface: {fileID: 1431563564}
-  mapValidator: {fileID: 1582205438}
-  maxGenerationRetry: 10
   chapterTheme: {fileID: 11400000, guid: a84d5ec89f0d7fb43bad5922a97c6270, type: 2}
   settings: {fileID: 11400000, guid: 7b7fb076fe7939e488d5bb15522d22ec, type: 2}
   useSavedSeed: 1
@@ -650,6 +647,9 @@ MonoBehaviour:
   environmentObjectPlacer: {fileID: 1582205434}
   throwObjectPlacer: {fileID: 1582205433}
   spawnPointGenerator: {fileID: 1582205432}
+  navMeshSurface: {fileID: 1431563564}
+  mapValidator: {fileID: 1582205438}
+  maxGenerationRetry: 20
   playerSpawnManager: {fileID: 1794788914}
 --- !u!114 &1582205432
 MonoBehaviour:
@@ -705,12 +705,12 @@ MonoBehaviour:
   rewardRadius: 4
   bossRadius: 8
   startToCombatMinDistance: 18
-  combatToCombatMinDistance: 30
+  combatToCombatMinDistance: 24
   combatToSecretMinDistance: 18
   combatToRewardMinDistance: 18
   secretToRewardMinDistance: 16
-  bossToCombatMinDistance: 24
-  startToBossMinDistance: 80
+  bossToCombatMinDistance: 16
+  startToBossMinDistance: 40
   branchPOIOffset: 8
   maxSearchAttempts: 8
 --- !u!114 &1582205436

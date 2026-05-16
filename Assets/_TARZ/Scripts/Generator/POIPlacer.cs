@@ -101,15 +101,44 @@ public class POIPlacer : MonoBehaviour
 
     private void PlaceBoss(MapContext context)
     {
+        Vector3 bossPos = FindValidBossPosition(context);
+
         TryPlacePOI(
             context,
             POIType.Boss,
             context.theme.bossPrefabs,
-            context.bossPosition,
+            bossPos,
             bossRadius,
             "POI_Boss",
-            false
+            true
         );
+
+        context.bossPosition = bossPos;
+    }
+
+    private Vector3 FindValidBossPosition(MapContext context)
+    {
+        // 1순위: 기존 bossPosition 사용
+        POIArea bossArea = new POIArea(POIType.Boss, context.bossPosition, bossRadius);
+
+        if (CanPlacePOI(context, bossArea))
+            return context.bossPosition;
+
+        // 2순위: 마지막 도로부터 역순으로 검사
+        for (int i = context.roadWorldPositions.Count - 1; i >= 0; i--)
+        {
+            Vector3 candidate = context.roadWorldPositions[i];
+            POIArea testArea = new POIArea(POIType.Boss, candidate, bossRadius);
+
+            if (CanPlacePOI(context, testArea))
+                return candidate;
+        }
+
+        // 3순위: 그래도 없으면 마지막 도로에 강제 배치
+        if (context.roadWorldPositions.Count > 0)
+            return context.roadWorldPositions[context.roadWorldPositions.Count - 1];
+
+        return context.bossPosition;
     }
 
     private bool TryPlacePOI(
