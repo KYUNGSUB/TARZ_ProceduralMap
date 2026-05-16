@@ -571,8 +571,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chapterTheme: {fileID: 11400000, guid: a84d5ec89f0d7fb43bad5922a97c6270, type: 2}
   settings: {fileID: 11400000, guid: 7b7fb076fe7939e488d5bb15522d22ec, type: 2}
-  useRandomSeed: 1
+  useSavedSeed: 1
   seed: 123456
+  regenerateKey: 47
   mapRoot: {fileID: 1656682062}
   runtimeRoot: {fileID: 571775729}
   debugRoot: {fileID: 106322625}
@@ -733,6 +734,9 @@ MonoBehaviour:
   playerPrefab: {fileID: 9114719003272350191, guid: 55d81ff4cf4b70c4ea4c2dacf8a77dcd,
     type: 3}
   runtimeRoot: {fileID: 571775729}
+  mainCamera: {fileID: 330585545}
+  cameraOffset: {x: 0, y: 12, z: -10}
+  cameraRotation: {x: 50, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
