@@ -26,6 +26,9 @@ public class MapContext
 
     public List<Bounds> occupiedBounds = new List<Bounds>();
 
+    // 추가: POI 영역 관리
+    public List<POIArea> poiAreas = new List<POIArea>();
+
     public Vector3 GridToWorld(Vector2Int grid)
     {
         return new Vector3(grid.x * settings.tileSize, 0f, grid.y * settings.tileSize);
