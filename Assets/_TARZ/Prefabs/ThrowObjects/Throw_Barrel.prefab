@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2054174011634920071}
   - component: {fileID: 7055819122515979169}
   - component: {fileID: 6901903539941009247}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Throw_Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}

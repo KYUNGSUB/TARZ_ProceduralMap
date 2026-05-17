@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 684118142681068643}
   - component: {fileID: 7064020803883646579}
   - component: {fileID: 8592444704907958471}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Debris_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -117,7 +117,7 @@ GameObject:
   - component: {fileID: 922443707666367901}
   - component: {fileID: 7362401722749994639}
   - component: {fileID: 1691388769433221376}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Debris_03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -222,7 +222,7 @@ GameObject:
   - component: {fileID: 8062363214241049368}
   - component: {fileID: 487498149409743970}
   - component: {fileID: 2092480035704588371}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Debris_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -324,7 +324,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6148340464917412386}
-  m_Layer: 0
+  - component: {fileID: -680491686097642268}
+  m_Layer: 7
   m_Name: Debris
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -349,3 +350,22 @@ Transform:
   - {fileID: 4430828545941061598}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-680491686097642268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8646108271082140247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 1
+  m_Area: 1
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 0
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff

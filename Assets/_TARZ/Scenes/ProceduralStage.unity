@@ -523,8 +523,8 @@ MonoBehaviour:
   m_Center: {x: 0, y: 2, z: 0}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
-  m_UseGeometry: 0
+    m_Bits: 126
+  m_UseGeometry: 1
   m_DefaultArea: 0
   m_GenerateLinks: 0
   m_IgnoreNavMeshAgent: 1
@@ -649,7 +649,7 @@ MonoBehaviour:
   spawnPointGenerator: {fileID: 1582205432}
   navMeshSurface: {fileID: 1431563564}
   mapValidator: {fileID: 1582205438}
-  maxGenerationRetry: 20
+  maxGenerationRetry: 5
   playerSpawnManager: {fileID: 1794788914}
 --- !u!114 &1582205432
 MonoBehaviour:
@@ -725,6 +725,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37c696c0ec7c2d34387b3108d1b7bf3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  minGapFromRoad: 2
+  maxTryPerRoad: 2
 --- !u!114 &1582205437
 MonoBehaviour:
   m_ObjectHideFlags: 0

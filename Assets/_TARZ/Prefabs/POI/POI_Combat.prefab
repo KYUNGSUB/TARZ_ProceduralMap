@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6416008657574274411}
   - component: {fileID: 5724736122445330358}
   - component: {fileID: 3125114431580531705}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: POI_Combat
   m_TagString: Untagged
   m_Icon: {fileID: 0}

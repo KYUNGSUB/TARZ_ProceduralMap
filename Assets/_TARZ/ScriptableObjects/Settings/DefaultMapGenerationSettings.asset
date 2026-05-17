@@ -17,7 +17,7 @@ MonoBehaviour:
   branchCount: 4
   branchMinLength: 2
   branchMaxLength: 5
-  buildingOffsetFromRoad: 18
+  buildingOffsetFromRoad: 24
   objectPlacementRadius: 8
   throwObjectRadius: 10
   objectsPerRoadTile: 5

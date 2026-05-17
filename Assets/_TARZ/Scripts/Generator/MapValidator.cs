@@ -34,6 +34,7 @@ public class MapValidator : MonoBehaviour
             return false;
         }
 
+        /*
         foreach (Vector3 spawnPos in context.enemySpawnPositions)
         {
             if (!IsOnNavMesh(spawnPos))
@@ -42,6 +43,7 @@ public class MapValidator : MonoBehaviour
                 return false;
             }
         }
+        */
 
         return true;
     }

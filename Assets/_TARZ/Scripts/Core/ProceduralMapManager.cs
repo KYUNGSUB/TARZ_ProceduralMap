@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using Unity.AI.Navigation;
 
@@ -30,43 +31,34 @@ public class ProceduralMapManager : MonoBehaviour
     [Header("Validation")]
     public NavMeshSurface navMeshSurface;
     public MapValidator mapValidator;
+
+    [Header("Retry")]
     public int maxGenerationRetry = 10;
 
     [Header("Runtime")]
     public PlayerSpawnManager playerSpawnManager;
 
     private MapContext currentContext;
+    private bool isGenerating = false;
 
     private void Start()
     {
         LoadOrCreateSeed();
-
-        bool success = Generate();
-
-        if (!success)
-        {
-            Debug.LogWarning($"Saved seed failed. Creating new seed. Failed Seed={seed}");
-
-            seed = CreateRandomSeed();
-            success = Generate();
-
-            if (success)
-            {
-                SeedStorage.SaveSeed(seed);
-                Debug.Log($"Recovered with new valid seed: {seed}");
-            }
-            else
-            {
-                Debug.LogError("Failed to recover with new seed.");
-            }
-        }
+        StartCoroutine(GenerateWithRetry(seed, true));
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(regenerateKey))
         {
-            GenerateNewRandomSeedAndMap();
+            if (isGenerating)
+            {
+                Debug.LogWarning("Map generation is already running. Input ignored.");
+                return;
+            }
+
+            int newSeed = CreateRandomSeed();
+            StartCoroutine(GenerateWithRetry(newSeed, true));
         }
     }
 
@@ -81,33 +73,7 @@ public class ProceduralMapManager : MonoBehaviour
 
         seed = CreateRandomSeed();
         SeedStorage.SaveSeed(seed);
-
         Debug.Log($"Created new seed: {seed}");
-    }
-
-    private void GenerateNewRandomSeedAndMap()
-    {
-        int maxNewSeedTry = 20;
-
-        for (int i = 0; i < maxNewSeedTry; i++)
-        {
-            seed = CreateRandomSeed();
-
-            Debug.Log($"Trying new random seed: {seed} ({i + 1}/{maxNewSeedTry})");
-
-            bool success = Generate();
-
-            if (success)
-            {
-                SeedStorage.SaveSeed(seed);
-                Debug.Log($"New valid seed saved: {seed}");
-                return;
-            }
-
-            Debug.LogWarning($"New seed failed: {seed}");
-        }
-
-        Debug.LogError("Failed to generate a valid map after trying multiple new seeds.");
     }
 
     private int CreateRandomSeed()
@@ -115,73 +81,95 @@ public class ProceduralMapManager : MonoBehaviour
         return Random.Range(1, int.MaxValue);
     }
 
-    [ContextMenu("Generate Map")]
-    public bool Generate()
+    private IEnumerator GenerateWithRetry(int baseSeed, bool saveWhenSuccess)
     {
         if (!ValidateReferences())
-            return false;
+            yield break;
+
+        isGenerating = true;
 
         for (int attempt = 0; attempt < maxGenerationRetry; attempt++)
         {
+            int attemptSeed = baseSeed + attempt;
+
+            Debug.Log($"Generating map. Attempt={attempt + 1}/{maxGenerationRetry}, Seed={attemptSeed}");
+
             ClearChildren(mapRoot);
             ClearChildren(runtimeRoot);
             ClearChildren(debugRoot);
 
-            int attemptSeed = seed + attempt;
+            // 중요: Destroy()가 실제 처리될 시간을 줌
+            yield return null;
 
-            currentContext = new MapContext
+            bool success = GenerateOnce(attemptSeed);
+
+            if (success)
             {
-                seed = attemptSeed,
-                random = new System.Random(attemptSeed),
+                seed = attemptSeed;
 
-                theme = chapterTheme,
-                settings = settings,
+                if (saveWhenSuccess)
+                    SeedStorage.SaveSeed(seed);
 
-                mapRoot = mapRoot,
-                runtimeRoot = runtimeRoot,
-                debugRoot = debugRoot,
+                Debug.Log($"Map generated successfully. Chapter={chapterTheme.chapterName}, Seed={seed}");
 
-                navMeshSurface = navMeshSurface
-            };
-
-            roadNetworkGenerator.Generate(currentContext);
-            buildingPlacer.Place(currentContext);
-            poiPlacer.Place(currentContext);
-            environmentObjectPlacer.Place(currentContext);
-            throwObjectPlacer.Place(currentContext);
-            spawnPointGenerator.GenerateEnemySpawns(currentContext);
-
-            bool valid = true;
-
-            if (mapValidator != null)
-            {
-                valid = mapValidator.Validate(currentContext);
+                isGenerating = false;
+                yield break;
             }
 
-            if (!valid)
-            {
-                Debug.LogWarning(
-                    $"Map validation failed. Retry {attempt + 1}/{maxGenerationRetry}, Seed={attemptSeed}"
-                );
+            Debug.LogWarning($"Map validation failed. Seed={attemptSeed}");
 
-                continue;
-            }
-
-            seed = attemptSeed;
-
-            if (playerSpawnManager != null)
-            {
-                playerSpawnManager.SpawnPlayer(currentContext.startPosition);
-            }
-
-            Debug.Log($"Map generated. Chapter={chapterTheme.chapterName}, Seed={seed}");
-
-            return true;
+            // 다음 재시도 전 한 프레임 대기
+            yield return null;
         }
 
-        Debug.LogError($"Map generation failed after max retry. Base Seed={seed}");
+        Debug.LogError($"Map generation failed after max retry. Base Seed={baseSeed}");
 
-        return false;
+        isGenerating = false;
+    }
+
+    private bool GenerateOnce(int generationSeed)
+    {
+        currentContext = new MapContext
+        {
+            seed = generationSeed,
+            random = new System.Random(generationSeed),
+
+            theme = chapterTheme,
+            settings = settings,
+
+            mapRoot = mapRoot,
+            runtimeRoot = runtimeRoot,
+            debugRoot = debugRoot,
+
+            navMeshSurface = navMeshSurface
+        };
+
+        roadNetworkGenerator.Generate(currentContext);
+
+        // 현재 테스트 중이면 주석 유지 가능
+        buildingPlacer.Place(currentContext);
+
+        poiPlacer.Place(currentContext);
+
+        // 현재 테스트 중이면 주석 유지 가능
+        environmentObjectPlacer.Place(currentContext);
+
+        bool valid = true;
+
+        if (mapValidator != null)
+            valid = mapValidator.Validate(currentContext);
+
+        if (!valid)
+            return false;
+
+        // NavMesh 검증 성공 후 동적 오브젝트 생성
+        throwObjectPlacer.Place(currentContext);
+        spawnPointGenerator.GenerateEnemySpawns(currentContext);
+
+        if (playerSpawnManager != null)
+            playerSpawnManager.SpawnPlayer(currentContext.startPosition);
+
+        return true;
     }
 
     private bool ValidateReferences()
@@ -222,21 +210,9 @@ public class ProceduralMapManager : MonoBehaviour
             return false;
         }
 
-        if (buildingPlacer == null)
-        {
-            Debug.LogError("BuildingPlacer is missing.");
-            return false;
-        }
-
         if (poiPlacer == null)
         {
             Debug.LogError("POIPlacer is missing.");
-            return false;
-        }
-
-        if (environmentObjectPlacer == null)
-        {
-            Debug.LogError("EnvironmentObjectPlacer is missing.");
             return false;
         }
 
@@ -274,18 +250,7 @@ public class ProceduralMapManager : MonoBehaviour
 
         for (int i = root.childCount - 1; i >= 0; i--)
         {
-#if UNITY_EDITOR
-            if (!Application.isPlaying)
-            {
-                DestroyImmediate(root.GetChild(i).gameObject);
-            }
-            else
-            {
-                Destroy(root.GetChild(i).gameObject);
-            }
-#else
             Destroy(root.GetChild(i).gameObject);
-#endif
         }
     }
 }
