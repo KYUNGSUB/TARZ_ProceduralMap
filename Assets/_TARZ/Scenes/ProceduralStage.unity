@@ -523,7 +523,7 @@ MonoBehaviour:
   m_Center: {x: 0, y: 2, z: 0}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 126
+    m_Bits: 8
   m_UseGeometry: 1
   m_DefaultArea: 0
   m_GenerateLinks: 0
@@ -654,6 +654,8 @@ MonoBehaviour:
   playerSpawnManager: {fileID: 1794788914}
   combatZoneRule: {fileID: 11400000, guid: 52cf795f3ef39f34789a4bc5dc964e36, type: 2}
   combatZoneGenerator: {fileID: 1582205439}
+  buildingPlacementRule: {fileID: 11400000, guid: e4c4ac79133d188479be187ffc3528b7,
+    type: 2}
 --- !u!114 &1582205432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -666,6 +668,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6f55f42cf965d24e8d417c2ed42aae8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  navMeshSampleDistance: 5
 --- !u!114 &1582205433
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -728,8 +731,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37c696c0ec7c2d34387b3108d1b7bf3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minGapFromRoad: 2
-  maxTryPerRoad: 2
 --- !u!114 &1582205437
 MonoBehaviour:
   m_ObjectHideFlags: 0

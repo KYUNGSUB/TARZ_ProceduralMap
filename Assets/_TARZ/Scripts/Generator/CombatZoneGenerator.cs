@@ -88,7 +88,7 @@ public class CombatZoneGenerator : MonoBehaviour
         );
 
         int placed = 0;
-        int maxTry = count * 10;
+        int maxTry = count * 20;
 
         for (int i = 0; i < maxTry && placed < count; i++)
         {
@@ -99,10 +99,8 @@ public class CombatZoneGenerator : MonoBehaviour
                 context.combatZoneRule.throwObjectMaxDistanceFromCenter
             );
 
+            // 전투 중심부는 플레이어 이동 공간으로 비워둠
             if (IsInsideCenterClearArea(context, center, pos))
-                continue;
-
-            if (IsOccupied(context, pos, 1.5f))
                 continue;
 
             GameObject prefab = PrefabPicker.Pick(
@@ -111,7 +109,10 @@ public class CombatZoneGenerator : MonoBehaviour
             );
 
             if (prefab == null)
+            {
+                Debug.LogWarning("ThrowObject prefab is missing in ChapterThemeData.");
                 return;
+            }
 
             Quaternion rot = Quaternion.Euler(
                 0f,
@@ -119,17 +120,19 @@ public class CombatZoneGenerator : MonoBehaviour
                 0f
             );
 
-            GameObject obj = Instantiate(prefab, pos, rot, context.mapRoot);
+            GameObject obj = Instantiate(prefab, pos + Vector3.up * 0.5f, rot, context.mapRoot);
             obj.name = "Combat_ThrowObject";
 
             if (obj.GetComponent<ThrowObject>() == null)
                 obj.AddComponent<ThrowObject>();
 
-            Bounds bounds = BoundsUtility.GetObjectBounds(obj);
-            context.occupiedBounds.Add(bounds);
+            // ThrowObject는 Road/POI 위에 있어야 하므로 occupiedBounds 검사로 막지 않음
+            // 단, 이후 다른 큰 구조물 배치를 막을 필요가 있으면 별도 throwObjectBounds로 관리하는 것이 좋음
 
             placed++;
         }
+
+        Debug.Log($"ThrowObjects placed: {placed}");
     }
 
     private void RegisterEnemySpawnPositions(MapContext context, Vector3 center)

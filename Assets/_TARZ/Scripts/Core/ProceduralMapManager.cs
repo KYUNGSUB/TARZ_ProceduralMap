@@ -45,6 +45,9 @@ public class ProceduralMapManager : MonoBehaviour
     public CombatZoneRule combatZoneRule;
     public CombatZoneGenerator combatZoneGenerator;
 
+    [Header("Building")]
+    public BuildingPlacementRule buildingPlacementRule;
+
     private void Start()
     {
         LoadOrCreateSeed();
@@ -141,6 +144,7 @@ public class ProceduralMapManager : MonoBehaviour
             theme = chapterTheme,
             settings = settings,
             combatZoneRule = combatZoneRule,
+            buildingPlacementRule = buildingPlacementRule,
 
             mapRoot = mapRoot,
             runtimeRoot = runtimeRoot,
@@ -151,10 +155,10 @@ public class ProceduralMapManager : MonoBehaviour
 
         roadNetworkGenerator.Generate(currentContext);
 
+        poiPlacer.Place(currentContext);
+
         // 현재 테스트 중이면 주석 유지 가능
         buildingPlacer.Place(currentContext);
-
-        poiPlacer.Place(currentContext);
 
         // 현재 테스트 중이면 주석 유지 가능
         environmentObjectPlacer.Place(currentContext);
