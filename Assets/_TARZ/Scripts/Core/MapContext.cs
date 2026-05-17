@@ -9,6 +9,7 @@ public class MapContext
 
     public ChapterThemeData theme;
     public MapGenerationSettings settings;
+    public CombatZoneRule combatZoneRule;
 
     public Transform mapRoot;
     public Transform runtimeRoot;

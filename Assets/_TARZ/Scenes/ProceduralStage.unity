@@ -599,6 +599,7 @@ GameObject:
   - component: {fileID: 1582205433}
   - component: {fileID: 1582205432}
   - component: {fileID: 1582205438}
+  - component: {fileID: 1582205439}
   m_Layer: 0
   m_Name: ProceduralMapManager
   m_TagString: Untagged
@@ -651,6 +652,8 @@ MonoBehaviour:
   mapValidator: {fileID: 1582205438}
   maxGenerationRetry: 5
   playerSpawnManager: {fileID: 1794788914}
+  combatZoneRule: {fileID: 11400000, guid: 52cf795f3ef39f34789a4bc5dc964e36, type: 2}
+  combatZoneGenerator: {fileID: 1582205439}
 --- !u!114 &1582205432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -753,6 +756,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sampleDistance: 3
   maxPathDistance: 1000
+--- !u!114 &1582205439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 705ce8f1a3c9c224aa2744407dd7c31b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  coverPrefabs:
+  - {fileID: 1824599713845831165, guid: 49020c4eaff3d1844a8e959927926811, type: 3}
 --- !u!1 &1656682061
 GameObject:
   m_ObjectHideFlags: 0

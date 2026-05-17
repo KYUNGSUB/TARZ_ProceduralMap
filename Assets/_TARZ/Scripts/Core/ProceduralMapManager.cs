@@ -41,6 +41,10 @@ public class ProceduralMapManager : MonoBehaviour
     private MapContext currentContext;
     private bool isGenerating = false;
 
+    [Header("Combat")]
+    public CombatZoneRule combatZoneRule;
+    public CombatZoneGenerator combatZoneGenerator;
+
     private void Start()
     {
         LoadOrCreateSeed();
@@ -136,6 +140,7 @@ public class ProceduralMapManager : MonoBehaviour
 
             theme = chapterTheme,
             settings = settings,
+            combatZoneRule = combatZoneRule,
 
             mapRoot = mapRoot,
             runtimeRoot = runtimeRoot,
@@ -154,6 +159,9 @@ public class ProceduralMapManager : MonoBehaviour
         // 현재 테스트 중이면 주석 유지 가능
         environmentObjectPlacer.Place(currentContext);
 
+        // 전투 공간 규칙 적용
+        combatZoneGenerator.Generate(currentContext);
+
         bool valid = true;
 
         if (mapValidator != null)
@@ -163,7 +171,7 @@ public class ProceduralMapManager : MonoBehaviour
             return false;
 
         // NavMesh 검증 성공 후 동적 오브젝트 생성
-        throwObjectPlacer.Place(currentContext);
+        // throwObjectPlacer.Place(currentContext);
         spawnPointGenerator.GenerateEnemySpawns(currentContext);
 
         if (playerSpawnManager != null)

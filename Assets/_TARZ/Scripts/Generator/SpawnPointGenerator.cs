@@ -1,40 +1,42 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class SpawnPointGenerator : MonoBehaviour
 {
+    public float navMeshSampleDistance = 5f;
+
     public void GenerateEnemySpawns(MapContext context)
     {
-        foreach (Vector3 combatPos in context.combatPositions)
+        Debug.Log($"SpawnPointGenerator received {context.enemySpawnPositions.Count} enemy spawn positions.");
+
+        foreach (Vector3 spawnPos in context.enemySpawnPositions)
         {
-            for (int i = 0; i < context.settings.enemiesPerCombatZone; i++)
+            if (context.theme.enemyPrefab == null)
             {
-                Vector3 position = GetRandomPoint(context, combatPos, 8f);
-                context.enemySpawnPositions.Add(position);
-
-                if (context.theme.enemyPrefab != null)
-                {
-                    GameObject enemy = Instantiate(
-                        context.theme.enemyPrefab,
-                        position,
-                        Quaternion.identity,
-                        context.runtimeRoot
-                    );
-
-                    enemy.name = "Enemy_Zombie";
-                }
+                Debug.LogWarning("Enemy prefab is missing in ChapterThemeData.");
+                continue;
             }
+
+            Vector3 finalPos = spawnPos;
+
+            if (NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, navMeshSampleDistance, NavMesh.AllAreas))
+            {
+                finalPos = hit.position;
+            }
+            else
+            {
+                Debug.LogWarning($"Enemy spawn position is not near NavMesh: {spawnPos}");
+                continue;
+            }
+
+            GameObject enemy = Instantiate(
+                context.theme.enemyPrefab,
+                finalPos + Vector3.up,
+                Quaternion.identity,
+                context.runtimeRoot
+            );
+
+            enemy.name = "Enemy_Zombie";
         }
-    }
-
-    private Vector3 GetRandomPoint(MapContext context, Vector3 center, float radius)
-    {
-        float angle = (float)context.random.NextDouble() * Mathf.PI * 2f;
-        float distance = (float)context.random.NextDouble() * radius;
-
-        return center + new Vector3(
-            Mathf.Cos(angle) * distance,
-            0f,
-            Mathf.Sin(angle) * distance
-        );
     }
 }
