@@ -600,6 +600,8 @@ GameObject:
   - component: {fileID: 1582205432}
   - component: {fileID: 1582205438}
   - component: {fileID: 1582205439}
+  - component: {fileID: 1582205440}
+  - component: {fileID: 1582205441}
   m_Layer: 0
   m_Name: ProceduralMapManager
   m_TagString: Untagged
@@ -656,6 +658,8 @@ MonoBehaviour:
   combatZoneGenerator: {fileID: 1582205439}
   buildingPlacementRule: {fileID: 11400000, guid: e4c4ac79133d188479be187ffc3528b7,
     type: 2}
+  cityBlockGenerator: {fileID: 1582205440}
+  blockBuildingPlacer: {fileID: 1582205441}
 --- !u!114 &1582205432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -771,6 +775,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   coverPrefabs:
   - {fileID: 1824599713845831165, guid: 49020c4eaff3d1844a8e959927926811, type: 3}
+--- !u!114 &1582205440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dc0e83615ab8234286bf36419f2efce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1582205441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 301e937bf8145e34a8d7d41d8023e95c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minBuildingsPerBlock: 2
+  maxBuildingsPerBlock: 4
+  edgePadding: 5
+  maxTryPerBuilding: 20
 --- !u!1 &1656682061
 GameObject:
   m_ObjectHideFlags: 0

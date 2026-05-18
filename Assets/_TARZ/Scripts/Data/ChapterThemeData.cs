@@ -36,4 +36,14 @@ public class ChapterThemeData : ScriptableObject
     [Range(0f, 1f)] public float buildingDensity = 0.7f;
     [Range(0f, 1f)] public float environmentDensity = 0.6f;
     [Range(0f, 1f)] public float throwObjectDensity = 0.8f;
+
+    [Header("District Rule")]
+    public DistrictThemeRule districtThemeRule;
+
+    [Header("District Building Prefabs")]
+    public List<GameObject> residentialBuildingPrefabs = new List<GameObject>();
+    public List<GameObject> commercialBuildingPrefabs = new List<GameObject>();
+    public List<GameObject> industrialBuildingPrefabs = new List<GameObject>();
+    public List<GameObject> harborBuildingPrefabs = new List<GameObject>();
+    public List<GameObject> beachBuildingPrefabs = new List<GameObject>();
 }

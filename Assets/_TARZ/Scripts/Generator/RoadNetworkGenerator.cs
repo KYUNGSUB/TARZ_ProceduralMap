@@ -45,21 +45,32 @@ public class RoadNetworkGenerator : MonoBehaviour
                 TryCreateBranch(context, current, direction);
         }
 
-        /*
-        Vector2Int bossGrid = current + direction;
-
-        if (!roadSet.Contains(bossGrid) && CanPlaceRoad(context, bossGrid, current))
-        {
-            AddRoad(context, bossGrid);
-            context.bossPosition = context.GridToWorld(bossGrid);
-        }
-        else
-        {
-            context.bossPosition = context.GridToWorld(current);
-        }
-        */
         context.bossPosition = context.GridToWorld(current);
         Debug.Log($"Boss position set to last road: {current}");
+        CalculateMapBounds(context);
+    }
+
+    private void CalculateMapBounds(MapContext context)
+    {
+        if (context.roadBounds == null || context.roadBounds.Count == 0)
+            return;
+
+        Bounds bounds = context.roadBounds[0];
+
+        for (int i = 1; i < context.roadBounds.Count; i++)
+        {
+            bounds.Encapsulate(context.roadBounds[i]);
+        }
+
+        // Road 주변에 건물과 Block이 들어갈 수 있도록 여유 공간 추가
+        float padding = 35f;
+
+        bounds.Expand(new Vector3(padding * 2f, 0f, padding * 2f));
+
+        context.mapBounds = bounds;
+        context.hasMapBounds = true;
+
+        Debug.Log($"Map Bounds calculated. Center={bounds.center}, Size={bounds.size}");
     }
 
     private void AddRoad(MapContext context, Vector2Int grid)

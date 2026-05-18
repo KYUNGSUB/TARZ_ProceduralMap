@@ -48,6 +48,10 @@ public class ProceduralMapManager : MonoBehaviour
     [Header("Building")]
     public BuildingPlacementRule buildingPlacementRule;
 
+    [Header("District")]
+    public CityBlockGenerator cityBlockGenerator;
+    public BlockBuildingPlacer blockBuildingPlacer;
+
     private void Start()
     {
         LoadOrCreateSeed();
@@ -154,11 +158,31 @@ public class ProceduralMapManager : MonoBehaviour
         };
 
         roadNetworkGenerator.Generate(currentContext);
-
         poiPlacer.Place(currentContext);
 
-        // 현재 테스트 중이면 주석 유지 가능
-        buildingPlacer.Place(currentContext);
+        Debug.Log("Before CityBlockGenerator call");
+        // 도시 블록 생성
+        if (cityBlockGenerator == null)
+        {
+            Debug.LogError("cityBlockGenerator is NULL");
+        }
+        else
+        {
+            cityBlockGenerator.Generate(currentContext);
+        }
+
+        // 블록 안에 건물 그룹 배치
+        if (blockBuildingPlacer == null)
+        {
+            Debug.LogError("blockBuildingPlacer is NULL");
+        }
+        else
+        {
+            blockBuildingPlacer.Place(currentContext);
+        }
+
+        // 기존 단순 BuildingPlacer는 일단 비활성 권장
+        // buildingPlacer.Place(currentContext);
 
         // 현재 테스트 중이면 주석 유지 가능
         environmentObjectPlacer.Place(currentContext);

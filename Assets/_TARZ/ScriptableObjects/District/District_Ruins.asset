@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5035a9654f030848a8a0d722ccc591e, type: 3}
+  m_Name: District_Ruins
+  m_EditorClassIdentifier: 
+  minBlockSize: {x: 12, y: 12}
+  maxBlockSize: {x: 20, y: 20}
+  blockOffsetFromRoad: 24
+  roadAvoidanceGap: 4
+  maxBlocksPerRoad: 2
+  maxTryPerRoad: 8
+  blockCreationChance: 0.8
+  blockWeights:
+  - blockType: 4
+    weight: 5
+  - blockType: 0
+    weight: 2
+  - blockType: 1
+    weight: 2
+  - blockType: 2
+    weight: 1
+  - blockType: 8
+    weight: 1

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b2ac6f6285cd6084dad2245cb165573b, type: 3}
-  m_Name: Chapter_Ruins
+  m_Name: Chapter_Harbor
   m_EditorClassIdentifier: 
-  chapterId: chapter_01_ruins
-  chapterName: "\uD3D0\uD5C8"
+  chapterId: chapter_03_harbor
+  chapterName: "\uD56D\uAD6C"
   roadPrefabs:
   - {fileID: 2027547638819069183, guid: a24140c04d86f0c43b44b92a531d94f1, type: 3}
   buildingPrefabs:
@@ -45,14 +45,12 @@ MonoBehaviour:
   buildingDensity: 0.7
   environmentDensity: 0.6
   throwObjectDensity: 0.9
-  districtThemeRule: {fileID: 11400000, guid: 1b96d1de077974f4cbf52c9835a0f496, type: 2}
-  residentialBuildingPrefabs:
-  - {fileID: 2559432405022361438, guid: 1173cb49c557ae046835ce5285b8f371, type: 3}
-  - {fileID: 1121737385989866733, guid: 0b03cddfe9057c64db271e5080b1c635, type: 3}
-  commercialBuildingPrefabs:
-  - {fileID: 1121737385989866733, guid: 0b03cddfe9057c64db271e5080b1c635, type: 3}
-  - {fileID: 1754605587894940570, guid: 418ef00eb2adda24e8f285784146e2cb, type: 3}
+  districtThemeRule: {fileID: 11400000, guid: ad9054c5fb9d8a2469a74a99c565630b, type: 2}
+  residentialBuildingPrefabs: []
+  commercialBuildingPrefabs: []
   industrialBuildingPrefabs:
   - {fileID: 1754605587894940570, guid: 418ef00eb2adda24e8f285784146e2cb, type: 3}
-  harborBuildingPrefabs: []
+  harborBuildingPrefabs:
+  - {fileID: 1121737385989866733, guid: 0b03cddfe9057c64db271e5080b1c635, type: 3}
+  - {fileID: 1754605587894940570, guid: 418ef00eb2adda24e8f285784146e2cb, type: 3}
   beachBuildingPrefabs: []

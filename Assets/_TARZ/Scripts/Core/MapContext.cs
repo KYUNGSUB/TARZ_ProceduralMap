@@ -28,6 +28,13 @@ public class MapContext
     public List<Vector3> enemySpawnPositions = new List<Vector3>();
 
     public List<Bounds> occupiedBounds = new List<Bounds>();
+    public List<Bounds> roadBounds = new List<Bounds>();
+    public List<Bounds> buildingBounds = new List<Bounds>();
+    public List<CityBlock> cityBlocks = new List<CityBlock>();
+    public List<Bounds> blockBounds = new List<Bounds>();
+
+    public Bounds mapBounds;
+    public bool hasMapBounds = false;
 
     // 추가: POI 영역 관리
     public List<POIArea> poiAreas = new List<POIArea>();
