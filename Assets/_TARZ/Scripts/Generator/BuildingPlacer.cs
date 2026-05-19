@@ -3,62 +3,91 @@ using UnityEngine;
 
 public class BuildingPlacer : MonoBehaviour
 {
-    [Header("Stable Road Lot Placement")]
-    public float roadSafetyGap = 3f;
-    public float extraOffsetMin = 0f;
-    public float extraOffsetMax = 4f;
-    public float placementChance = 0.85f;
-    public int maxTryPerSide = 3;
+    [Header("Lot Rule")]
+    public LotPlacementRule lotRule;
 
     public void Place(MapContext context)
     {
+        if (lotRule == null)
+        {
+            Debug.LogWarning("LotPlacementRule is missing.");
+            return;
+        }
+
+        if (context.theme == null || context.theme.buildingPrefabs == null || context.theme.buildingPrefabs.Count == 0)
+        {
+            Debug.LogWarning("Building prefabs are missing.");
+            return;
+        }
+
         HashSet<Vector2Int> roadSet = new HashSet<Vector2Int>(context.roadGridPositions);
+
+        int placedCount = 0;
 
         foreach (Vector2Int roadGrid in context.roadGridPositions)
         {
             Vector3 roadWorld = context.GridToWorld(roadGrid);
-            Vector3 roadDir = EstimateRoadDirection(roadGrid, roadSet);
+            Vector3 roadDirection = EstimateRoadDirection(roadGrid, roadSet);
 
-            Vector3 left = Vector3.Cross(Vector3.up, roadDir).normalized;
+            Vector3 left = Vector3.Cross(Vector3.up, roadDirection).normalized;
             Vector3 right = -left;
 
-            TryPlaceOnSide(context, roadWorld, left);
-            TryPlaceOnSide(context, roadWorld, right);
+            if (TryPlaceLotBuilding(context, roadWorld, roadDirection, left))
+                placedCount++;
+
+            if (TryPlaceLotBuilding(context, roadWorld, roadDirection, right))
+                placedCount++;
         }
 
-        Debug.Log($"Buildings placed: {context.buildingBounds.Count}");
+        Debug.Log($"Lot Buildings placed: {placedCount}");
     }
 
-    private void TryPlaceOnSide(MapContext context, Vector3 roadWorld, Vector3 sideDir)
+    private bool TryPlaceLotBuilding(
+        MapContext context,
+        Vector3 roadWorld,
+        Vector3 roadDirection,
+        Vector3 sideDirection
+    )
     {
-        if (context.random.NextDouble() > placementChance * context.theme.buildingDensity)
-            return;
+        float chance = lotRule.placementChance * context.theme.buildingDensity;
 
-        for (int i = 0; i < maxTryPerSide; i++)
+        if (context.random.NextDouble() > chance)
+            return false;
+
+        for (int i = 0; i < lotRule.maxTryPerSide; i++)
         {
             GameObject prefab = PrefabPicker.Pick(context.theme.buildingPrefabs, context.random);
 
             if (prefab == null)
-                return;
+                continue;
 
             Vector2 footprint = GetBuildingFootprint(prefab);
 
-            float roadHalf = context.settings.tileSize * 0.5f;
-            float buildingHalf = Mathf.Max(footprint.x, footprint.y) * 0.5f;
+            Vector3 lotCenter = CalculateLotCenter(
+                context,
+                roadWorld,
+                sideDirection,
+                footprint
+            );
 
-            float offset =
-                roadHalf +
-                buildingHalf +
-                roadSafetyGap +
-                RandomRange(context, extraOffsetMin, extraOffsetMax);
+            Vector3 buildingPosition = GetBuildingPositionInsideLot(
+                context,
+                lotCenter,
+                roadDirection,
+                sideDirection,
+                footprint
+            );
 
-            Vector3 position = roadWorld + sideDir.normalized * offset;
-            position.y = 0f;
+            Quaternion rotation = Quaternion.LookRotation(-sideDirection.normalized, Vector3.up);
 
-            Quaternion rotation = Quaternion.LookRotation(-sideDir.normalized, Vector3.up);
+            GameObject building = Instantiate(
+                prefab,
+                buildingPosition,
+                rotation,
+                context.mapRoot
+            );
 
-            GameObject building = Instantiate(prefab, position, rotation, context.mapRoot);
-            building.name = "Building_StableLot";
+            building.name = "Building_Lot";
 
             Bounds bounds = BoundsUtility.GetObjectBounds(building);
 
@@ -69,25 +98,102 @@ public class BuildingPlacer : MonoBehaviour
             }
 
             context.buildingBounds.Add(bounds);
-            return;
+            return true;
         }
+
+        return false;
+    }
+
+    private Vector3 CalculateLotCenter(
+        MapContext context,
+        Vector3 roadWorld,
+        Vector3 sideDirection,
+        Vector2 buildingFootprint
+    )
+    {
+        float roadHalf = lotRule.roadWidth * 0.5f;
+        float sidewalk = lotRule.sidewalkWidth;
+        float lotHalfDepth = lotRule.lotDepth * 0.5f;
+
+        float offset =
+            roadHalf +
+            sidewalk +
+            lotHalfDepth;
+
+        Vector3 lotCenter = roadWorld + sideDirection.normalized * offset;
+        lotCenter.y = 0f;
+
+        return lotCenter;
+    }
+
+    private Vector3 GetBuildingPositionInsideLot(
+        MapContext context,
+        Vector3 lotCenter,
+        Vector3 roadDirection,
+        Vector3 sideDirection,
+        Vector2 footprint
+    )
+    {
+        float maxForwardOffset =
+            Mathf.Max(0f, (lotRule.lotWidth - footprint.x) * 0.5f - lotRule.buildingInsetFromLotEdge);
+
+        float maxSideOffset =
+            Mathf.Max(0f, (lotRule.lotDepth - footprint.y) * 0.5f - lotRule.buildingInsetFromLotEdge);
+
+        float forwardOffset = RandomRange(
+            context,
+            -Mathf.Min(maxForwardOffset, lotRule.randomOffsetInLot),
+            Mathf.Min(maxForwardOffset, lotRule.randomOffsetInLot)
+        );
+
+        float sideOffset = RandomRange(
+            context,
+            -Mathf.Min(maxSideOffset, lotRule.randomOffsetInLot),
+            Mathf.Min(maxSideOffset, lotRule.randomOffsetInLot)
+        );
+
+        Vector3 position =
+            lotCenter +
+            roadDirection.normalized * forwardOffset +
+            sideDirection.normalized * sideOffset;
+
+        position.y = 0f;
+
+        return position;
     }
 
     private bool CanPlaceBuilding(MapContext context, Bounds buildingBounds)
     {
-        if (context.hasMapBounds && !ContainsBoundsXZ(context.mapBounds, buildingBounds))
-            return false;
+        if (context.hasMapBounds)
+        {
+            Bounds safeMapBounds = context.mapBounds;
+            safeMapBounds.Expand(new Vector3(
+                -lotRule.mapBoundaryGap * 2f,
+                0f,
+                -lotRule.mapBoundaryGap * 2f
+            ));
+
+            if (!ContainsBoundsXZ(safeMapBounds, buildingBounds))
+                return false;
+        }
 
         if (OverlapsAnyRoadTile(context, buildingBounds))
             return false;
 
         foreach (POIArea poi in context.poiAreas)
         {
-            if (poi.type != POIType.Start && poi.type != POIType.Boss)
+            if (poi.type != POIType.Start &&
+                poi.type != POIType.Boss)
+            {
                 continue;
+            }
 
             Bounds protectedBounds = poi.bounds;
-            protectedBounds.Expand(new Vector3(2f, 0f, 2f));
+            protectedBounds.Expand(new Vector3(
+                lotRule.protectedPOIGap * 2f,
+                0f,
+                lotRule.protectedPOIGap * 2f
+            ));
 
             if (IntersectsXZ(protectedBounds, buildingBounds))
                 return false;
@@ -104,16 +210,14 @@ public class BuildingPlacer : MonoBehaviour
 
     private bool OverlapsAnyRoadTile(MapContext context, Bounds buildingBounds)
     {
-        float gap = 0.5f;
-
         foreach (Vector3 roadCenter in context.roadWorldPositions)
         {
             Bounds roadBounds = new Bounds(
                 roadCenter,
                 new Vector3(
-                    context.settings.tileSize + gap * 2f,
+                    lotRule.roadWidth + lotRule.roadSafetyGap * 2f,
                     10f,
-                    context.settings.tileSize + gap * 2f
+                    lotRule.roadWidth + lotRule.roadSafetyGap * 2f
                 )
             );
 
@@ -157,10 +261,10 @@ public class BuildingPlacer : MonoBehaviour
         for (int i = 1; i < renderers.Length; i++)
             bounds.Encapsulate(renderers[i].bounds);
 
-        return new Vector2(
-            Mathf.Max(bounds.size.x, 1f),
-            Mathf.Max(bounds.size.z, 1f)
-        );
+        float x = Mathf.Max(bounds.size.x, 1f);
+        float z = Mathf.Max(bounds.size.z, 1f);
+
+        return new Vector2(x, z);
     }
 
     private bool IntersectsXZ(Bounds a, Bounds b)

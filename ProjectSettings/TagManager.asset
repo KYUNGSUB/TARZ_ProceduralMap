@@ -13,12 +13,12 @@ TagManager:
   - UI
   - NavMeshObstacle
   - IgnoreNavMesh
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Road
+  - Sidewalk
+  - Building
+  - Environment
+  - ThrowObject
+  - Enemy
   - 
   - 
   - 

@@ -48,6 +48,9 @@ public class ProceduralMapManager : MonoBehaviour
     [Header("Building")]
     public BuildingPlacementRule buildingPlacementRule;
 
+    [Header("Lot")]
+    public LotPlacementRule lotPlacementRule;
+
     [Header("District")]
     public CityBlockGenerator cityBlockGenerator;
     public BlockBuildingPlacer blockBuildingPlacer;
