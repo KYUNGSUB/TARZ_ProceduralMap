@@ -45,6 +45,20 @@ public class CityBlockGenerator : MonoBehaviour
             float offset = rule.blockOffsetFromRoad + RandomRange(context, 0f, 8f);
 
             Vector3 center = roadWorld + sideDirection.normalized * offset;
+            // Map 경계 근처는 피함
+            float borderMargin = 20f;
+
+            center.x = Mathf.Clamp(
+                center.x,
+                context.mapBounds.min.x + borderMargin,
+                context.mapBounds.max.x - borderMargin
+            );
+
+            center.z = Mathf.Clamp(
+                center.z,
+                context.mapBounds.min.z + borderMargin,
+                context.mapBounds.max.z - borderMargin
+            );
 
             CityBlockType type = context.theme.districtThemeRule.PickBlockType(context.random);
             CityBlock block = new CityBlock(type, center, size);

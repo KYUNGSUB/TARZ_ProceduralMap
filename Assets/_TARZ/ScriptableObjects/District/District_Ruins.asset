@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5035a9654f030848a8a0d722ccc591e, type: 3}
   m_Name: District_Ruins
   m_EditorClassIdentifier: 
-  minBlockSize: {x: 12, y: 12}
-  maxBlockSize: {x: 20, y: 20}
-  blockOffsetFromRoad: 24
-  roadAvoidanceGap: 4
+  minBlockSize: {x: 18, y: 18}
+  maxBlockSize: {x: 30, y: 30}
+  blockOffsetFromRoad: 42
+  roadAvoidanceGap: 12
   maxBlocksPerRoad: 2
   maxTryPerRoad: 8
-  blockCreationChance: 0.8
+  blockCreationChance: 0.75
   blockWeights:
   - blockType: 4
     weight: 5

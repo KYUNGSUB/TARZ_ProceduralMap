@@ -36,6 +36,8 @@ public class MapContext
     public Bounds mapBounds;
     public bool hasMapBounds = false;
 
+    public float maxBuildingHalfExtent = 10f;
+
     // 추가: POI 영역 관리
     public List<POIArea> poiAreas = new List<POIArea>();
 

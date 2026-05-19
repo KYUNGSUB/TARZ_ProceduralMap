@@ -63,7 +63,7 @@ public class RoadNetworkGenerator : MonoBehaviour
         }
 
         // Road 주변에 건물과 Block이 들어갈 수 있도록 여유 공간 추가
-        float padding = 35f;
+        float padding = 50f + context.maxBuildingHalfExtent;
 
         bounds.Expand(new Vector3(padding * 2f, 0f, padding * 2f));
 

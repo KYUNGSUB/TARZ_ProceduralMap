@@ -799,10 +799,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 301e937bf8145e34a8d7d41d8023e95c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minBuildingsPerBlock: 2
-  maxBuildingsPerBlock: 4
-  edgePadding: 5
-  maxTryPerBuilding: 20
+  minBuildingsPerBlock: 1
+  maxBuildingsPerBlock: 2
+  edgePadding: 8
+  maxTryPerBuilding: 30
 --- !u!1 &1656682061
 GameObject:
   m_ObjectHideFlags: 0

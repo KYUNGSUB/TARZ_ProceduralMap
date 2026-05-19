@@ -157,9 +157,12 @@ public class ProceduralMapManager : MonoBehaviour
             navMeshSurface = navMeshSurface
         };
 
+        CalculateMaxBuildingSize(currentContext);
+
         roadNetworkGenerator.Generate(currentContext);
         poiPlacer.Place(currentContext);
 
+        /*
         Debug.Log("Before CityBlockGenerator call");
         // 도시 블록 생성
         if (cityBlockGenerator == null)
@@ -180,9 +183,9 @@ public class ProceduralMapManager : MonoBehaviour
         {
             blockBuildingPlacer.Place(currentContext);
         }
+        */
 
-        // 기존 단순 BuildingPlacer는 일단 비활성 권장
-        // buildingPlacer.Place(currentContext);
+        buildingPlacer.Place(currentContext);
 
         // 현재 테스트 중이면 주석 유지 가능
         environmentObjectPlacer.Place(currentContext);
@@ -206,6 +209,37 @@ public class ProceduralMapManager : MonoBehaviour
             playerSpawnManager.SpawnPlayer(currentContext.startPosition);
 
         return true;
+    }
+
+    private void CalculateMaxBuildingSize(MapContext context)
+    {
+        float maxExtent = 0f;
+
+        foreach (GameObject prefab in context.theme.buildingPrefabs)
+        {
+            if (prefab == null)
+                continue;
+
+            Renderer[] renderers =
+                prefab.GetComponentsInChildren<Renderer>();
+
+            foreach (Renderer r in renderers)
+            {
+                Bounds b = r.bounds;
+
+                maxExtent = Mathf.Max(
+                    maxExtent,
+                    b.extents.x,
+                    b.extents.z
+                );
+            }
+        }
+
+        context.maxBuildingHalfExtent = maxExtent;
+
+        Debug.Log(
+            $"Max Building Half Extent = {maxExtent}"
+        );
     }
 
     private bool ValidateReferences()

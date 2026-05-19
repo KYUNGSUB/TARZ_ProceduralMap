@@ -38,8 +38,9 @@ public class BlockBuildingPlacer : MonoBehaviour
             if (prefab == null)
                 return;
 
-//            Vector3 position = GetRandomPointInBlock(context, block);
-            Vector3 position = GetEdgePointInBlock(context, block);
+            //            Vector3 position = GetRandomPointInBlock(context, block);
+            //            Vector3 position = GetEdgePointInBlock(context, block);
+            Vector3 position = GetInnerPointInBlock(context, block);
 
             Quaternion rotation = Quaternion.Euler(
                 0f,
@@ -61,6 +62,31 @@ public class BlockBuildingPlacer : MonoBehaviour
             context.buildingBounds.Add(bounds);
             return;
         }
+    }
+
+    private Vector3 GetInnerPointInBlock(MapContext context, CityBlock block)
+    {
+        // Block 내부 중앙 영역만 사용
+        float usableX = block.size.x * 0.25f;
+        float usableZ = block.size.y * 0.25f;
+
+        float x = RandomRange(
+            context,
+            -usableX,
+            usableX
+        );
+
+        float z = RandomRange(
+            context,
+            -usableZ,
+            usableZ
+        );
+
+        return block.center + new Vector3(
+            x,
+            0f,
+            z
+        );
     }
 
     private Vector3 GetEdgePointInBlock(MapContext context, CityBlock block)
@@ -167,32 +193,78 @@ public class BlockBuildingPlacer : MonoBehaviour
         return block.center + new Vector3(x, 0f, z);
     }
 
-    private bool CanPlaceBuilding(MapContext context, Bounds bounds)
+    private bool CanPlaceBuilding(MapContext context, Bounds buildingBounds)
     {
         // 1. Map 영역 밖이면 금지
-        if (context.hasMapBounds && !ContainsBoundsXZ(context.mapBounds, bounds))
+        if (context.hasMapBounds && !ContainsBoundsXZ(context.mapBounds, buildingBounds))
             return false;
 
-        // 2. Road와 겹치면 금지
-        float roadSafetyGap = 1.5f;
+        // 2. Road Grid 기반 금지 영역 검사
+        if (OverlapsAnyRoadTile(context, buildingBounds))
+            return false;
 
-        foreach (Bounds road in context.roadBounds)
+        // 3. Start / Boss / Reward POI 위 건물 금지
+        foreach (POIArea poi in context.poiAreas)
         {
-            Bounds expandedRoad = road;
-            expandedRoad.Expand(new Vector3(roadSafetyGap * 2f, 0f, roadSafetyGap * 2f));
+            if (poi.type != POIType.Start &&
+                poi.type != POIType.Boss &&
+                poi.type != POIType.Reward)
+            {
+                continue;
+            }
 
-            if (IntersectsXZ(expandedRoad, bounds))
+            Bounds expandedPOI = poi.bounds;
+            expandedPOI.Expand(new Vector3(2f, 0f, 2f));
+
+            if (IntersectsXZ(expandedPOI, buildingBounds))
                 return false;
         }
 
-        // 3. 건물끼리 겹치면 금지
+        // 4. 건물끼리 겹침 금지
         foreach (Bounds b in context.buildingBounds)
         {
-            if (IntersectsXZ(b, bounds))
+            if (IntersectsXZ(b, buildingBounds))
                 return false;
         }
 
         return true;
+    }
+
+    private bool OverlapsAnyRoadTile(MapContext context, Bounds buildingBounds)
+    {
+        float roadSafetyGap = 2.0f;
+
+        foreach (Vector3 roadCenter in context.roadWorldPositions)
+        {
+            Bounds expandedRoadBounds = new Bounds(
+                roadCenter,
+                new Vector3(
+                    context.settings.tileSize,
+                    10f,
+                    context.settings.tileSize
+                )
+            );
+
+            // Building 크기를 고려한 추가 여유 공간
+            float buildingMargin =
+                Mathf.Max(
+                    buildingBounds.size.x,
+                    buildingBounds.size.z
+                ) * 0.5f;
+
+            expandedRoadBounds.Expand(
+                new Vector3(
+                    buildingMargin * 1.5f,
+                    0f,
+                    buildingMargin * 1.5f
+                )
+            );
+
+            if (IntersectsXZ(expandedRoadBounds, buildingBounds))
+                return true;
+        }
+
+        return false;
     }
 
     private bool IntersectsXZ(Bounds a, Bounds b)
