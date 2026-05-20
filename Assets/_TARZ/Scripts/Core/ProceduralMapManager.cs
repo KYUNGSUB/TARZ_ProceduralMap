@@ -14,6 +14,7 @@ public class ProceduralMapManager : MonoBehaviour
 
     [Header("Input")]
     public KeyCode regenerateKey = KeyCode.Slash;
+    public KeyCode wholeMapKey = KeyCode.M;
 
     [Header("Roots")]
     public Transform mapRoot;
@@ -73,6 +74,9 @@ public class ProceduralMapManager : MonoBehaviour
 
             int newSeed = CreateRandomSeed();
             StartCoroutine(GenerateWithRetry(newSeed, true));
+        } else if(Input.GetKeyDown(wholeMapKey))
+        {
+
         }
     }
 
