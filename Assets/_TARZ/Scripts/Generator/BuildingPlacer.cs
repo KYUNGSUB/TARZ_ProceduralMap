@@ -139,18 +139,18 @@ public class BuildingPlacer : MonoBehaviour
     {
         double value = context.random.NextDouble();
 
-        // 폐허 테마 기준
-        // Building 60%, Debris 25%, Empty 15%
-        if (value < 0.60)
+        // 폐허 도시 기준
+        // Building 45%, Debris 20%, Empty 35%
+        if (value < 0.45)
             return LotType.Building;
 
-        if (value < 0.85)
+        if (value < 0.65)
             return LotType.Debris;
 
         return LotType.Empty;
     }
 
-    private void PlaceDebrisLot(
+    private void PlaceDebrisLot(    // Cluster 방식으로 교체
         MapContext context,
         Vector3 lotCenter,
         Vector3 roadDirection,
@@ -160,7 +160,14 @@ public class BuildingPlacer : MonoBehaviour
         if (context.theme.debrisPrefabs == null || context.theme.debrisPrefabs.Count == 0)
             return;
 
-        int count = context.random.Next(2, 5);
+        // Debris는 Lot 전체가 아니라 Lot 내부 작은 영역에만 생성
+        int count = context.random.Next(2, 4);
+
+        // Road에서 조금 멀어지는 방향으로 Cluster 중심 이동
+        Vector3 clusterCenter =
+            lotCenter +
+            sideDirection.normalized * RandomRange(context, 2f, 4f) +
+            roadDirection.normalized * RandomRange(context, -1.5f, 1.5f);
 
         for (int i = 0; i < count; i++)
         {
@@ -169,11 +176,12 @@ public class BuildingPlacer : MonoBehaviour
             if (prefab == null)
                 continue;
 
-            float forwardOffset = RandomRange(context, -4f, 4f);
-            float sideOffset = RandomRange(context, -4f, 4f);
+            // 기존 -4~4처럼 넓게 퍼뜨리지 말고 작은 더미로 제한
+            float forwardOffset = RandomRange(context, -1.5f, 1.5f);
+            float sideOffset = RandomRange(context, -1.5f, 1.5f);
 
             Vector3 position =
-                lotCenter +
+                clusterCenter +
                 roadDirection.normalized * forwardOffset +
                 sideDirection.normalized * sideOffset;
 
@@ -192,7 +200,7 @@ public class BuildingPlacer : MonoBehaviour
                 context.mapRoot
             );
 
-            obj.name = "Debris_Lot";
+            obj.name = "Debris_Cluster";
         }
     }
 
