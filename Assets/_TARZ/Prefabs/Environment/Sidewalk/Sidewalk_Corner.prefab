@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4598973166017717109}
   - component: {fileID: 9072265995297047327}
   - component: {fileID: 4386289506450122356}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: Part_A
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -114,7 +114,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8845150971226593322}
-  m_Layer: 9
+  - component: {fileID: -8459845910492497236}
+  m_Layer: 3
   m_Name: Sidewalk_Corner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,6 +139,27 @@ Transform:
   - {fileID: 6276446257582358031}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &-8459845910492497236
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2069641427574889283}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5554907982801198183
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,7 +172,7 @@ GameObject:
   - component: {fileID: 8723935343318819928}
   - component: {fileID: 3005226838452895772}
   - component: {fileID: 7725601250245651709}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: Part_B
   m_TagString: Untagged
   m_Icon: {fileID: 0}
