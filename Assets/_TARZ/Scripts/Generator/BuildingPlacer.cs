@@ -56,52 +56,164 @@ public class BuildingPlacer : MonoBehaviour
 
         for (int i = 0; i < lotRule.maxTryPerSide; i++)
         {
-            GameObject prefab = PrefabPicker.Pick(context.theme.buildingPrefabs, context.random);
-
-            if (prefab == null)
-                continue;
-
-            Vector2 footprint = GetBuildingFootprint(prefab);
+            LotType lotType = DetermineLotType(context);
 
             Vector3 lotCenter = CalculateLotCenter(
                 context,
                 roadWorld,
                 sideDirection,
-                footprint
-            );
-
-            Vector3 buildingPosition = GetBuildingPositionInsideLot(
-                context,
-                lotCenter,
-                roadDirection,
-                sideDirection,
-                footprint
+                Vector2.zero
             );
 
             Quaternion rotation = Quaternion.LookRotation(-sideDirection.normalized, Vector3.up);
 
-            GameObject building = Instantiate(
+            switch (lotType)
+            {
+                case LotType.Empty:
+                    return true;
+
+                case LotType.Debris:
+                    if (CanUseLotArea(context, lotCenter))
+                    {
+                        PlaceDebrisLot(context, lotCenter, roadDirection, sideDirection);
+                        return true;
+                    }
+                    break;
+
+                case LotType.Building:
+                    if (TryPlaceBuildingInLot(context, lotCenter, roadDirection, sideDirection))
+                        return true;
+                    break;
+            }
+        }
+
+        return false;
+    }
+
+    private bool TryPlaceBuildingInLot(
+        MapContext context,
+        Vector3 lotCenter,
+        Vector3 roadDirection,
+        Vector3 sideDirection
+    )
+    {
+        GameObject prefab = PrefabPicker.Pick(context.theme.buildingPrefabs, context.random);
+
+        if (prefab == null)
+            return false;
+
+        Vector2 footprint = GetBuildingFootprint(prefab);
+
+        Vector3 buildingPosition = GetBuildingPositionInsideLot(
+            context,
+            lotCenter,
+            roadDirection,
+            sideDirection,
+            footprint
+        );
+
+        Quaternion rotation = Quaternion.LookRotation(-sideDirection.normalized, Vector3.up);
+
+        GameObject building = Instantiate(
+            prefab,
+            buildingPosition,
+            rotation,
+            context.mapRoot
+        );
+
+        building.name = "Building_Lot";
+
+        Bounds bounds = BoundsUtility.GetObjectBounds(building);
+
+        if (!CanPlaceBuilding(context, bounds))
+        {
+            Destroy(building);
+            return false;
+        }
+
+        context.buildingBounds.Add(bounds);
+        return true;
+    }
+
+    private LotType DetermineLotType(MapContext context)
+    {
+        double value = context.random.NextDouble();
+
+        // 폐허 테마 기준
+        // Building 60%, Debris 25%, Empty 15%
+        if (value < 0.60)
+            return LotType.Building;
+
+        if (value < 0.85)
+            return LotType.Debris;
+
+        return LotType.Empty;
+    }
+
+    private void PlaceDebrisLot(
+        MapContext context,
+        Vector3 lotCenter,
+        Vector3 roadDirection,
+        Vector3 sideDirection
+    )
+    {
+        if (context.theme.debrisPrefabs == null || context.theme.debrisPrefabs.Count == 0)
+            return;
+
+        int count = context.random.Next(2, 5);
+
+        for (int i = 0; i < count; i++)
+        {
+            GameObject prefab = PrefabPicker.Pick(context.theme.debrisPrefabs, context.random);
+
+            if (prefab == null)
+                continue;
+
+            float forwardOffset = RandomRange(context, -4f, 4f);
+            float sideOffset = RandomRange(context, -4f, 4f);
+
+            Vector3 position =
+                lotCenter +
+                roadDirection.normalized * forwardOffset +
+                sideDirection.normalized * sideOffset;
+
+            position.y = 0f;
+
+            Quaternion rotation = Quaternion.Euler(
+                0f,
+                RandomRange(context, 0f, 360f),
+                0f
+            );
+
+            GameObject obj = Instantiate(
                 prefab,
-                buildingPosition,
+                position,
                 rotation,
                 context.mapRoot
             );
 
-            building.name = "Building_Lot";
-
-            Bounds bounds = BoundsUtility.GetObjectBounds(building);
-
-            if (!CanPlaceBuilding(context, bounds))
-            {
-                Destroy(building);
-                continue;
-            }
-
-            context.buildingBounds.Add(bounds);
-            return true;
+            obj.name = "Debris_Lot";
         }
+    }
 
-        return false;
+    private bool CanUseLotArea(MapContext context, Vector3 lotCenter)
+    {
+        Bounds lotBounds = new Bounds(
+            lotCenter,
+            new Vector3(
+                lotRule.lotWidth,
+                5f,
+                lotRule.lotDepth
+            )
+        );
+
+        if (context.hasMapBounds && !ContainsBoundsXZ(context.mapBounds, lotBounds))
+            return false;
+
+        if (OverlapsAnyRoadTile(context, lotBounds))
+            return false;
+
+        return true;
     }
 
     private Vector3 CalculateLotCenter(
