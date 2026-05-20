@@ -11,6 +11,10 @@ public class ChapterThemeData : ScriptableObject
     [Header("Road Prefabs")]
     public List<GameObject> roadPrefabs = new List<GameObject>();
 
+    [Header("Sidewalk Prefabs")]
+    public GameObject sidewalkStraightPrefab;
+    public GameObject sidewalkCornerPrefab;
+
     [Header("Building Prefabs")]
     public List<GameObject> buildingPrefabs = new List<GameObject>();
 

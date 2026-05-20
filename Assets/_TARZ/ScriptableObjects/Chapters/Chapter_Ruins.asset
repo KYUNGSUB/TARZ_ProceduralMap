@@ -16,6 +16,10 @@ MonoBehaviour:
   chapterName: "\uD3D0\uD5C8"
   roadPrefabs:
   - {fileID: 2027547638819069183, guid: a24140c04d86f0c43b44b92a531d94f1, type: 3}
+  sidewalkStraightPrefab: {fileID: 587217684021110009, guid: ee7ad8bbe0e4dc54d89dbc375f0578c2,
+    type: 3}
+  sidewalkCornerPrefab: {fileID: 2069641427574889283, guid: 916141595d1d74e4e829f69ba2231cbe,
+    type: 3}
   buildingPrefabs:
   - {fileID: 2559432405022361438, guid: 1173cb49c557ae046835ce5285b8f371, type: 3}
   - {fileID: 1121737385989866733, guid: 0b03cddfe9057c64db271e5080b1c635, type: 3}
@@ -26,7 +30,12 @@ MonoBehaviour:
   - {fileID: 7489336605327535295, guid: 36c57b0ed85566545ac15fac419ec54c, type: 3}
   - {fileID: 1824599713845831165, guid: 49020c4eaff3d1844a8e959927926811, type: 3}
   debrisPrefabs:
-  - {fileID: 8646108271082140247, guid: 4ccec6f7b180b844184b0374b596f255, type: 3}
+  - {fileID: 8450590041240196718, guid: 242b75256f71faa4db6e88063b192231, type: 3}
+  - {fileID: 8450590041240196718, guid: 242b75256f71faa4db6e88063b192231, type: 3}
+  - {fileID: 6302884176266331025, guid: 004492431d3de3141a4c461cddd3f81b, type: 3}
+  - {fileID: 5781669367100832005, guid: e079b32b611ab05488c71ca363e40180, type: 3}
+  - {fileID: 945027482285855136, guid: 204c48d77e7675f4198af455948b28dd, type: 3}
+  - {fileID: 843696656497200325, guid: c4bff904ffdb9a948bbee3b61b484d40, type: 3}
   throwObjectPrefabs:
   - {fileID: 3907745847316420186, guid: f9532befbd06c024bb66ee8331b40ee6, type: 3}
   - {fileID: 1337715560574783645, guid: 2fff9cff1b92fbb4dae2ed50928ea03e, type: 3}

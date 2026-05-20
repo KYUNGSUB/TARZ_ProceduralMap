@@ -43,6 +43,8 @@ public class MapContext
 
     public NavMeshSurface navMeshSurface;
 
+    public List<LotData> lots = new List<LotData>();
+
     public Vector3 GridToWorld(Vector2Int grid)
     {
         return new Vector3(grid.x * settings.tileSize, 0f, grid.y * settings.tileSize);

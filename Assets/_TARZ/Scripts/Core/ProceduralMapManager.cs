@@ -56,6 +56,9 @@ public class ProceduralMapManager : MonoBehaviour
     public CityBlockGenerator cityBlockGenerator;
     public BlockBuildingPlacer blockBuildingPlacer;
 
+    [Header("Sidewalk")]
+    public SidewalkPlacer sidewalkPlacer;
+
     private void Start()
     {
         LoadOrCreateSeed();
@@ -167,6 +170,11 @@ public class ProceduralMapManager : MonoBehaviour
         CalculateMaxBuildingSize(currentContext);
 
         roadNetworkGenerator.Generate(currentContext);
+
+        // Road 持失 送板 Sidewalk 持失
+        if (sidewalkPlacer != null)
+            sidewalkPlacer.Place(currentContext);
+
         poiPlacer.Place(currentContext);
 
         /*
