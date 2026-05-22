@@ -42,6 +42,17 @@ public class PlayerSpawnManager : MonoBehaviour
         currentPlayer.tag = "Player";
 
         SetupCamera();
+
+        PlayerFollowCamera followCamera = Camera.main.GetComponent<PlayerFollowCamera>();
+
+        if (followCamera != null)
+        {
+            followCamera.SetTarget(currentPlayer.transform);
+        }
+        else
+        {
+            Debug.LogWarning("PlayerFollowCamera is not attached to Main Camera.");
+        }
     }
 
     private void SetupCamera()

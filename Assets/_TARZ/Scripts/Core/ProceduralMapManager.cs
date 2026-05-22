@@ -68,6 +68,9 @@ public class ProceduralMapManager : MonoBehaviour
     [Header("Sidewalk")]
     public SidewalkPlacer sidewalkPlacer;
 
+    [Header("Boundary")]
+    public MapBoundaryColliderBuilder boundaryColliderBuilder;
+
     private void Start()
     {
         LoadOrCreateSeed();
@@ -219,6 +222,9 @@ public class ProceduralMapManager : MonoBehaviour
 
         // 현재 테스트 중이면 주석 유지 가능
         environmentObjectPlacer.Place(currentContext);
+
+        if (boundaryColliderBuilder != null)
+            boundaryColliderBuilder.Build(currentContext);
 
         // 전투 공간 규칙 적용
         combatZoneGenerator.Generate(currentContext);
