@@ -686,6 +686,10 @@ GameObject:
   - component: {fileID: 1582205439}
   - component: {fileID: 1582205440}
   - component: {fileID: 1582205441}
+  - component: {fileID: 1582205444}
+  - component: {fileID: 1582205443}
+  - component: {fileID: 1582205442}
+  - component: {fileID: 1582205445}
   m_Layer: 0
   m_Name: ProceduralMapManager
   m_TagString: Untagged
@@ -722,6 +726,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chapterTheme: {fileID: 11400000, guid: a84d5ec89f0d7fb43bad5922a97c6270, type: 2}
   settings: {fileID: 11400000, guid: 7b7fb076fe7939e488d5bb15522d22ec, type: 2}
+  useChapterStageFlow: 1
+  currentStageIndex: 1
   useSavedSeed: 1
   seed: 123456
   regenerateKey: 47
@@ -735,6 +741,9 @@ MonoBehaviour:
   environmentObjectPlacer: {fileID: 1582205434}
   throwObjectPlacer: {fileID: 1582205433}
   spawnPointGenerator: {fileID: 1582205432}
+  stageFlowApplier: {fileID: 1582205444}
+  enemySpawnRuleApplier: {fileID: 1582205443}
+  bossSpawner: {fileID: 1582205442}
   navMeshSurface: {fileID: 1431563564}
   mapValidator: {fileID: 1582205438}
   maxGenerationRetry: 5
@@ -743,9 +752,10 @@ MonoBehaviour:
   combatZoneGenerator: {fileID: 1582205439}
   buildingPlacementRule: {fileID: 11400000, guid: e4c4ac79133d188479be187ffc3528b7,
     type: 2}
-  lotPlacementRule: {fileID: 0}
+  lotPlacementRule: {fileID: 11400000, guid: 64ff33fb58dc0114abf157299c80e1be, type: 2}
   cityBlockGenerator: {fileID: 1582205440}
   blockBuildingPlacer: {fileID: 1582205441}
+  sidewalkPlacer: {fileID: 1582205445}
 --- !u!114 &1582205432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -890,6 +900,57 @@ MonoBehaviour:
   maxBuildingsPerBlock: 2
   edgePadding: 8
   maxTryPerBuilding: 30
+--- !u!114 &1582205442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67fa737fe7d557741ad09b5660e3ab74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1582205443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 401b799e7f8c2194da5656636b72ffed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1582205444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 974646745471dc945b5480a25fdc648e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1582205445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f2658cb2cabc73418cd8d56f08e6eda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sidewalkWidth: 4
+  sidewalkHeight: 0.05
+  yOffset: 0.12
 --- !u!1 &1636845774
 GameObject:
   m_ObjectHideFlags: 0

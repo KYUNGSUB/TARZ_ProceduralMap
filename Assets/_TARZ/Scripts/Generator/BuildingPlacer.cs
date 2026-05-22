@@ -206,19 +206,20 @@ public class BuildingPlacer : MonoBehaviour
 
     private bool CanUseLotArea(MapContext context, Vector3 lotCenter)
     {
-        Bounds lotBounds = new Bounds(
+        // Debris는 Lot 전체를 쓰지 않고 작은 Cluster 영역만 사용
+        Bounds debrisClusterBounds = new Bounds(
             lotCenter,
             new Vector3(
-                lotRule.lotWidth,
+                6f,
                 5f,
-                lotRule.lotDepth
+                6f
             )
         );
 
-        if (context.hasMapBounds && !ContainsBoundsXZ(context.mapBounds, lotBounds))
+        if (context.hasMapBounds && !ContainsBoundsXZ(context.mapBounds, debrisClusterBounds))
             return false;
 
-        if (OverlapsAnyRoadTile(context, lotBounds))
+        if (OverlapsAnyRoadTile(context, debrisClusterBounds))
             return false;
 
         return true;

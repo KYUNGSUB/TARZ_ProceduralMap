@@ -14,6 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chapterId: chapter_01_ruins
   chapterName: "\uD3D0\uD5C8"
+  chapterNumber: 1
+  chapterDisplayName: "\uCC55\uD1301 \uD3D0\uD5C8 \uB3C4\uC2DC / \uCD94\uB77D\uD55C
+    \uBE44\uD589\uC120"
+  chapterDescription: 
+  stageCount: 6
+  stageFlow: 000000000100000003000000040000000500000007000000
   roadPrefabs:
   - {fileID: 2027547638819069183, guid: a24140c04d86f0c43b44b92a531d94f1, type: 3}
   sidewalkStraightPrefab: {fileID: 587217684021110009, guid: ee7ad8bbe0e4dc54d89dbc375f0578c2,
@@ -51,6 +57,12 @@ MonoBehaviour:
   - {fileID: 5048030741778686749, guid: 422c7820caad75b428f63126aedc85b0, type: 3}
   enemyPrefab: {fileID: 1979143788180314665, guid: c46ccbcb6afc8474387622b27fb4ae33,
     type: 3}
+  enemySpawnRules: []
+  chapterBossPrefab: {fileID: 0}
+  bossName: "\uC544\uB180\uB4DC"
+  bossDescription: 
+  hasSecretRoom: 1
+  secretRoomPrefabs: []
   buildingDensity: 0.9
   environmentDensity: 0.6
   throwObjectDensity: 0.9

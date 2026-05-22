@@ -14,8 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chapterId: chapter_02_beach
   chapterName: "\uD574\uBCC0"
+  chapterNumber: 2
+  chapterDisplayName: "\uCC55\uD1302 \uBC14\uB2E4 \uB9C8\uC744 / \uD574\uBCC0"
+  chapterDescription: 
+  stageCount: 6
+  stageFlow: 000000000100000002000000030000000100000007000000
   roadPrefabs:
   - {fileID: 2027547638819069183, guid: a24140c04d86f0c43b44b92a531d94f1, type: 3}
+  sidewalkStraightPrefab: {fileID: 0}
+  sidewalkCornerPrefab: {fileID: 0}
   buildingPrefabs:
   - {fileID: 2559432405022361438, guid: 1173cb49c557ae046835ce5285b8f371, type: 3}
   - {fileID: 1121737385989866733, guid: 0b03cddfe9057c64db271e5080b1c635, type: 3}
@@ -42,6 +49,12 @@ MonoBehaviour:
   - {fileID: 5048030741778686749, guid: 422c7820caad75b428f63126aedc85b0, type: 3}
   enemyPrefab: {fileID: 1979143788180314665, guid: c46ccbcb6afc8474387622b27fb4ae33,
     type: 3}
+  enemySpawnRules: []
+  chapterBossPrefab: {fileID: 0}
+  bossName: "\uB85C\uB4DC"
+  bossDescription: 
+  hasSecretRoom: 1
+  secretRoomPrefabs: []
   buildingDensity: 0.7
   environmentDensity: 0.6
   throwObjectDensity: 0.9

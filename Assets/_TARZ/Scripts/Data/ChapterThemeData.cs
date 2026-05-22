@@ -8,6 +8,16 @@ public class ChapterThemeData : ScriptableObject
     public string chapterId;
     public string chapterName;
 
+    [Header("TARZ Chapter Info")]
+    public int chapterNumber;
+    public string chapterDisplayName;
+    [TextArea(2, 5)]
+    public string chapterDescription;
+
+    [Header("Stage Flow")]
+    public int stageCount = 6;
+    public List<StageNodeType> stageFlow = new List<StageNodeType>();
+
     [Header("Road Prefabs")]
     public List<GameObject> roadPrefabs = new List<GameObject>();
 
@@ -33,8 +43,21 @@ public class ChapterThemeData : ScriptableObject
     public List<GameObject> rewardPrefabs = new List<GameObject>();
     public List<GameObject> bossPrefabs = new List<GameObject>();
 
-    [Header("Characters")]
+    [Header("Characters - Legacy")]
     public GameObject enemyPrefab;
+
+    [Header("Enemy Spawn Rules")]
+    public List<EnemySpawnRule> enemySpawnRules = new List<EnemySpawnRule>();
+
+    [Header("Boss")]
+    public GameObject chapterBossPrefab;
+    public string bossName;
+    [TextArea(2, 5)]
+    public string bossDescription;
+
+    [Header("Secret Room")]
+    public bool hasSecretRoom = true;
+    public List<GameObject> secretRoomPrefabs = new List<GameObject>();
 
     [Header("Theme Density")]
     [Range(0f, 1f)] public float buildingDensity = 0.7f;

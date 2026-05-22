@@ -8,6 +8,10 @@ public class ProceduralMapManager : MonoBehaviour
     public ChapterThemeData chapterTheme;
     public MapGenerationSettings settings;
 
+    [Header("Chapter Flow")]
+    public bool useChapterStageFlow = true;
+    public int currentStageIndex = 0;
+
     [Header("Seed")]
     public bool useSavedSeed = true;
     public int seed = 123456;
@@ -28,6 +32,11 @@ public class ProceduralMapManager : MonoBehaviour
     public EnvironmentObjectPlacer environmentObjectPlacer;
     public ThrowObjectPlacer throwObjectPlacer;
     public SpawnPointGenerator spawnPointGenerator;
+
+    [Header("TARZ Rule Appliers")]
+    public StageFlowApplier stageFlowApplier;
+    public EnemySpawnRuleApplier enemySpawnRuleApplier;
+    public BossSpawner bossSpawner;
 
     [Header("Validation")]
     public NavMeshSurface navMeshSurface;
@@ -150,6 +159,8 @@ public class ProceduralMapManager : MonoBehaviour
 
     private bool GenerateOnce(int generationSeed)
     {
+        ApplyChapterThemeDebugInfo();
+
         currentContext = new MapContext
         {
             seed = generationSeed,
@@ -176,6 +187,10 @@ public class ProceduralMapManager : MonoBehaviour
             sidewalkPlacer.Place(currentContext);
 
         poiPlacer.Place(currentContext);
+
+        // 기존 ApplyStageFlowToPOI(currentContext)를 대체
+        if (stageFlowApplier != null)
+            stageFlowApplier.Apply(currentContext);
 
         /*
         Debug.Log("Before CityBlockGenerator call");
@@ -208,6 +223,9 @@ public class ProceduralMapManager : MonoBehaviour
         // 전투 공간 규칙 적용
         combatZoneGenerator.Generate(currentContext);
 
+        if (bossSpawner != null)
+            bossSpawner.Spawn(currentContext);
+
         bool valid = true;
 
         if (mapValidator != null)
@@ -219,6 +237,9 @@ public class ProceduralMapManager : MonoBehaviour
         // NavMesh 검증 성공 후 동적 오브젝트 생성
         // throwObjectPlacer.Place(currentContext);
         spawnPointGenerator.GenerateEnemySpawns(currentContext);
+
+        if (enemySpawnRuleApplier != null)
+            enemySpawnRuleApplier.Apply(currentContext);
 
         if (playerSpawnManager != null)
             playerSpawnManager.SpawnPlayer(currentContext.startPosition);
@@ -337,5 +358,47 @@ public class ProceduralMapManager : MonoBehaviour
         {
             Destroy(root.GetChild(i).gameObject);
         }
+    }
+
+    private void ApplyChapterThemeDebugInfo()
+    {
+        if (chapterTheme == null)
+            return;
+
+        Debug.Log(
+            $"[Chapter Theme] " +
+            $"No={chapterTheme.chapterNumber}, " +
+            $"Id={chapterTheme.chapterId}, " +
+            $"Name={chapterTheme.chapterName}, " +
+            $"Display={chapterTheme.chapterDisplayName}, " +
+            $"StageCount={chapterTheme.stageCount}"
+        );
+
+        if (chapterTheme.stageFlow != null && chapterTheme.stageFlow.Count > 0)
+        {
+            string flowText = string.Join(" -> ", chapterTheme.stageFlow);
+            Debug.Log($"[Stage Flow] {flowText}");
+        }
+
+        if (chapterTheme.enemySpawnRules != null)
+        {
+            Debug.Log($"[Enemy Spawn Rules] Count={chapterTheme.enemySpawnRules.Count}");
+        }
+
+        if (chapterTheme.chapterBossPrefab != null)
+        {
+            Debug.Log($"[Boss] {chapterTheme.bossName} / Prefab={chapterTheme.chapterBossPrefab.name}");
+        }
+    }
+
+    private void ApplyBossRule(MapContext context)
+    {
+        if (chapterTheme.chapterBossPrefab == null)
+        {
+            Debug.LogWarning("Chapter boss prefab is not assigned.");
+            return;
+        }
+
+        Debug.Log($"[BossRule] Boss={chapterTheme.bossName}, Prefab={chapterTheme.chapterBossPrefab.name}");
     }
 }

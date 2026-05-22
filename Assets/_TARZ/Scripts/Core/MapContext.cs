@@ -19,6 +19,10 @@ public class MapContext
     public Vector3 startPosition;
     public Vector3 bossPosition;
 
+    public Vector3 bossRoomPosition;
+    public Vector3 exitPosition;
+    public Vector3 secretRoomPosition;
+
     public List<Vector2Int> roadGridPositions = new List<Vector2Int>();
     public List<Vector3> roadWorldPositions = new List<Vector3>();
 

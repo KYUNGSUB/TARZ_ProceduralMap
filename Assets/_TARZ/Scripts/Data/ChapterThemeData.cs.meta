@@ -3,7 +3,15 @@ guid: b2ac6f6285cd6084dad2245cb165573b
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - sidewalkStraightPrefab: {fileID: 587217684021110009, guid: ee7ad8bbe0e4dc54d89dbc375f0578c2,
+      type: 3}
+  - sidewalkCornerPrefab: {fileID: 2069641427574889283, guid: 916141595d1d74e4e829f69ba2231cbe,
+      type: 3}
+  - enemyPrefab: {fileID: 1979143788180314665, guid: c46ccbcb6afc8474387622b27fb4ae33,
+      type: 3}
+  - chapterBossPrefab: {instanceID: 0}
+  - districtThemeRule: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
