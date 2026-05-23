@@ -41,6 +41,12 @@ public class PlayerSpawnManager : MonoBehaviour
 
         currentPlayer.tag = "Player";
 
+        PlayerMovement movement = currentPlayer.GetComponent<PlayerMovement>();
+        if (movement != null)
+        {
+            movement.respawnPosition = position + Vector3.up;
+        }
+
         SetupCamera();
 
         PlayerFollowCamera followCamera = Camera.main.GetComponent<PlayerFollowCamera>();

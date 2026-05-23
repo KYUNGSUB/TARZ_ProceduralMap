@@ -70,6 +70,8 @@ public class ProceduralMapManager : MonoBehaviour
 
     [Header("Boundary")]
     public MapBoundaryColliderBuilder boundaryColliderBuilder;
+    public RoadEndBoundaryBuilder roadEndBoundaryBuilder;
+    public MapSafetyGroundBuilder safetyGroundBuilder;
 
     private void Start()
     {
@@ -189,6 +191,9 @@ public class ProceduralMapManager : MonoBehaviour
         if (sidewalkPlacer != null)
             sidewalkPlacer.Place(currentContext);
 
+//        if (roadEndBoundaryBuilder != null)
+//            roadEndBoundaryBuilder.Build(currentContext);
+
         poiPlacer.Place(currentContext);
 
         // 기존 ApplyStageFlowToPOI(currentContext)를 대체
@@ -222,6 +227,9 @@ public class ProceduralMapManager : MonoBehaviour
 
         // 현재 테스트 중이면 주석 유지 가능
         environmentObjectPlacer.Place(currentContext);
+
+        if (safetyGroundBuilder != null)
+            safetyGroundBuilder.Build(currentContext);
 
         if (boundaryColliderBuilder != null)
             boundaryColliderBuilder.Build(currentContext);

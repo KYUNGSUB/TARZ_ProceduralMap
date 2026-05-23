@@ -11,6 +11,10 @@ public class PlayerMovement : MonoBehaviour
     public float gravity = -20f;
     public float groundedGravity = -2f;
 
+    [Header("Fall Safety")]
+    public float minY = -2f;
+    public Vector3 respawnPosition;
+
     private CharacterController controller;
     private Vector3 verticalVelocity;
 
@@ -22,6 +26,14 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         Move();
+
+        if (transform.position.y < minY)
+        {
+            CharacterController controller = GetComponent<CharacterController>();
+            controller.enabled = false;
+            transform.position = respawnPosition;
+            controller.enabled = true;
+        }
     }
 
     private void Move()
