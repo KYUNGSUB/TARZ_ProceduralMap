@@ -8,13 +8,18 @@ public class ProceduralMapManager : MonoBehaviour
     public ChapterThemeData chapterTheme;
     public MapGenerationSettings settings;
 
+    [Header("Menu Selection")]
+    public bool useMenuSelection = true;
+    public ChapterThemeData[] chapterThemes;
+    public int selectedStage = 1;
+
     [Header("Chapter Flow")]
     public bool useChapterStageFlow = true;
     public int currentStageIndex = 0;
 
     [Header("Seed")]
-    public bool useSavedSeed = true;
     public int seed = 123456;
+    public bool useSavedSeed = false;
 
     [Header("Input")]
     public KeyCode regenerateKey = KeyCode.Slash;
@@ -27,29 +32,28 @@ public class ProceduralMapManager : MonoBehaviour
 
     [Header("Generators")]
     public RoadNetworkGenerator roadNetworkGenerator;
-    public BuildingPlacer buildingPlacer;
+    public SidewalkPlacer sidewalkPlacer;
     public POIPlacer poiPlacer;
+    public BuildingPlacer buildingPlacer;
     public EnvironmentObjectPlacer environmentObjectPlacer;
     public ThrowObjectPlacer throwObjectPlacer;
     public SpawnPointGenerator spawnPointGenerator;
 
-    [Header("TARZ Rule Appliers")]
+    [Header("Rule Appliers")]
     public StageFlowApplier stageFlowApplier;
     public EnemySpawnRuleApplier enemySpawnRuleApplier;
     public BossSpawner bossSpawner;
+
+    [Header("Boundary")]
+    public MapBoundaryColliderBuilder boundaryColliderBuilder;
+    public MapSafetyGroundBuilder safetyGroundBuilder;
 
     [Header("Validation")]
     public NavMeshSurface navMeshSurface;
     public MapValidator mapValidator;
 
-    [Header("Retry")]
-    public int maxGenerationRetry = 10;
-
     [Header("Runtime")]
     public PlayerSpawnManager playerSpawnManager;
-
-    private MapContext currentContext;
-    private bool isGenerating = false;
 
     [Header("Combat")]
     public CombatZoneRule combatZoneRule;
@@ -58,25 +62,79 @@ public class ProceduralMapManager : MonoBehaviour
     [Header("Building")]
     public BuildingPlacementRule buildingPlacementRule;
 
-    [Header("Lot")]
-    public LotPlacementRule lotPlacementRule;
+    [Header("Retry")]
+    public int maxGenerationRetry = 10;
 
-    [Header("District")]
-    public CityBlockGenerator cityBlockGenerator;
-    public BlockBuildingPlacer blockBuildingPlacer;
+    private MapContext currentContext;
+    private bool isGenerating = false;
 
-    [Header("Sidewalk")]
-    public SidewalkPlacer sidewalkPlacer;
+//    [Header("Lot")]
+//    public LotPlacementRule lotPlacementRule;
 
-    [Header("Boundary")]
-    public MapBoundaryColliderBuilder boundaryColliderBuilder;
-    public RoadEndBoundaryBuilder roadEndBoundaryBuilder;
-    public MapSafetyGroundBuilder safetyGroundBuilder;
+//    [Header("District")]
+//    public CityBlockGenerator cityBlockGenerator;
+//    public BlockBuildingPlacer blockBuildingPlacer;
 
     private void Start()
     {
-        LoadOrCreateSeed();
+        ApplyMenuSelection();
+
+        if (useMenuSelection)
+        {
+            seed = StageSelectionData.selectedSeed;
+            selectedStage = StageSelectionData.selectedStage;
+        }
+        else
+        {
+            LoadOrCreateSeed();
+        }
+
         StartCoroutine(GenerateWithRetry(seed, true));
+    }
+
+    private void ApplyMenuSelection()
+    {
+        if (!useMenuSelection)
+            return;
+
+        int chapterNumber = StageSelectionData.selectedChapter;
+        selectedStage = StageSelectionData.selectedStage;
+
+        ChapterThemeData selectedTheme = FindChapterTheme(chapterNumber);
+
+        if (selectedTheme != null)
+        {
+            chapterTheme = selectedTheme;
+
+            Debug.Log(
+                $"[Menu Selection] Chapter={chapterNumber}, " +
+                $"Stage={selectedStage}, Theme={chapterTheme.chapterName}"
+            );
+        }
+        else
+        {
+            Debug.LogWarning(
+                $"[Menu Selection] Chapter {chapterNumber} theme not found. " +
+                $"Current chapterTheme will be used."
+            );
+        }
+    }
+
+    private ChapterThemeData FindChapterTheme(int chapterNumber)
+    {
+        if (chapterThemes == null || chapterThemes.Length == 0)
+            return null;
+
+        foreach (ChapterThemeData theme in chapterThemes)
+        {
+            if (theme == null)
+                continue;
+
+            if (theme.chapterNumber == chapterNumber)
+                return theme;
+        }
+
+        return null;
     }
 
     private void Update()
@@ -198,7 +256,7 @@ public class ProceduralMapManager : MonoBehaviour
 
         // 기존 ApplyStageFlowToPOI(currentContext)를 대체
         if (stageFlowApplier != null)
-            stageFlowApplier.Apply(currentContext);
+            stageFlowApplier.Apply(currentContext, selectedStage);
 
         /*
         Debug.Log("Before CityBlockGenerator call");

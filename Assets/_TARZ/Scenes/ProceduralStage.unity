@@ -590,6 +590,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1151410812
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1151410814}
+  - component: {fileID: 1151410813}
+  m_Layer: 0
+  m_Name: StageExitController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1151410813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151410812}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0dc6ec5fe4fdae43bfdde2cb9f666fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menuSceneName: MenuScene
+  exitKey: 27
+  proceduralMapManager: {fileID: 1582205431}
+--- !u!4 &1151410814
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151410812}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 127.27413, y: 540, z: 72.650696}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1431563563
 GameObject:
   m_ObjectHideFlags: 0
@@ -702,15 +749,12 @@ GameObject:
   - component: {fileID: 1582205432}
   - component: {fileID: 1582205438}
   - component: {fileID: 1582205439}
-  - component: {fileID: 1582205440}
-  - component: {fileID: 1582205441}
   - component: {fileID: 1582205444}
   - component: {fileID: 1582205443}
   - component: {fileID: 1582205442}
   - component: {fileID: 1582205445}
   - component: {fileID: 1582205446}
   - component: {fileID: 1582205447}
-  - component: {fileID: 1582205448}
   m_Layer: 0
   m_Name: ProceduralMapManager
   m_TagString: Untagged
@@ -747,39 +791,45 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chapterTheme: {fileID: 11400000, guid: a84d5ec89f0d7fb43bad5922a97c6270, type: 2}
   settings: {fileID: 11400000, guid: 7b7fb076fe7939e488d5bb15522d22ec, type: 2}
+  useMenuSelection: 1
+  chapterThemes:
+  - {fileID: 11400000, guid: a84d5ec89f0d7fb43bad5922a97c6270, type: 2}
+  - {fileID: 11400000, guid: d1921b08253e66d4c800a48f8744f619, type: 2}
+  - {fileID: 11400000, guid: 758a6339d1ce5b647a14dc9d7dc5c229, type: 2}
+  - {fileID: 11400000, guid: 758a6339d1ce5b647a14dc9d7dc5c229, type: 2}
+  - {fileID: 11400000, guid: 758a6339d1ce5b647a14dc9d7dc5c229, type: 2}
+  - {fileID: 11400000, guid: 758a6339d1ce5b647a14dc9d7dc5c229, type: 2}
+  - {fileID: 11400000, guid: 758a6339d1ce5b647a14dc9d7dc5c229, type: 2}
+  selectedStage: 1
   useChapterStageFlow: 1
   currentStageIndex: 1
-  useSavedSeed: 1
   seed: 123456
+  useSavedSeed: 1
   regenerateKey: 47
   wholeMapKey: 109
   mapRoot: {fileID: 1656682062}
   runtimeRoot: {fileID: 571775729}
   debugRoot: {fileID: 106322625}
   roadNetworkGenerator: {fileID: 1582205437}
-  buildingPlacer: {fileID: 1582205436}
+  sidewalkPlacer: {fileID: 1582205445}
   poiPlacer: {fileID: 1582205435}
+  buildingPlacer: {fileID: 1582205436}
   environmentObjectPlacer: {fileID: 1582205434}
   throwObjectPlacer: {fileID: 1582205433}
   spawnPointGenerator: {fileID: 1582205432}
   stageFlowApplier: {fileID: 1582205444}
   enemySpawnRuleApplier: {fileID: 1582205443}
   bossSpawner: {fileID: 1582205442}
+  boundaryColliderBuilder: {fileID: 1582205446}
+  safetyGroundBuilder: {fileID: 1582205447}
   navMeshSurface: {fileID: 1431563564}
   mapValidator: {fileID: 1582205438}
-  maxGenerationRetry: 5
   playerSpawnManager: {fileID: 1794788914}
   combatZoneRule: {fileID: 11400000, guid: 52cf795f3ef39f34789a4bc5dc964e36, type: 2}
   combatZoneGenerator: {fileID: 1582205439}
   buildingPlacementRule: {fileID: 11400000, guid: e4c4ac79133d188479be187ffc3528b7,
     type: 2}
-  lotPlacementRule: {fileID: 11400000, guid: 64ff33fb58dc0114abf157299c80e1be, type: 2}
-  cityBlockGenerator: {fileID: 1582205440}
-  blockBuildingPlacer: {fileID: 1582205441}
-  sidewalkPlacer: {fileID: 1582205445}
-  boundaryColliderBuilder: {fileID: 1582205446}
-  roadEndBoundaryBuilder: {fileID: 0}
-  safetyGroundBuilder: {fileID: 1582205447}
+  maxGenerationRetry: 5
 --- !u!114 &1582205432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -896,34 +946,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   coverPrefabs:
   - {fileID: 1824599713845831165, guid: 49020c4eaff3d1844a8e959927926811, type: 3}
---- !u!114 &1582205440
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1582205429}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4dc0e83615ab8234286bf36419f2efce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1582205441
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1582205429}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 301e937bf8145e34a8d7d41d8023e95c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minBuildingsPerBlock: 1
-  maxBuildingsPerBlock: 2
-  edgePadding: 8
-  maxTryPerBuilding: 30
 --- !u!114 &1582205442
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1006,22 +1028,6 @@ MonoBehaviour:
   padding: 5
   yPosition: -0.05
   thickness: 0.2
---- !u!114 &1582205448
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1582205429}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7793124f1f239ed42ac00ae9794f613b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wallWidth: 8
-  wallHeight: 4
-  wallThickness: 1
-  yPosition: 2
 --- !u!1 &1636845774
 GameObject:
   m_ObjectHideFlags: 0
@@ -1247,3 +1253,4 @@ SceneRoots:
   - {fileID: 1431563565}
   - {fileID: 580543824}
   - {fileID: 192997446}
+  - {fileID: 1151410814}

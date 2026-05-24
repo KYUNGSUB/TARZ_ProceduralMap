@@ -62,6 +62,64 @@ public class StageFlowApplier : MonoBehaviour
         }
     }
 
+    public void Apply(MapContext context, int selectedStage)
+    {
+        if (context == null || context.theme == null)
+        {
+            Debug.LogWarning("[StageFlowApplier] Context or theme is null.");
+            return;
+        }
+
+        ChapterThemeData theme = context.theme;
+
+        if (theme.stageFlow == null || theme.stageFlow.Count == 0)
+        {
+            Debug.LogWarning("[StageFlowApplier] StageFlow is empty.");
+            return;
+        }
+
+        int index = Mathf.Clamp(selectedStage - 1, 0, theme.stageFlow.Count - 1);
+        StageNodeType nodeType = theme.stageFlow[index];
+
+        Debug.Log($"[StageFlowApplier] Selected Stage {selectedStage}: {nodeType}");
+
+        switch (nodeType)
+        {
+            case StageNodeType.Start:
+                Debug.Log("[StageFlowApplier] Start stage selected.");
+                break;
+
+            case StageNodeType.NormalBattle:
+                Debug.Log("[StageFlowApplier] Normal battle stage selected.");
+                break;
+
+            case StageNodeType.ObjectReward:
+                Debug.Log("[StageFlowApplier] Object reward stage selected.");
+                break;
+
+            case StageNodeType.Event:
+                Debug.Log("[StageFlowApplier] Event stage selected.");
+                break;
+
+            case StageNodeType.MidBoss:
+                Debug.Log("[StageFlowApplier] Mid boss stage selected.");
+                break;
+
+            case StageNodeType.SecretRoomEntrance:
+            case StageNodeType.SecretRoom:
+                Debug.Log("[StageFlowApplier] Secret room stage selected.");
+                break;
+
+            case StageNodeType.BossRoom:
+                Debug.Log("[StageFlowApplier] Boss room stage selected.");
+                break;
+
+            case StageNodeType.Exit:
+                Debug.Log("[StageFlowApplier] Exit stage selected.");
+                break;
+        }
+    }
+
     private void ApplyStartStage(MapContext context, int index)
     {
         Debug.Log("[StageFlowApplier] Start stage applied.");
