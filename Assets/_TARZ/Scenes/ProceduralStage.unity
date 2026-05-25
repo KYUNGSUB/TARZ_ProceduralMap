@@ -1038,9 +1038,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fac2cdb0f03a9aa4695df2ab9c80a444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  padding: 0
+  padding: 3
   yPosition: -0.05
-  thickness: 0.2
+  thickness: 0.3
 --- !u!114 &1582205448
 MonoBehaviour:
   m_ObjectHideFlags: 0

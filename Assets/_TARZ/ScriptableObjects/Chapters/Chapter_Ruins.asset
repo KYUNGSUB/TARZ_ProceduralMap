@@ -60,7 +60,16 @@ MonoBehaviour:
   - {fileID: 5196264505289546108, guid: c8e3690bd9fd7834183bb6f54cafdfc0, type: 3}
   enemyPrefab: {fileID: 1979143788180314665, guid: c46ccbcb6afc8474387622b27fb4ae33,
     type: 3}
-  enemySpawnRules: []
+  enemySpawnRules:
+  - enemyName: Zombie_Rush
+    enemyPrefab: {fileID: 1979143788180314665, guid: c46ccbcb6afc8474387622b27fb4ae33,
+      type: 3}
+    roleType: 0
+    spawnWeight: 1
+    minStage: 1
+    maxStage: 6
+    minCount: 2
+    maxCount: 3
   chapterBossPrefab: {fileID: 0}
   bossName: "\uC544\uB180\uB4DC"
   bossDescription: 

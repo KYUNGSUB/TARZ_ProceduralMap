@@ -12,15 +12,24 @@ public class PlayerMovement : MonoBehaviour
     public float groundedGravity = -2f;
 
     [Header("Fall Safety")]
-    public float minY = -2f;
+    public float minY = -20f;
     public Vector3 respawnPosition;
 
     private CharacterController controller;
     private Vector3 verticalVelocity;
 
+    private Vector3 lastSafePosition;
+    public float safePositionUpdateInterval = 0.5f;
+    private float safeTimer;
+
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
+    }
+
+    private void Start()
+    {
+        lastSafePosition = transform.position;
     }
 
     private void Update()
@@ -31,8 +40,16 @@ public class PlayerMovement : MonoBehaviour
         {
             CharacterController controller = GetComponent<CharacterController>();
             controller.enabled = false;
-            transform.position = respawnPosition;
+            transform.position = lastSafePosition;
             controller.enabled = true;
+        }
+
+        safeTimer += Time.deltaTime;
+
+        if (safeTimer >= safePositionUpdateInterval && controller.isGrounded)
+        {
+            lastSafePosition = transform.position;
+            safeTimer = 0f;
         }
     }
 
