@@ -17,9 +17,11 @@ public class MapContext
     public Transform debugRoot;
 
     public Vector3 startPosition;
-    public Vector3 bossPosition;
+//    public Vector3 bossPosition;
 
+    public Vector3 midBossPosition;
     public Vector3 bossRoomPosition;
+
     public Vector3 exitPosition;
     public Vector3 secretRoomPosition;
 
@@ -48,6 +50,12 @@ public class MapContext
     public NavMeshSurface navMeshSurface;
 
     public List<LotData> lots = new List<LotData>();
+
+    public int selectedStage;
+    public StageNodeType selectedStageType;
+    public StageMapShapeType selectedMapShape;
+
+    public List<CombatZoneArea> combatZones = new List<CombatZoneArea>();
 
     public Vector3 GridToWorld(Vector2Int grid)
     {

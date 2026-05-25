@@ -9,6 +9,7 @@ public class POIPlacer : MonoBehaviour
     public float secretRadius = 4f;
     public float rewardRadius = 4f;
     public float bossRadius = 8f;
+    public float exitRadius = 5f;
 
     [Header("Minimum Distance")]
     public float startToCombatMinDistance = 18f;
@@ -25,13 +26,78 @@ public class POIPlacer : MonoBehaviour
 
     public void Place(MapContext context)
     {
+        if (context == null || context.theme == null)
+        {
+            Debug.LogWarning("[POIPlacer] Context or theme is null.");
+            return;
+        }
+
         context.poiAreas.Clear();
 
-        PlaceStart(context);
-        PlaceCombatAreas(context);
-        PlaceSecretAreas(context);
-        PlaceRewardAreas(context);
-        PlaceBoss(context);
+        switch (context.selectedStageType)
+        {
+            case StageNodeType.Start:
+                PlaceStart(context);
+                PlaceCombatAreas(context);
+                PlaceExit(context);
+                break;
+
+            case StageNodeType.NormalBattle:
+                PlaceStart(context);
+                PlaceCombatAreas(context);
+                PlaceExit(context);
+                break;
+
+            case StageNodeType.ObjectReward:
+                PlaceStart(context);
+                PlaceCombatAreas(context);
+                PlaceRewardAreas(context);
+                PlaceExit(context);
+                break;
+
+            case StageNodeType.Event:
+                PlaceStart(context);
+                PlaceCombatAreas(context);
+                PlaceRewardAreas(context);
+                break;
+
+            case StageNodeType.MidBoss:
+                PlaceStart(context);
+                PlaceCombatAreas(context);
+                PlaceMidBoss(context);
+                PlaceExit(context);
+                break;
+
+            case StageNodeType.SecretRoomEntrance:
+                PlaceStart(context);
+                PlaceCombatAreas(context);
+                PlaceSecretAreas(context);
+                PlaceExit(context);
+                break;
+
+            case StageNodeType.SecretRoom:
+                PlaceStart(context);
+                PlaceSecretAreas(context);
+                PlaceRewardAreas(context);
+                break;
+
+            case StageNodeType.BossRoom:
+                PlaceStart(context);
+                PlaceBoss(context);
+                PlaceExit(context);
+                break;
+
+            case StageNodeType.Exit:
+                PlaceStart(context);
+                break;
+
+            default:
+                PlaceStart(context);
+                PlaceCombatAreas(context);
+                break;
+        }
+
+        Debug.Log($"[POIPlacer] POI placed for StageType={context.selectedStageType}");
     }
 
     private void PlaceStart(MapContext context)
@@ -113,16 +179,43 @@ public class POIPlacer : MonoBehaviour
             true
         );
 
-        context.bossPosition = bossPos;
+        context.bossRoomPosition = bossPos;
+    }
+
+    private void PlaceMidBoss(MapContext context)
+    {
+        Vector3 midBossPos = context.midBossPosition;
+
+        if (midBossPos == Vector3.zero)
+        {
+            if (context.combatPositions != null && context.combatPositions.Count > 0)
+                midBossPos = context.combatPositions[context.combatPositions.Count - 1];
+            else if (context.roadWorldPositions != null && context.roadWorldPositions.Count > 0)
+                midBossPos = context.roadWorldPositions[context.roadWorldPositions.Count - 1];
+            else
+                midBossPos = context.startPosition;
+        }
+
+        TryPlacePOI(
+            context,
+            POIType.Combat,
+            context.theme.combatPrefabs,
+            midBossPos,
+            combatRadius,
+            "POI_MidBoss",
+            true
+        );
+
+        context.midBossPosition = midBossPos;
     }
 
     private Vector3 FindValidBossPosition(MapContext context)
     {
         // 1순위: 기존 bossPosition 사용
-        POIArea bossArea = new POIArea(POIType.Boss, context.bossPosition, bossRadius);
+        POIArea bossArea = new POIArea(POIType.Boss, context.bossRoomPosition, bossRadius);
 
         if (CanPlacePOI(context, bossArea))
-            return context.bossPosition;
+            return context.bossRoomPosition;
 
         // 2순위: 마지막 도로부터 역순으로 검사
         for (int i = context.roadWorldPositions.Count - 1; i >= 0; i--)
@@ -138,7 +231,7 @@ public class POIPlacer : MonoBehaviour
         if (context.roadWorldPositions.Count > 0)
             return context.roadWorldPositions[context.roadWorldPositions.Count - 1];
 
-        return context.bossPosition;
+        return context.bossRoomPosition;
     }
 
     private bool TryPlacePOI(
@@ -285,5 +378,18 @@ public class POIPlacer : MonoBehaviour
             array[i] = array[rand];
             array[rand] = temp;
         }
+    }
+
+    private void PlaceExit(MapContext context)
+    {
+        TryPlacePOI(
+            context,
+            POIType.Exit,
+            context.theme.exitPrefabs,
+            context.exitPosition,
+            exitRadius,
+            "POI_Exit",
+            true
+        );
     }
 }

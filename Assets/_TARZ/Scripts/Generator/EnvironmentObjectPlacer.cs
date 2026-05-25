@@ -1,10 +1,21 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class EnvironmentObjectPlacer : MonoBehaviour
 {
     public void Place(MapContext context)
     {
+        foreach (Bounds building in context.buildingBounds)
+        {
+            if (Random.value > context.theme.environmentDensity)
+                continue;
+
+            Vector3 pos = FindEnvironmentPosition(context, building);
+
+            TrySpawnObject(context, pos);
+        }
+        /*
         foreach (Vector3 roadPos in context.roadWorldPositions)
         {
             for (int i = 0; i < context.settings.objectsPerRoadTile; i++)
@@ -16,6 +27,7 @@ public class EnvironmentObjectPlacer : MonoBehaviour
                 TrySpawnObject(context, position);
             }
         }
+        */
     }
 
     private Vector3 GetRandomPosition(MapContext context, Vector3 center, float radius)
@@ -54,5 +66,20 @@ public class EnvironmentObjectPlacer : MonoBehaviour
     private float RandomRange(MapContext context, float min, float max)
     {
         return min + (float)context.random.NextDouble() * (max - min);
+    }
+
+    private Vector3 FindEnvironmentPosition(
+    MapContext context,
+    Bounds building)
+    {
+        Vector3 center = building.center;
+
+        Vector3 randomOffset = new Vector3(
+            Random.Range(-4f, 4f),
+            0f,
+            Random.Range(-4f, 4f)
+        );
+
+        return center + randomOffset;
     }
 }

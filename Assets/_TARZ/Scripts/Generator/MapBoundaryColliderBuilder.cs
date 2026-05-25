@@ -5,7 +5,7 @@ public class MapBoundaryColliderBuilder : MonoBehaviour
     [Header("Boundary")]
     public float wallHeight = 5f;
     public float wallThickness = 2f;
-    public float padding = 3f;
+    public float padding = 0f;
 
     [Header("Debug")]
     public bool showBoundaryObjects = true;
@@ -18,7 +18,16 @@ public class MapBoundaryColliderBuilder : MonoBehaviour
             return;
         }
 
-        Bounds bounds = CalculateMapBounds(context.mapRoot);
+        Bounds bounds;
+
+        if (context.hasMapBounds)
+        {
+            bounds = context.mapBounds;
+        }
+        else
+        {
+            bounds = CalculateMapBounds(context.mapRoot);
+        }
 
         if (bounds.size == Vector3.zero)
         {
@@ -56,7 +65,11 @@ public class MapBoundaryColliderBuilder : MonoBehaviour
             new Vector3(minX, wallHeight / 2f, centerZ),
             new Vector3(wallThickness, wallHeight, depth));
 
-        Debug.Log($"[MapBoundaryColliderBuilder] Boundary created. Bounds={bounds}");
+        Debug.Log($"[MapBoundaryColliderBuilder] Boundary created. " +
+            $"UseContextBounds={context.hasMapBounds}, " +
+            $"Center={bounds.center}, Size={bounds.size}, " +
+            $"Padding={padding}"
+        );
     }
 
     private Bounds CalculateMapBounds(Transform root)

@@ -6,17 +6,47 @@ public class ProceduralStageExitController : MonoBehaviour
     [Header("Scene")]
     public string menuSceneName = "MenuScene";
 
-    [Header("Key")]
-    public KeyCode exitKey = KeyCode.Escape;
+    [Header("Keys")]
+    public KeyCode unlockCursorKey = KeyCode.Escape;
+    public KeyCode returnMenuKey = KeyCode.F10;
 
     [Header("Manager")]
     public ProceduralMapManager proceduralMapManager;
 
+    private bool cursorUnlocked = false;
+
     private void Update()
     {
-        if (Input.GetKeyDown(exitKey))
+        // ESC ¡æ Cursor Unlock¸¸ ¼öÇà
+        if (Input.GetKeyDown(unlockCursorKey))
+        {
+            ToggleCursor();
+        }
+
+        // F10 ¡æ MenuScene º¹±Í
+        if (Input.GetKeyDown(returnMenuKey))
         {
             SaveAndReturnToMenu();
+        }
+    }
+
+    private void ToggleCursor()
+    {
+        cursorUnlocked = !cursorUnlocked;
+
+        if (cursorUnlocked)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            Debug.Log("[ProceduralStageExitController] Cursor Unlocked.");
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            Debug.Log("[ProceduralStageExitController] Cursor Locked.");
         }
     }
 
@@ -28,14 +58,6 @@ public class ProceduralStageExitController : MonoBehaviour
                 StageSelectionData.selectedChapter,
                 proceduralMapManager.selectedStage,
                 proceduralMapManager.seed
-            );
-        }
-        else
-        {
-            StageProgressStorage.Save(
-                StageSelectionData.selectedChapter,
-                StageSelectionData.selectedStage,
-                StageSelectionData.selectedSeed
             );
         }
 

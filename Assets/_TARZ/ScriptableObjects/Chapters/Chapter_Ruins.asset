@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: Chapter_Ruins
   m_EditorClassIdentifier: 
   chapterId: chapter_01_ruins
-  chapterName: "\uD3D0\uD5C8"
+  chapterName: Chapter_Ruins
   chapterNumber: 1
   chapterDisplayName: "\uCC55\uD1301 \uD3D0\uD5C8 \uB3C4\uC2DC / \uCD94\uB77D\uD55C
     \uBE44\uD589\uC120"
   chapterDescription: 
   stageCount: 6
-  stageFlow: 000000000100000003000000040000000500000007000000
+  stageFlow: 000000000100000001000000040000000500000007000000
+  stageMapShapes: 000000000100000002000000030000000400000005000000
   roadPrefabs:
   - {fileID: 2027547638819069183, guid: a24140c04d86f0c43b44b92a531d94f1, type: 3}
   sidewalkStraightPrefab: {fileID: 587217684021110009, guid: ee7ad8bbe0e4dc54d89dbc375f0578c2,
@@ -55,6 +56,8 @@ MonoBehaviour:
   - {fileID: 8147785111393225985, guid: b61ddf478b0e78a4bbc7017eba43942d, type: 3}
   bossPrefabs:
   - {fileID: 5048030741778686749, guid: 422c7820caad75b428f63126aedc85b0, type: 3}
+  exitPrefabs:
+  - {fileID: 5196264505289546108, guid: c8e3690bd9fd7834183bb6f54cafdfc0, type: 3}
   enemyPrefab: {fileID: 1979143788180314665, guid: c46ccbcb6afc8474387622b27fb4ae33,
     type: 3}
   enemySpawnRules: []
@@ -63,9 +66,9 @@ MonoBehaviour:
   bossDescription: 
   hasSecretRoom: 1
   secretRoomPrefabs: []
-  buildingDensity: 0.9
-  environmentDensity: 0.6
-  throwObjectDensity: 0.9
+  buildingDensity: 1
+  environmentDensity: 0.4
+  throwObjectDensity: 0.3
   districtThemeRule: {fileID: 11400000, guid: 1b96d1de077974f4cbf52c9835a0f496, type: 2}
   residentialBuildingPrefabs:
   - {fileID: 2559432405022361438, guid: 1173cb49c557ae046835ce5285b8f371, type: 3}

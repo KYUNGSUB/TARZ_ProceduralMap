@@ -574,7 +574,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: a6560a915ef98420e9faacc1c7438823, type: 2}
+  sharedProfile: {fileID: 11400000, guid: afe720d9a7724224ea03dd084419017a, type: 2}
 --- !u!4 &832575519
 Transform:
   m_ObjectHideFlags: 0
@@ -620,7 +620,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuSceneName: MenuScene
-  exitKey: 27
+  unlockCursorKey: 27
+  returnMenuKey: 291
   proceduralMapManager: {fileID: 1582205431}
 --- !u!4 &1151410814
 Transform:
@@ -755,6 +756,8 @@ GameObject:
   - component: {fileID: 1582205445}
   - component: {fileID: 1582205446}
   - component: {fileID: 1582205447}
+  - component: {fileID: 1582205448}
+  - component: {fileID: 1582205449}
   m_Layer: 0
   m_Name: ProceduralMapManager
   m_TagString: Untagged
@@ -821,15 +824,18 @@ MonoBehaviour:
   enemySpawnRuleApplier: {fileID: 1582205443}
   bossSpawner: {fileID: 1582205442}
   boundaryColliderBuilder: {fileID: 1582205446}
+  mapBoundsExpander: {fileID: 1582205448}
   safetyGroundBuilder: {fileID: 1582205447}
   navMeshSurface: {fileID: 1431563564}
   mapValidator: {fileID: 1582205438}
   playerSpawnManager: {fileID: 1794788914}
   combatZoneRule: {fileID: 11400000, guid: 52cf795f3ef39f34789a4bc5dc964e36, type: 2}
   combatZoneGenerator: {fileID: 1582205439}
+  combatZoneVisualizer: {fileID: 0}
   buildingPlacementRule: {fileID: 11400000, guid: e4c4ac79133d188479be187ffc3528b7,
     type: 2}
   maxGenerationRetry: 5
+  debrisClusterGenerator: {fileID: 1582205449}
 --- !u!114 &1582205432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -855,6 +861,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c3533bb6610a624a8edefc5c7d0886f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  zoneInnerRate: 0.75
+  minDistanceFromPOI: 3
+  occupiedCheckRadius: 2.5
 --- !u!114 &1582205434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -884,6 +893,7 @@ MonoBehaviour:
   secretRadius: 4
   rewardRadius: 4
   bossRadius: 8
+  exitRadius: 5
   startToCombatMinDistance: 18
   combatToCombatMinDistance: 24
   combatToSecretMinDistance: 18
@@ -944,8 +954,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 705ce8f1a3c9c224aa2744407dd7c31b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coverPrefabs:
-  - {fileID: 1824599713845831165, guid: 49020c4eaff3d1844a8e959927926811, type: 3}
+  normalCombatRadius: 10
+  midBossRadius: 14
+  bossRadius: 22
+  normalCombatCount: 2
+  minDistanceBetweenCombatZones: 25
 --- !u!114 &1582205442
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1011,7 +1024,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wallHeight: 5
   wallThickness: 2
-  padding: 2
+  padding: 0
   showBoundaryObjects: 1
 --- !u!114 &1582205447
 MonoBehaviour:
@@ -1025,9 +1038,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fac2cdb0f03a9aa4695df2ab9c80a444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  padding: 5
+  padding: 0
   yPosition: -0.05
   thickness: 0.2
+--- !u!114 &1582205448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16ce2d91b6a229448ae806dce2dc3152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minWidth: 280
+  minDepth: 150
+  extraPaddingX: 18
+  extraPaddingZ: 28
+  height: 10
+--- !u!114 &1582205449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 700b7fbc0aaeaaa428d66fe29a67df94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minClusterCount: 4
+  maxClusterCount: 10
+  minDebrisPerCluster: 3
+  maxDebrisPerCluster: 7
+  clusterRadius: 5
+  buildingOffsetMin: 3
+  buildingOffsetMax: 9
+  minDistanceFromRoad: 5
+  minDistanceFromPOI: 6
+  minDistanceBetweenClusters: 8
+  minScale: 0.8
+  maxScale: 1.25
 --- !u!1 &1636845774
 GameObject:
   m_ObjectHideFlags: 0

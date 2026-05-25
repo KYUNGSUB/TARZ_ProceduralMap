@@ -46,6 +46,7 @@ public class ProceduralMapManager : MonoBehaviour
 
     [Header("Boundary")]
     public MapBoundaryColliderBuilder boundaryColliderBuilder;
+    public MapBoundsExpander mapBoundsExpander;
     public MapSafetyGroundBuilder safetyGroundBuilder;
 
     [Header("Validation")]
@@ -58,12 +59,16 @@ public class ProceduralMapManager : MonoBehaviour
     [Header("Combat")]
     public CombatZoneRule combatZoneRule;
     public CombatZoneGenerator combatZoneGenerator;
+    public CombatZoneVisualizer combatZoneVisualizer;
 
     [Header("Building")]
     public BuildingPlacementRule buildingPlacementRule;
 
     [Header("Retry")]
     public int maxGenerationRetry = 10;
+
+    [Header("Debris")]
+    public DebrisClusterGenerator debrisClusterGenerator;
 
     private MapContext currentContext;
     private bool isGenerating = false;
@@ -241,50 +246,48 @@ public class ProceduralMapManager : MonoBehaviour
             navMeshSurface = navMeshSurface
         };
 
+        currentContext.selectedStage = selectedStage;
+        currentContext.selectedStageType = GetSelectedStageType();
+        currentContext.selectedMapShape = GetSelectedMapShape();
+
         CalculateMaxBuildingSize(currentContext);
 
         roadNetworkGenerator.Generate(currentContext);
 
-        // Road 생성 직후 Sidewalk 생성
-        if (sidewalkPlacer != null)
-            sidewalkPlacer.Place(currentContext);
+        if (combatZoneGenerator != null)
+            combatZoneGenerator.Generate(currentContext);
 
-//        if (roadEndBoundaryBuilder != null)
-//            roadEndBoundaryBuilder.Build(currentContext);
+        if (combatZoneVisualizer != null)
+            combatZoneVisualizer.Visualize(currentContext);
 
         poiPlacer.Place(currentContext);
 
-        // 기존 ApplyStageFlowToPOI(currentContext)를 대체
+        buildingPlacer.Place(currentContext);
+
+        if (throwObjectPlacer != null)
+        {
+            if (currentContext.selectedStageType == StageNodeType.Start)
+            {
+                throwObjectPlacer.PlaceTutorialThrowObjects(currentContext);
+            }
+            else
+            {
+                throwObjectPlacer.PlaceCombatThrowObjects(currentContext);
+            }
+        }
+
         if (stageFlowApplier != null)
             stageFlowApplier.Apply(currentContext, selectedStage);
 
-        /*
-        Debug.Log("Before CityBlockGenerator call");
-        // 도시 블록 생성
-        if (cityBlockGenerator == null)
-        {
-            Debug.LogError("cityBlockGenerator is NULL");
-        }
-        else
-        {
-            cityBlockGenerator.Generate(currentContext);
-        }
-
-        // 블록 안에 건물 그룹 배치
-        if (blockBuildingPlacer == null)
-        {
-            Debug.LogError("blockBuildingPlacer is NULL");
-        }
-        else
-        {
-            blockBuildingPlacer.Place(currentContext);
-        }
-        */
-
-        buildingPlacer.Place(currentContext);
+        if (debrisClusterGenerator != null)
+            debrisClusterGenerator.Generate(currentContext);
 
         // 현재 테스트 중이면 주석 유지 가능
         environmentObjectPlacer.Place(currentContext);
+
+        // Building, Environment 생성 후 MapBounds 확장
+        if (mapBoundsExpander != null)
+            mapBoundsExpander.Expand(currentContext);
 
         if (safetyGroundBuilder != null)
             safetyGroundBuilder.Build(currentContext);
@@ -301,7 +304,17 @@ public class ProceduralMapManager : MonoBehaviour
         bool valid = true;
 
         if (mapValidator != null)
-            valid = mapValidator.Validate(currentContext);
+        {
+            if (currentContext.selectedStageType == StageNodeType.Start)
+            {
+                Debug.Log("[ProceduralMapManager] Start Stage validation skipped.");
+                valid = true;
+            }
+            else
+            {
+                valid = mapValidator.Validate(currentContext);
+            }
+        }
 
         if (!valid)
             return false;
@@ -317,6 +330,24 @@ public class ProceduralMapManager : MonoBehaviour
             playerSpawnManager.SpawnPlayer(currentContext.startPosition);
 
         return true;
+    }
+
+    private StageNodeType GetSelectedStageType()
+    {
+        if (chapterTheme == null || chapterTheme.stageFlow == null || chapterTheme.stageFlow.Count == 0)
+            return StageNodeType.NormalBattle;
+
+        int index = Mathf.Clamp(selectedStage - 1, 0, chapterTheme.stageFlow.Count - 1);
+        return chapterTheme.stageFlow[index];
+    }
+
+    private StageMapShapeType GetSelectedMapShape()
+    {
+        if (chapterTheme == null || chapterTheme.stageMapShapes == null || chapterTheme.stageMapShapes.Count == 0)
+            return StageMapShapeType.CityCorridor;
+
+        int index = Mathf.Clamp(selectedStage - 1, 0, chapterTheme.stageMapShapes.Count - 1);
+        return chapterTheme.stageMapShapes[index];
     }
 
     private void CalculateMaxBuildingSize(MapContext context)

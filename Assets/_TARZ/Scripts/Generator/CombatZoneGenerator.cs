@@ -1,251 +1,229 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CombatZoneGenerator : MonoBehaviour
 {
-    [Header("Prefabs")]
-    public List<GameObject> coverPrefabs = new List<GameObject>();
+    [Header("Combat Zone Radius")]
+    public float normalCombatRadius = 10f;
+    public float midBossRadius = 14f;
+    public float bossRadius = 22f;
+
+    [Header("Placement")]
+    public int normalCombatCount = 2;
+    public float minDistanceBetweenCombatZones = 25f;
 
     public void Generate(MapContext context)
     {
-        if (context.combatZoneRule == null)
+        if (context == null)
         {
-            Debug.LogWarning("CombatZoneRule is missing.");
+            Debug.LogWarning("[CombatZoneGenerator] Context is null.");
             return;
         }
 
-        foreach (Vector3 combatCenter in context.combatPositions)
+        context.combatPositions.Clear();
+
+        if (context.combatZones != null)
+            context.combatZones.Clear();
+
+        switch (context.selectedStageType)
         {
-            GenerateCombatZone(context, combatCenter);
+            case StageNodeType.Start:
+                GenerateStartStageCombat(context);
+                break;
+
+            case StageNodeType.NormalBattle:
+                GenerateNormalCombatZones(context);
+                break;
+
+            case StageNodeType.ObjectReward:
+                GenerateRewardCombatZone(context);
+                break;
+
+            case StageNodeType.Event:
+                GenerateNormalCombatZones(context);
+                break;
+
+            case StageNodeType.MidBoss:
+                GenerateMidBossCombatZone(context);
+                break;
+
+            case StageNodeType.SecretRoomEntrance:
+                GenerateSecretEntranceCombatZone(context);
+                break;
+
+            case StageNodeType.BossRoom:
+                GenerateBossCombatZone(context);
+                break;
+
+            default:
+                GenerateNormalCombatZones(context);
+                break;
         }
+
+        Debug.Log($"[CombatZoneGenerator] Combat zones created: {context.combatPositions.Count}");
     }
 
-    private void GenerateCombatZone(MapContext context, Vector3 center)
+    private void GenerateStartStageCombat(MapContext context)
     {
-        PlaceCovers(context, center);
-        PlaceThrowObjects(context, center);
-        RegisterEnemySpawnPositions(context, center);
-        AnalyzeSight(context, center);
-    }
+        // Stage 1: Start에서 조금 진행한 지점에 작은 튜토리얼 전투 구역 생성
+        Vector3 pos = GetRoadPositionByRate(context, 0.65f);
 
-    private void PlaceCovers(MapContext context, Vector3 center)
-    {
-        int count = context.random.Next(
-            context.combatZoneRule.minCoverCount,
-            context.combatZoneRule.maxCoverCount + 1
+        AddCombatZone(
+            context,
+            pos,
+            normalCombatRadius * 0.75f,
+            false,
+            false
         );
 
-        int placed = 0;
-        int maxTry = count * 10;
-
-        for (int i = 0; i < maxTry && placed < count; i++)
-        {
-            Vector3 pos = GetRandomRingPoint(
-                context,
-                center,
-                context.combatZoneRule.coverMinDistanceFromCenter,
-                context.combatZoneRule.coverMaxDistanceFromCenter
-            );
-
-            if (IsInsideCenterClearArea(context, center, pos))
-                continue;
-
-            if (IsOccupied(context, pos, 2.0f))
-                continue;
-
-            GameObject prefab = PickCoverPrefab(context);
-
-            if (prefab == null)
-                return;
-
-            Quaternion rot = Quaternion.Euler(
-                0f,
-                RandomRange(context, 0f, 360f),
-                0f
-            );
-
-            GameObject cover = Instantiate(prefab, pos, rot, context.mapRoot);
-            cover.name = "Combat_Cover";
-
-            Bounds bounds = BoundsUtility.GetObjectBounds(cover);
-
-            if (BoundsUtility.IsOverlapping(context.occupiedBounds, bounds))
-            {
-                Destroy(cover);
-                continue;
-            }
-
-            context.occupiedBounds.Add(bounds);
-            placed++;
-        }
+        Debug.Log("[CombatZoneGenerator] Small tutorial combat zone created for Stage 1.");
     }
 
-    private void PlaceThrowObjects(MapContext context, Vector3 center)
+    private void GenerateNormalCombatZones(MapContext context)
     {
-        int count = context.random.Next(
-            context.combatZoneRule.minThrowObjectCount,
-            context.combatZoneRule.maxThrowObjectCount + 1
+        AddCombatZone(
+            context,
+            GetRoadPositionByRate(context, 0.35f),
+            normalCombatRadius
         );
 
-        int placed = 0;
-        int maxTry = count * 20;
-
-        for (int i = 0; i < maxTry && placed < count; i++)
-        {
-            Vector3 pos = GetRandomRingPoint(
-                context,
-                center,
-                context.combatZoneRule.throwObjectMinDistanceFromCenter,
-                context.combatZoneRule.throwObjectMaxDistanceFromCenter
-            );
-
-            // 전투 중심부는 플레이어 이동 공간으로 비워둠
-            if (IsInsideCenterClearArea(context, center, pos))
-                continue;
-
-            GameObject prefab = PrefabPicker.Pick(
-                context.theme.throwObjectPrefabs,
-                context.random
-            );
-
-            if (prefab == null)
-            {
-                Debug.LogWarning("ThrowObject prefab is missing in ChapterThemeData.");
-                return;
-            }
-
-            Quaternion rot = Quaternion.Euler(
-                0f,
-                RandomRange(context, 0f, 360f),
-                0f
-            );
-
-            GameObject obj = Instantiate(prefab, pos + Vector3.up * 0.5f, rot, context.mapRoot);
-            obj.name = "Combat_ThrowObject";
-
-            if (obj.GetComponent<ThrowObject>() == null)
-                obj.AddComponent<ThrowObject>();
-
-            // ThrowObject는 Road/POI 위에 있어야 하므로 occupiedBounds 검사로 막지 않음
-            // 단, 이후 다른 큰 구조물 배치를 막을 필요가 있으면 별도 throwObjectBounds로 관리하는 것이 좋음
-
-            placed++;
-        }
-
-        Debug.Log($"ThrowObjects placed: {placed}");
+        AddCombatZone(
+            context,
+            GetRoadPositionByRate(context, 0.70f),
+            normalCombatRadius
+        );
     }
 
-    private void RegisterEnemySpawnPositions(MapContext context, Vector3 center)
+    private void GenerateRewardCombatZone(MapContext context)
     {
-        int count = context.random.Next(
-            context.combatZoneRule.minEnemySpawnCount,
-            context.combatZoneRule.maxEnemySpawnCount + 1
+        Vector3 pos = GetRoadPositionByRate(context, 0.55f);
+
+        AddCombatZone(
+            context,
+            pos,
+            normalCombatRadius
         );
 
-        int placed = 0;
-        int maxTry = count * 20;
-
-        for (int i = 0; i < maxTry && placed < count; i++)
-        {
-            Vector3 pos = GetRandomRingPoint(
-                context,
-                center,
-                context.combatZoneRule.enemySpawnMinDistanceFromCenter,
-                context.combatZoneRule.enemySpawnMaxDistanceFromCenter
-            );
-
-            // Enemy Spawn은 Road/POI 위에 있어야 하므로 occupiedBounds 전체 검사 금지
-            // 대신 중심부 너무 가까운 위치만 피함
-            if (IsInsideCenterClearArea(context, center, pos))
-                continue;
-
-            context.enemySpawnPositions.Add(pos);
-            placed++;
-        }
-
-        Debug.Log($"Enemy spawn positions count: {context.enemySpawnPositions.Count}");
+        context.rewardPositions.Add(
+            pos + new Vector3(0f, 0f, context.settings.tileSize * 0.5f)
+        );
     }
 
-    private void AnalyzeSight(MapContext context, Vector3 center)
+    private void GenerateMidBossCombatZone(MapContext context)
     {
-        int blocked = 0;
-        int rayCount = Mathf.Max(1, context.combatZoneRule.sightRayCount);
+        Vector3 pos = context.midBossPosition;
 
-        for (int i = 0; i < rayCount; i++)
-        {
-            float angle = (360f / rayCount) * i;
-            Vector3 dir = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
+        if (pos == Vector3.zero)
+            pos = GetRoadPositionByRate(context, 0.75f);
 
-            Vector3 origin = center + Vector3.up * 1.5f;
-            float distance = context.combatZoneRule.combatRadius;
-
-            if (Physics.Raycast(origin, dir, distance))
-            {
-                blocked++;
-            }
-        }
-
-        float ratio = (float)blocked / rayCount;
-
-        if (ratio > context.combatZoneRule.maxCoverBlockingRatio)
-        {
-            Debug.LogWarning(
-                $"Combat sight is too blocked. Center={center}, BlockedRatio={ratio}"
-            );
-        }
-    }
-
-    private bool IsInsideCenterClearArea(MapContext context, Vector3 center, Vector3 pos)
-    {
-        float distance = Vector3.Distance(
-            new Vector3(center.x, 0f, center.z),
-            new Vector3(pos.x, 0f, pos.z)
+        AddCombatZone(
+            context,
+            pos,
+            midBossRadius,
+            false,
+            true
         );
 
-        return distance < context.combatZoneRule.centerClearRadius;
+        context.midBossPosition = pos;
     }
 
-    private bool IsOccupied(MapContext context, Vector3 pos, float radius)
+    private void GenerateSecretEntranceCombatZone(MapContext context)
     {
-        foreach (Bounds b in context.occupiedBounds)
-        {
-            if (b.SqrDistance(pos) < radius * radius)
-                return true;
-        }
+        Vector3 pos = GetRoadPositionByRate(context, 0.55f);
 
-        return false;
+        AddCombatZone(
+            context,
+            pos,
+            normalCombatRadius
+        );
+
+        if (context.secretRoomPosition != Vector3.zero)
+        {
+            context.secretPositions.Add(context.secretRoomPosition);
+        }
+        else
+        {
+            context.secretPositions.Add(
+                pos + new Vector3(context.settings.tileSize, 0f, -context.settings.tileSize)
+            );
+        }
     }
 
-    private Vector3 GetRandomRingPoint(
+    private void GenerateBossCombatZone(MapContext context)
+    {
+        Vector3 pos = context.bossRoomPosition;
+
+        if (pos == Vector3.zero)
+            pos = GetRoadPositionByRate(context, 0.85f);
+
+        AddCombatZone(
+            context,
+            pos,
+            bossRadius,
+            true,
+            false
+        );
+
+        context.bossRoomPosition = pos;
+    }
+
+    private void AddCombatZone(
         MapContext context,
         Vector3 center,
-        float minRadius,
-        float maxRadius
-    )
+        float radius,
+        bool isBossZone = false,
+        bool isMidBossZone = false)
     {
-        float angle = RandomRange(context, 0f, Mathf.PI * 2f);
-        float distance = RandomRange(context, minRadius, maxRadius);
+        if (center == Vector3.zero)
+            return;
 
-        return center + new Vector3(
-            Mathf.Cos(angle) * distance,
-            0f,
-            Mathf.Sin(angle) * distance
+        if (!CanPlaceCombatZone(context, center, radius))
+        {
+            Debug.LogWarning($"[CombatZoneGenerator] Combat zone skipped: {center}");
+            return;
+        }
+
+        context.combatPositions.Add(center);
+
+        if (context.combatZones != null)
+        {
+            context.combatZones.Add(
+                new CombatZoneArea(center, radius, isBossZone, isMidBossZone)
+            );
+        }
+
+        Bounds bounds = new Bounds(
+            center,
+            new Vector3(radius * 2f, 4f, radius * 2f)
         );
+
+        context.occupiedBounds.Add(bounds);
     }
 
-    private GameObject PickCoverPrefab(MapContext context)
+    private bool CanPlaceCombatZone(MapContext context, Vector3 center, float radius)
     {
-        if (coverPrefabs != null && coverPrefabs.Count > 0)
-            return PrefabPicker.Pick(coverPrefabs, context.random);
+        if (context.hasMapBounds && !context.mapBounds.Contains(center))
+            return false;
 
-        if (context.theme.facilityPrefabs != null && context.theme.facilityPrefabs.Count > 0)
-            return PrefabPicker.Pick(context.theme.facilityPrefabs, context.random);
+        foreach (Vector3 existing in context.combatPositions)
+        {
+            if (Vector3.Distance(existing, center) < minDistanceBetweenCombatZones)
+                return false;
+        }
 
-        return null;
+        return true;
     }
 
-    private float RandomRange(MapContext context, float min, float max)
+    private Vector3 GetRoadPositionByRate(MapContext context, float rate)
     {
-        return min + (float)context.random.NextDouble() * (max - min);
+        if (context.roadWorldPositions == null || context.roadWorldPositions.Count == 0)
+            return Vector3.zero;
+
+        int index = Mathf.Clamp(
+            Mathf.RoundToInt((context.roadWorldPositions.Count - 1) * rate),
+            0,
+            context.roadWorldPositions.Count - 1
+        );
+
+        return context.roadWorldPositions[index];
     }
 }

@@ -22,13 +22,13 @@ public class MapValidator : MonoBehaviour
             return false;
         }
 
-        if (!IsOnNavMesh(context.bossPosition))
+        if (!IsOnNavMesh(context.bossRoomPosition))
         {
             Debug.LogWarning("Boss position is not on NavMesh.");
             return false;
         }
 
-        if (!HasValidPath(context.startPosition, context.bossPosition))
+        if (!HasValidPath(context.startPosition, context.bossRoomPosition))
         {
             Debug.LogWarning("No valid path from Start to Boss.");
             return false;

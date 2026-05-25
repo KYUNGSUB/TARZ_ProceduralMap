@@ -6,7 +6,8 @@ public enum POIType
     Combat,
     Secret,
     Reward,
-    Boss
+    Boss,
+    Exit
 }
 
 [System.Serializable]

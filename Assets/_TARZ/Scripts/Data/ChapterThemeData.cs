@@ -18,6 +18,9 @@ public class ChapterThemeData : ScriptableObject
     public int stageCount = 6;
     public List<StageNodeType> stageFlow = new List<StageNodeType>();
 
+    [Header("Stage Map Shape")]
+    public List<StageMapShapeType> stageMapShapes = new List<StageMapShapeType>();
+
     [Header("Road Prefabs")]
     public List<GameObject> roadPrefabs = new List<GameObject>();
 
@@ -42,6 +45,7 @@ public class ChapterThemeData : ScriptableObject
     public List<GameObject> secretPrefabs = new List<GameObject>();
     public List<GameObject> rewardPrefabs = new List<GameObject>();
     public List<GameObject> bossPrefabs = new List<GameObject>();
+    public List<GameObject> exitPrefabs = new List<GameObject>();
 
     [Header("Characters - Legacy")]
     public GameObject enemyPrefab;
