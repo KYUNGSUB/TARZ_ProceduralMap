@@ -25,6 +25,9 @@ public class MapContext
     public Vector3 exitPosition;
     public Vector3 secretRoomPosition;
 
+    public Bounds secretRoomBounds;
+    public bool hasSecretRoomBounds = false;
+
     public List<Vector2Int> roadGridPositions = new List<Vector2Int>();
     public List<Vector3> roadWorldPositions = new List<Vector3>();
 

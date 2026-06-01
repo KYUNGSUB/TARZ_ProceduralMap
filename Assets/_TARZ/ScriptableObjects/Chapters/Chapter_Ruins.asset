@@ -19,7 +19,7 @@ MonoBehaviour:
     \uBE44\uD589\uC120"
   chapterDescription: 
   stageCount: 6
-  stageFlow: 000000000100000001000000040000000500000007000000
+  stageFlow: 000000000100000002000000040000000500000007000000
   stageMapShapes: 000000000100000002000000030000000400000005000000
   roadPrefabs:
   - {fileID: 2027547638819069183, guid: a24140c04d86f0c43b44b92a531d94f1, type: 3}
@@ -70,6 +70,33 @@ MonoBehaviour:
     maxStage: 6
     minCount: 2
     maxCount: 3
+  - enemyName: Zombie_FastRush
+    enemyPrefab: {fileID: 1979143788180314665, guid: c46ccbcb6afc8474387622b27fb4ae33,
+      type: 3}
+    roleType: 1
+    spawnWeight: 0.6
+    minStage: 2
+    maxStage: 6
+    minCount: 1
+    maxCount: 2
+  - enemyName: Zombie_Ranged
+    enemyPrefab: {fileID: 1979143788180314665, guid: b174f9aaaf0479c4b9675255c46403c2,
+      type: 3}
+    roleType: 3
+    spawnWeight: 0.4
+    minStage: 3
+    maxStage: 6
+    minCount: 1
+    maxCount: 1
+  - enemyName: Zombie_MidBoss
+    enemyPrefab: {fileID: 1979143788180314665, guid: c46ccbcb6afc8474387622b27fb4ae33,
+      type: 3}
+    roleType: 0
+    spawnWeight: 1
+    minStage: 4
+    maxStage: 4
+    minCount: 1
+    maxCount: 1
   chapterBossPrefab: {fileID: 0}
   bossName: "\uC544\uB180\uB4DC"
   bossDescription: 

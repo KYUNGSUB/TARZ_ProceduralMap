@@ -673,7 +673,7 @@ MonoBehaviour:
   m_Center: {x: 0, y: 2, z: 0}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 777
   m_UseGeometry: 1
   m_DefaultArea: 0
   m_GenerateLinks: 0
@@ -758,6 +758,10 @@ GameObject:
   - component: {fileID: 1582205447}
   - component: {fileID: 1582205448}
   - component: {fileID: 1582205449}
+  - component: {fileID: 1582205450}
+  - component: {fileID: 1582205451}
+  - component: {fileID: 1582205452}
+  - component: {fileID: 1582205453}
   m_Layer: 0
   m_Name: ProceduralMapManager
   m_TagString: Untagged
@@ -831,7 +835,10 @@ MonoBehaviour:
   playerSpawnManager: {fileID: 1794788914}
   combatZoneRule: {fileID: 11400000, guid: 52cf795f3ef39f34789a4bc5dc964e36, type: 2}
   combatZoneGenerator: {fileID: 1582205439}
-  combatZoneVisualizer: {fileID: 0}
+  combatZoneVisualizer: {fileID: 1582205450}
+  combatCoverGenerator: {fileID: 1582205451}
+  rewardZoneGenerator: {fileID: 1582205452}
+  rewardZoneVisualizer: {fileID: 1582205453}
   buildingPlacementRule: {fileID: 11400000, guid: e4c4ac79133d188479be187ffc3528b7,
     type: 2}
   maxGenerationRetry: 5
@@ -928,6 +935,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 162548f0437301249ba571125902807f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sidewalkYawOffset: 0
 --- !u!114 &1582205438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -940,8 +948,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 593a900c2cd40c345b7840d5363d1356, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sampleDistance: 3
-  maxPathDistance: 1000
+  sampleDistance: 8
+  maxPathDistance: 2000
 --- !u!114 &1582205439
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -954,7 +962,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 705ce8f1a3c9c224aa2744407dd7c31b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  smallCombatRadius: 8
   normalCombatRadius: 10
+  largeCombatRadius: 12
   midBossRadius: 14
   bossRadius: 22
   normalCombatCount: 2
@@ -1082,6 +1092,94 @@ MonoBehaviour:
   minDistanceBetweenClusters: 8
   minScale: 0.8
   maxScale: 1.25
+--- !u!114 &1582205450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d944d92d3a74f074b9701596f37cc292, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  normalMaterial: {fileID: 2100000, guid: 33a8769a6f61be145a1889ec1785891b, type: 2}
+  bossMaterial: {fileID: 2100000, guid: e6f9452ed6dd1584990aae6a35d31623, type: 2}
+  midBossMaterial: {fileID: 2100000, guid: 22563ea124541b0478bc88e8b4c6a3ad, type: 2}
+  yOffset: 0.08
+  parentToDebugRoot: 1
+--- !u!114 &1582205451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9bedf7555d4ded4c81714544febe57c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  coverPrefabs:
+  - {fileID: 945027482285855136, guid: 204c48d77e7675f4198af455948b28dd, type: 3}
+  - {fileID: 8450590041240196718, guid: 242b75256f71faa4db6e88063b192231, type: 3}
+  - {fileID: 6302884176266331025, guid: 004492431d3de3141a4c461cddd3f81b, type: 3}
+  - {fileID: 5781669367100832005, guid: e079b32b611ab05488c71ca363e40180, type: 3}
+  - {fileID: 843696656497200325, guid: c4bff904ffdb9a948bbee3b61b484d40, type: 3}
+  - {fileID: 478420944549352315, guid: ffbd32e32d6f6bf4a83259773e8c5cc7, type: 3}
+  - {fileID: 8455306035150477017, guid: 2177bc6cbf1cc444898d22ce16b48233, type: 3}
+  minCoverPerZone: 3
+  maxCoverPerZone: 5
+  innerRadiusRate: 0.75
+  outerRadiusRate: 1.1
+  minDistanceFromPOI: 4
+  minDistanceFromRoadCenter: 2
+  occupiedCheckSize: 2
+  minScale: 1
+  maxScale: 1.4
+--- !u!114 &1582205452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3144768e810c87e43b8ea8b2448d028d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rewardObjectPrefabs:
+  - {fileID: 8455306035150477017, guid: 2177bc6cbf1cc444898d22ce16b48233, type: 3}
+  - {fileID: 478420944549352315, guid: ffbd32e32d6f6bf4a83259773e8c5cc7, type: 3}
+  - {fileID: 5781669367100832005, guid: e079b32b611ab05488c71ca363e40180, type: 3}
+  - {fileID: 8450590041240196718, guid: 242b75256f71faa4db6e88063b192231, type: 3}
+  rewardBoxPrefab: {fileID: 3922893122392055084, guid: 36f93b3e20479d34c9343214254e2209,
+    type: 3}
+  rewardCoverPrefab: {fileID: 3949214555437831002, guid: 4659e0265933c2645afb455530706b94,
+    type: 3}
+  minObjectCount: 2
+  maxObjectCount: 4
+  placementRadius: 10
+  minDistanceFromPOI: 2
+  occupiedCheckSize: 1.5
+--- !u!114 &1582205453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0732dcf209bb5284fae36a25a02c53cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rewardMaterial: {fileID: 2100000, guid: 502cedda2ecef484fbe24920ee8de386, type: 2}
+  radius: 5
+  yOffset: 0.08
+  parentToDebugRoot: 1
 --- !u!1 &1636845774
 GameObject:
   m_ObjectHideFlags: 0

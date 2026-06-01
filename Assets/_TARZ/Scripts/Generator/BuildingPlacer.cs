@@ -283,6 +283,9 @@ public class BuildingPlacer : MonoBehaviour
     // 도로/POI와 겹침 방지
     private bool IsOverlappingBlockedArea(MapContext context, Bounds buildingBounds)
     {
+        if (OverlapsRoadBounds(context, buildingBounds))
+            return true;
+
         // Road와 너무 가까운지 검사
         if (IsTooCloseToRoad(context, buildingBounds))
             return true;
@@ -294,6 +297,15 @@ public class BuildingPlacer : MonoBehaviour
         // Building 간 최소 거리 추가
         if (IsTooCloseToOtherBuildings(context, buildingBounds))
             return true;
+        
+        if (context.hasSecretRoomBounds)
+        {
+            Bounds protectedSecretRoom = context.secretRoomBounds;
+            protectedSecretRoom.Expand(new Vector3(8f, 0f, 8f));
+
+            if (protectedSecretRoom.Intersects(buildingBounds))
+                return true;
+        }
 
         // Combat Zone과 겹치는지 검사
         if (context.combatZones != null)
@@ -332,6 +344,43 @@ public class BuildingPlacer : MonoBehaviour
             }
         }
 
+        if (context.rewardPositions != null)
+        {
+            foreach (Vector3 rewardPos in context.rewardPositions)
+            {
+                if (Vector3.Distance(buildingBounds.center, rewardPos) < context.settings.tileSize * 1.5f)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool OverlapsRoadBounds(
+    MapContext context,
+    Bounds buildingBounds)
+    {
+        if (context.roadBounds == null)
+            return false;
+
+        Bounds expandedBuilding = new Bounds(
+            buildingBounds.center,
+            buildingBounds.size * 0.9f
+        );
+
+        foreach (Bounds road in context.roadBounds)
+        {
+            Bounds expandedRoad = road;
+            expandedRoad.Expand(new Vector3(
+                context.settings.tileSize * 0.25f,
+                0f,
+                context.settings.tileSize * 0.25f
+            ));
+
+            if (IntersectsXZ(expandedRoad, expandedBuilding))
+                return true;
+        }
+
         return false;
     }
 
@@ -342,31 +391,68 @@ public class BuildingPlacer : MonoBehaviour
         if (context.roadWorldPositions == null || context.roadWorldPositions.Count == 0)
             return;
 
-        float tileSize = context.settings.tileSize;
-        float buildingOffset = tileSize * 2.2f;
-        float placementChance = context.theme.buildingDensity * 0.5f;
+        if (context.theme.buildingPrefabs == null || context.theme.buildingPrefabs.Count == 0)
+            return;
 
-        for (int i = 0; i < context.roadWorldPositions.Count; i += 2)
+        float tileSize = context.settings.tileSize;
+
+        float firstRowOffset = tileSize * 2.3f;
+        float secondRowOffset = tileSize * 3.5f;
+
+        float firstRowChance = 1.0f;
+        float secondRowChance = 0.85f;
+
+        for (int i = 0; i < context.roadWorldPositions.Count; i++)
         {
             Vector3 roadPos = context.roadWorldPositions[i];
 
             Vector3 forward = GetRoadForward(context, i);
             Vector3 right = Vector3.Cross(Vector3.up, forward).normalized;
 
+            float randomRightOffset =
+                Mathf.Lerp(
+                    -tileSize * 0.2f,
+                    tileSize * 0.25f,
+                    (float)context.random.NextDouble()
+                );
+
+            float randomLeftOffset =
+                Mathf.Lerp(
+                    -tileSize * 0.2f,
+                    tileSize * 0.25f,
+                    (float)context.random.NextDouble()
+                );
+
             TryPlaceBuildingAtSide(
                 context,
-                roadPos + right * buildingOffset,
+                roadPos + right * (firstRowOffset + randomRightOffset),
                 Quaternion.LookRotation(-right),
-                placementChance,
+                firstRowChance,
                 "ArenaBuilding_Right"
             );
 
             TryPlaceBuildingAtSide(
                 context,
-                roadPos - right * buildingOffset,
+                roadPos - right * (firstRowOffset + randomLeftOffset),
                 Quaternion.LookRotation(right),
-                placementChance,
+                firstRowChance,
                 "ArenaBuilding_Left"
+            );
+
+            TryPlaceBuildingAtSide(
+                context,
+                roadPos + right * (secondRowOffset + randomRightOffset),
+                Quaternion.LookRotation(-right),
+                secondRowChance,
+                "ArenaBuilding_Right_Row2"
+            );
+
+            TryPlaceBuildingAtSide(
+                context,
+                roadPos - right * (secondRowOffset + randomLeftOffset),
+                Quaternion.LookRotation(right),
+                secondRowChance,
+                "ArenaBuilding_Left_Row2"
             );
         }
 

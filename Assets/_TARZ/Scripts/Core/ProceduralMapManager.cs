@@ -60,6 +60,11 @@ public class ProceduralMapManager : MonoBehaviour
     public CombatZoneRule combatZoneRule;
     public CombatZoneGenerator combatZoneGenerator;
     public CombatZoneVisualizer combatZoneVisualizer;
+    public CombatCoverGenerator combatCoverGenerator;
+
+    [Header("Reward Zone")]
+    public RewardZoneGenerator rewardZoneGenerator;
+    public RewardZoneVisualizer rewardZoneVisualizer;
 
     [Header("Building")]
     public BuildingPlacementRule buildingPlacementRule;
@@ -264,6 +269,9 @@ public class ProceduralMapManager : MonoBehaviour
 
         buildingPlacer.Place(currentContext);
 
+        if (combatCoverGenerator != null)
+            combatCoverGenerator.Generate(currentContext);
+
         if (throwObjectPlacer != null)
         {
             if (currentContext.selectedStageType == StageNodeType.Start)
@@ -283,7 +291,8 @@ public class ProceduralMapManager : MonoBehaviour
             debrisClusterGenerator.Generate(currentContext);
 
         // 현재 테스트 중이면 주석 유지 가능
-        environmentObjectPlacer.Place(currentContext);
+        if (environmentObjectPlacer != null)
+            environmentObjectPlacer.Place(currentContext);
 
         // Building, Environment 생성 후 MapBounds 확장
         if (mapBoundsExpander != null)
@@ -296,9 +305,9 @@ public class ProceduralMapManager : MonoBehaviour
             boundaryColliderBuilder.Build(currentContext);
 
         // 전투 공간 규칙 적용
-        combatZoneGenerator.Generate(currentContext);
+//        combatZoneGenerator.Generate(currentContext);
 
-        if (bossSpawner != null)
+        if (bossSpawner != null && currentContext.selectedStageType == StageNodeType.BossRoom)
             bossSpawner.Spawn(currentContext);
 
         bool valid = true;
@@ -318,6 +327,12 @@ public class ProceduralMapManager : MonoBehaviour
 
         if (!valid)
             return false;
+
+        if (rewardZoneGenerator != null)
+            rewardZoneGenerator.Generate(currentContext);
+
+        if (rewardZoneVisualizer != null)
+            rewardZoneVisualizer.Visualize(currentContext);
 
         // NavMesh 검증 성공 후 동적 오브젝트 생성
         // throwObjectPlacer.Place(currentContext);

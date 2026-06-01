@@ -123,18 +123,26 @@ public class ThrowObjectPlacer : MonoBehaviour
     }
 
     // Zone 종류별 Throw Object 개수
-    private int GetThrowObjectCount(CombatZoneArea zone, MapContext context)
+    private int GetThrowObjectCount(
+        CombatZoneArea zone,
+        MapContext context)
     {
-        if(context.selectedStageType == StageNodeType.Start)
-        return context.random.Next(2, 4); // 2~3개
+        if (context.selectedStage == 1)
+            return context.random.Next(2, 4);
 
-        if (zone.isBossZone)
-            return context.random.Next(10, 17);
+        if (context.selectedStage == 2)
+            return context.random.Next(4, 7);
+
+        if (context.selectedStage == 3)
+            return context.random.Next(5, 8);
 
         if (zone.isMidBossZone)
-            return context.random.Next(8, 13);
+            return context.random.Next(6, 9);
 
-        return context.random.Next(5, 9);
+        if (zone.isBossZone)
+            return context.random.Next(8, 11);
+
+        return context.random.Next(5, 8);
     }
 
     // Combat Zone 안 랜덤 위치 계산

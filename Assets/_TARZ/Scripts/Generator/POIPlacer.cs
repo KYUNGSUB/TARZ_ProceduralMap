@@ -65,6 +65,7 @@ public class POIPlacer : MonoBehaviour
                 PlaceStart(context);
                 PlaceCombatAreas(context);
                 PlaceMidBoss(context);
+                PlaceRewardAreas(context);
                 PlaceExit(context);
                 break;
 

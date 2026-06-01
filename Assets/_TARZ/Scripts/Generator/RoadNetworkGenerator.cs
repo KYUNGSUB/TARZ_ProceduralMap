@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class RoadNetworkGenerator : MonoBehaviour
 {
+    [Header("Prefab Rotation Correction")]
+    public float sidewalkYawOffset = 90f;
+
     private HashSet<Vector2Int> roadSet = new HashSet<Vector2Int>();
 
     public void Generate(MapContext context)
@@ -62,7 +65,8 @@ public class RoadNetworkGenerator : MonoBehaviour
     private void PlaceRoadTile(
     MapContext context,
     Vector3 position,
-    Vector3 forward)
+    Vector3 forward,
+    bool createSidewalk = true)
     {
         GameObject roadPrefab = GetRoadPrefab(context);
 
@@ -93,15 +97,23 @@ public class RoadNetworkGenerator : MonoBehaviour
 
         float sidewalkOffset = context.settings.tileSize * 0.55f;
 
-        if (context.theme.sidewalkStraightPrefab != null)
+        bool shouldCreateSidewalk =
+            createSidewalk &&
+            context.selectedMapShape != StageMapShapeType.ObjectArena;
+
+        if (shouldCreateSidewalk &&
+            context.theme.sidewalkStraightPrefab != null)
         {
             Vector3 leftSidewalkPos = position - side * sidewalkOffset;
             Vector3 rightSidewalkPos = position + side * sidewalkOffset;
 
+            Quaternion sidewalkRotation =
+                roadRotation * Quaternion.Euler(0f, sidewalkYawOffset, 0f);
+
             GameObject left = Instantiate(
                 context.theme.sidewalkStraightPrefab,
                 leftSidewalkPos,
-                roadRotation,
+                sidewalkRotation,
                 context.mapRoot
             );
 
@@ -110,7 +122,7 @@ public class RoadNetworkGenerator : MonoBehaviour
             GameObject right = Instantiate(
                 context.theme.sidewalkStraightPrefab,
                 rightSidewalkPos,
-                roadRotation,
+                sidewalkRotation,
                 context.mapRoot
             );
 
@@ -134,65 +146,13 @@ public class RoadNetworkGenerator : MonoBehaviour
     Vector3 position,
     Quaternion rotation)
     {
-        GameObject roadPrefab = GetRoadPrefab(context);
+        Vector3 forward = rotation * Vector3.forward;
 
-        if (roadPrefab == null)
-            return;
-
-        float sidewalkOffset = context.settings.tileSize * 0.5f;
-
-        // 중앙 도로
-        GameObject road = Instantiate(
-            roadPrefab,
+        PlaceRoadTile(
+            context,
             position,
-            rotation,
-            context.mapRoot
+            forward
         );
-
-        road.name = $"Road_{position.x}_{position.z}";
-
-        // 진행 방향 기준 오른쪽 벡터
-        Vector3 right = rotation * Vector3.right;
-
-        // 왼쪽 보도
-        if (context.theme.sidewalkStraightPrefab != null)
-        {
-            Vector3 leftPos =
-                position - right * sidewalkOffset;
-
-            Instantiate(
-                context.theme.sidewalkStraightPrefab,
-                leftPos,
-                rotation,
-                context.mapRoot
-            );
-        }
-
-        // 오른쪽 보도
-        if (context.theme.sidewalkStraightPrefab != null)
-        {
-            Vector3 rightPos =
-                position + right * sidewalkOffset;
-
-            Instantiate(
-                context.theme.sidewalkStraightPrefab,
-                rightPos,
-                rotation,
-                context.mapRoot
-            );
-        }
-
-        context.roadWorldPositions.Add(position);
-
-        float roadWidth = context.settings.tileSize * 3f;
-        float roadDepth = context.settings.tileSize;
-
-        Bounds roadBounds = new Bounds(
-            position,
-            new Vector3(roadWidth, 4f, roadDepth)
-        );
-
-        context.roadBounds.Add(roadBounds);
     }
 
     // Stage 1: LinearLongRoad
@@ -302,26 +262,48 @@ public class RoadNetworkGenerator : MonoBehaviour
         float spacing = context.settings.tileSize;
         Vector3 start = new Vector3(-45f, 0f, -35f);
 
-        context.startPosition = start;
+        List<Vector3> path = new List<Vector3>();
 
-        int length = 11;
+        int length = 13;
 
         for (int i = 0; i < length; i++)
         {
             float x = i * spacing;
-            float z = Mathf.Sin(i * 0.8f) * 15f;
+            float z = Mathf.Sin(i * 0.55f) * 18f;
 
             Vector3 pos = start + new Vector3(x, 0f, z);
-
-            float angle = Mathf.Cos(i * 0.8f) * 15f;
-            PlaceRoadTile(context, pos, Quaternion.Euler(0f, angle, 0f));
+            path.Add(pos);
         }
 
-        context.exitPosition = start + new Vector3(
-            (length - 1) * spacing,
-            0f,
-            Mathf.Sin((length - 1) * 0.8f) * 15f
+        CenterPathToOrigin(path);
+
+        MovePath(
+            path,
+            new Vector3(
+                0f,
+                0f,
+                context.settings.tileSize * 1.4f
+            )
         );
+
+        context.startPosition = path[0];
+        context.exitPosition = path[path.Count - 1];
+
+        for (int i = 0; i < path.Count; i++)
+        {
+            Vector3 forward;
+
+            if (i == 0)
+                forward = path[i + 1] - path[i];
+            else if (i == path.Count - 1)
+                forward = path[i] - path[i - 1];
+            else
+                forward = path[i + 1] - path[i - 1];
+
+            PlaceRoadTile(context, path[i], forward);
+        }
+
+        UpdateMapBoundsFromPath(context, path, spacing * 5.5f);
 
         Debug.Log("[RoadNetworkGenerator] Generated Stage 2 CurvedRoad.");
     }
@@ -395,56 +377,69 @@ public class RoadNetworkGenerator : MonoBehaviour
     // Stage 5: BranchSecretPath (갈림길이 있고, 왼쪽은 비밀방 입구, 오른쪽은 다음 Stage로 진행하는 구조)
     private void GenerateBranchSecretPath(MapContext context)
     {
-        float spacing = context.settings.tileSize;
-        Vector3 start = new Vector3(-45f, 0f, -30f);
+        float tileSize = context.settings.tileSize;
+        float step = tileSize * 0.5f;
 
-        context.startPosition = start;
+        List<Vector3> mainPath = new List<Vector3>();
 
-        int mainLength = 7;
+        Vector3 start = new Vector3(-80f, 0f, 0f);
 
-        for (int i = 0; i < mainLength; i++)
+        for (int i = 0; i < 8; i++)
         {
-            Vector3 pos = start + new Vector3(i * spacing, 0f, 0f);
-            PlaceRoadTile(context, pos, Quaternion.identity);
+            Vector3 pos = start + new Vector3(i * tileSize, 0f, 0f);
+            mainPath.Add(pos);
         }
 
-        Vector3 branchPoint = start + new Vector3(4 * spacing, 0f, 0f);
+        context.startPosition = mainPath[0];
+        context.exitPosition = mainPath[mainPath.Count - 1];
 
-        // 오른쪽 길: 다음 스테이지로 진행
-        for (int i = 1; i <= 5; i++)
+        for (int i = 0; i < mainPath.Count; i++)
         {
-            Vector3 pos = branchPoint + new Vector3(
-                i * spacing,
-                0f,
-                i * spacing * 0.6f
+            Vector3 forward;
+
+            if (i == 0)
+                forward = mainPath[i + 1] - mainPath[i];
+            else if (i == mainPath.Count - 1)
+                forward = mainPath[i] - mainPath[i - 1];
+            else
+                forward = mainPath[i + 1] - mainPath[i - 1];
+
+            PlaceRoadTile(context, mainPath[i], forward);
+        }
+
+        Vector3 branchStart = mainPath[4];
+
+        List<Vector3> branchPath = new List<Vector3>();
+
+        // branchStart에서 Secret Room까지 촘촘하게 연결
+        for (int i = 1; i <= 12; i++)
+        {
+            Vector3 pos =
+                branchStart +
+                new Vector3(0f, 0f, -i * step);
+
+            branchPath.Add(pos);
+        }
+
+        for (int i = 0; i < branchPath.Count; i++)
+        {
+            PlaceRoadTile(
+                context,
+                branchPath[i],
+                Vector3.back,
+                false
             );
-
-            PlaceRoadTile(context, pos, Quaternion.Euler(0f, 25f, 0f));
         }
 
-        context.exitPosition = branchPoint + new Vector3(
-            5 * spacing,
-            0f,
-            5 * spacing * 0.6f
-        );
+        Vector3 secretRoomCenter =
+            branchStart + new Vector3(0f, 0f, -120f);
 
-        // 왼쪽 길: 막힌 구간 + 비밀방 입구
-        for (int i = 1; i <= 4; i++)
-        {
-            Vector3 pos = branchPoint + new Vector3(
-                i * spacing,
-                0f,
-                -i * spacing * 0.7f
-            );
+        GenerateSecretRoomTiles(context, secretRoomCenter);
 
-            PlaceRoadTile(context, pos, Quaternion.Euler(0f, -25f, 0f));
-        }
+        context.secretRoomPosition = secretRoomCenter;
 
-        context.secretRoomPosition = branchPoint + new Vector3(
-            4 * spacing,
-            0f,
-            -4 * spacing * 0.7f
-        );
+        if (!context.secretPositions.Contains(secretRoomCenter))
+            context.secretPositions.Add(secretRoomCenter);
 
         Debug.Log("[RoadNetworkGenerator] Generated Stage 5 BranchSecretPath.");
     }
@@ -714,5 +709,54 @@ public class RoadNetworkGenerator : MonoBehaviour
             list[i] = list[rand];
             list[rand] = temp;
         }
+    }
+
+    private void GenerateSecretRoomTiles(
+    MapContext context,
+    Vector3 roomCenter)
+    {
+        float tileSize = context.settings.tileSize;
+
+        int halfWidth = 2;
+        int halfDepth = 2;
+
+        for (int x = -halfWidth; x <= halfWidth; x++)
+        {
+            for (int z = -halfDepth; z <= halfDepth; z++)
+            {
+                Vector3 pos =
+                    roomCenter +
+                    new Vector3(
+                        x * tileSize,
+                        0f,
+                        z * tileSize
+                    );
+
+                PlaceRoadTile(
+                    context,
+                    pos,
+                    Vector3.forward,
+                    false
+                );
+            }
+        }
+
+        context.secretRoomPosition = roomCenter;
+
+        context.secretRoomBounds = new Bounds(
+            roomCenter,
+            new Vector3(
+                tileSize * 5f,
+                4f,
+                tileSize * 5f
+            )
+        );
+
+        context.hasSecretRoomBounds = true;
+
+        if (!context.secretPositions.Contains(roomCenter))
+            context.secretPositions.Add(roomCenter);
+
+        Debug.Log($"[RoadNetworkGenerator] Secret room created at {roomCenter}");
     }
 }
