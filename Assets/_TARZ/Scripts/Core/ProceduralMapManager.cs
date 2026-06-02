@@ -267,7 +267,40 @@ public class ProceduralMapManager : MonoBehaviour
 
         poiPlacer.Place(currentContext);
 
-        buildingPlacer.Place(currentContext);
+        //        buildingPlacer.Place(currentContext);
+
+        if (currentContext.selectedStageType != StageNodeType.BossRoom)
+        {
+            buildingPlacer.Place(currentContext);
+        }
+
+        // Building, Environment 생성 후 MapBounds 확장
+        if (mapBoundsExpander != null)
+            mapBoundsExpander.Expand(currentContext);
+
+        if (safetyGroundBuilder != null)
+            safetyGroundBuilder.Build(currentContext);
+
+        if (boundaryColliderBuilder != null)
+            boundaryColliderBuilder.Build(currentContext);
+
+        bool valid = true;
+
+        if (mapValidator != null)
+        {
+            if (currentContext.selectedStageType == StageNodeType.Start)
+            {
+                Debug.Log("[ProceduralMapManager] Start Stage validation skipped.");
+                valid = true;
+            }
+            else
+            {
+                valid = mapValidator.Validate(currentContext);
+            }
+        }
+
+        if (!valid)
+            return false;
 
         if (combatCoverGenerator != null)
             combatCoverGenerator.Generate(currentContext);
@@ -294,39 +327,11 @@ public class ProceduralMapManager : MonoBehaviour
         if (environmentObjectPlacer != null)
             environmentObjectPlacer.Place(currentContext);
 
-        // Building, Environment 생성 후 MapBounds 확장
-        if (mapBoundsExpander != null)
-            mapBoundsExpander.Expand(currentContext);
-
-        if (safetyGroundBuilder != null)
-            safetyGroundBuilder.Build(currentContext);
-
-        if (boundaryColliderBuilder != null)
-            boundaryColliderBuilder.Build(currentContext);
-
         // 전투 공간 규칙 적용
 //        combatZoneGenerator.Generate(currentContext);
 
         if (bossSpawner != null && currentContext.selectedStageType == StageNodeType.BossRoom)
             bossSpawner.Spawn(currentContext);
-
-        bool valid = true;
-
-        if (mapValidator != null)
-        {
-            if (currentContext.selectedStageType == StageNodeType.Start)
-            {
-                Debug.Log("[ProceduralMapManager] Start Stage validation skipped.");
-                valid = true;
-            }
-            else
-            {
-                valid = mapValidator.Validate(currentContext);
-            }
-        }
-
-        if (!valid)
-            return false;
 
         if (rewardZoneGenerator != null)
             rewardZoneGenerator.Generate(currentContext);

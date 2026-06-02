@@ -409,30 +409,25 @@ public class RoadNetworkGenerator : MonoBehaviour
 
         Vector3 branchStart = mainPath[4];
 
-        List<Vector3> branchPath = new List<Vector3>();
+        float secretDistance = tileSize * 8f;
+        Vector3 secretRoomCenter =
+            branchStart + Vector3.back * secretDistance;
 
-        // branchStart에서 Secret Room까지 촘촘하게 연결
-        for (int i = 1; i <= 12; i++)
+        int branchStepCount =
+            Mathf.RoundToInt(secretDistance / step);
+
+        for (int i = 1; i <= branchStepCount; i++)
         {
             Vector3 pos =
-                branchStart +
-                new Vector3(0f, 0f, -i * step);
+                branchStart + Vector3.back * step * i;
 
-            branchPath.Add(pos);
-        }
-
-        for (int i = 0; i < branchPath.Count; i++)
-        {
             PlaceRoadTile(
                 context,
-                branchPath[i],
+                pos,
                 Vector3.back,
                 false
             );
         }
-
-        Vector3 secretRoomCenter =
-            branchStart + new Vector3(0f, 0f, -120f);
 
         GenerateSecretRoomTiles(context, secretRoomCenter);
 
@@ -448,34 +443,81 @@ public class RoadNetworkGenerator : MonoBehaviour
     private void GenerateBossArena(MapContext context)
     {
         float spacing = context.settings.tileSize;
-        Vector3 start = new Vector3(-35f, 0f, 0f);
 
+        Vector3 start = new Vector3(-35f, 0f, 0f);
         context.startPosition = start;
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 6; i++)
         {
-            Vector3 pos = start + new Vector3(i * spacing, 0f, 0f);
+            Vector3 pos =
+                start + new Vector3(i * spacing, 0f, 0f);
+
             PlaceRoadTile(context, pos, Quaternion.identity);
         }
 
-        Vector3 bossArenaCenter = start + new Vector3(6 * spacing, 0f, 0f);
+        Vector3 bossArenaCenter =
+            start + new Vector3(6 * spacing, 0f, 0f);
 
+        Debug.Log(
+            $"LastRoad={start + new Vector3(5 * spacing, 0, 0)} " +
+            $"BossCenter={bossArenaCenter}"
+        );
+
+        // 1. Start에서 Boss Arena 중심까지 진입로 생성
+        for (int i = 0; i <= 6; i++)
+        {
+            Vector3 pos =
+                start + new Vector3(i * spacing, 0f, 0f);
+
+            PlaceRoadTile(
+                context,
+                pos,
+                Quaternion.identity
+            );
+        }
+
+        // 2. Boss Arena 생성
         for (int x = -3; x <= 3; x++)
         {
             for (int z = -3; z <= 3; z++)
             {
-                Vector3 pos = bossArenaCenter + new Vector3(
-                    x * spacing,
-                    0f,
-                    z * spacing
-                );
+                Vector3 pos =
+                    bossArenaCenter +
+                    new Vector3(
+                        x * spacing,
+                        0f,
+                        z * spacing
+                    );
 
-                PlaceRoadTile(context, pos, Quaternion.identity);
+                PlaceRoadTile(
+                    context,
+                    pos,
+                    Vector3.right,
+                    false
+                );
             }
         }
 
-        context.bossRoomPosition = bossArenaCenter;
-        context.exitPosition = bossArenaCenter + new Vector3(4 * spacing, 0f, 0f);
+        context.bossRoomPosition = bossArenaCenter + new Vector3(0f, 0f, 12f);
+
+        // 3. Exit 위치
+        context.exitPosition =
+            bossArenaCenter + new Vector3(4 * spacing, 0f, 0f);
+
+        // 4. Exit까지 연결 도로도 생성
+        for (int i = 1; i <= 4; i++)
+        {
+            Vector3 pos =
+                bossArenaCenter +
+                new Vector3(i * spacing, 0f, 0f);
+
+            PlaceRoadTile(
+                context,
+                pos,
+                Vector3.right,
+                false
+            );
+        }
 
         Debug.Log("[RoadNetworkGenerator] Generated Stage 6 BossArena.");
     }
@@ -724,6 +766,10 @@ public class RoadNetworkGenerator : MonoBehaviour
         {
             for (int z = -halfDepth; z <= halfDepth; z++)
             {
+                // Secret Room 중앙은 RewardBox 위치로 비워둔다
+                if (x == 0 && z == 0)
+                    continue;
+
                 Vector3 pos =
                     roomCenter +
                     new Vector3(

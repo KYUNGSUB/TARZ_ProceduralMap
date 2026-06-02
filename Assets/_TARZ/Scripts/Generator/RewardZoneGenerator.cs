@@ -63,7 +63,7 @@ public class RewardZoneGenerator : MonoBehaviour
         if (rewardBoxPrefab != null)
         {
             Vector3 boxPos = center;
-            boxPos.y = 1.0f;
+            boxPos.y = 6.0f;
 
             GameObject rewardBox = Instantiate(
                 rewardBoxPrefab,
@@ -74,15 +74,59 @@ public class RewardZoneGenerator : MonoBehaviour
 
             rewardBox.name = "RewardBox";
 
+            Debug.Log($"RewardBox Position = {boxPos}");
+
             Bounds boxBounds = BoundsUtility.GetObjectBounds(rewardBox);
             context.occupiedBounds.Add(boxBounds);
-
-            CreateRewardCover(context, center);
 
             placed++;
         }
 
-        // 2. RewardBox 주변에 보급 오브젝트 생성
+        // 2. Stage 5 Secret Room에서는 보상 오브젝트를 강제로 조금 배치
+        if (context.selectedStageType == StageNodeType.SecretRoomEntrance)
+        {
+            int secretCount = context.random.Next(3, 6);
+
+            for (int i = 0; i < secretCount; i++)
+            {
+                GameObject prefab = PickPrefab(context);
+
+                if (prefab == null)
+                    continue;
+
+                Vector3 pos = GetSecretRewardPosition(context, center);
+
+                Quaternion rot = Quaternion.Euler(
+                    0f,
+                    RandomRange(context, 0f, 360f),
+                    0f
+                );
+
+                GameObject obj = Instantiate(
+                    prefab,
+                    pos,
+                    rot,
+                    context.mapRoot
+                );
+
+                obj.name = "SecretRewardObject";
+
+                Debug.Log($"SecretRewardObject = {pos}");
+
+                Bounds bounds = BoundsUtility.GetObjectBounds(obj);
+                context.occupiedBounds.Add(bounds);
+
+                placed++;
+            }
+
+            CreateRewardCover(context, center);
+
+            return placed;
+        }
+
+        // 3. 일반 Reward Zone 처리
+        CreateRewardCover(context, center);
+
         int count = context.random.Next(minObjectCount, maxObjectCount + 1);
         int attempts = 0;
         int maxAttempts = count * 10;
@@ -91,17 +135,7 @@ public class RewardZoneGenerator : MonoBehaviour
         {
             attempts++;
 
-            Vector3 pos;
-
-            // Stage 5 Secret Room 보상은 방 중앙 근처에 더 조밀하게 배치
-            if (context.selectedStageType == StageNodeType.SecretRoomEntrance)
-            {
-                pos = GetSecretRewardPosition(context, center);
-            }
-            else
-            {
-                pos = GetRandomPosition(context, center);
-            }
+            Vector3 pos = GetRandomPosition(context, center);
 
             if (!CanPlace(context, pos))
                 continue;
@@ -124,9 +158,7 @@ public class RewardZoneGenerator : MonoBehaviour
                 context.mapRoot
             );
 
-            obj.name = context.selectedStageType == StageNodeType.SecretRoomEntrance
-                ? "SecretRewardObject"
-                : "RewardObject";
+            obj.name = "RewardObject";
 
             Bounds bounds = BoundsUtility.GetObjectBounds(obj);
             context.occupiedBounds.Add(bounds);
@@ -153,7 +185,7 @@ public class RewardZoneGenerator : MonoBehaviour
         );
 
         Vector3 pos = center + offset;
-        pos.y = 0f;
+        pos.y = 4.0f;
 
         return pos;
     }
@@ -165,19 +197,35 @@ public class RewardZoneGenerator : MonoBehaviour
         if (rewardCoverPrefab == null)
             return;
 
-        Vector3[] offsets =
+        Vector3[] offsets;
+
+        if (context.selectedStageType == StageNodeType.SecretRoomEntrance)
         {
-            new Vector3( 3f, 0f, 0f),
-            new Vector3(-3f, 0f, 0f),
-            new Vector3( 0f, 0f, 3f),
-            new Vector3( 0f, 0f,-3f)
-        };
+            offsets = new Vector3[]
+            {
+            new Vector3( 4f, 0f, 0f),
+            new Vector3(-4f, 0f, 0f)
+            };
+        }
+        else
+        {
+            offsets = new Vector3[]
+            {
+            new Vector3( 4f, 0f, 0f),
+            new Vector3(-4f, 0f, 0f),
+            new Vector3( 0f, 0f, 4f),
+            new Vector3( 0f, 0f,-4f)
+            };
+        }
 
         foreach (Vector3 offset in offsets)
         {
+            Vector3 pos = center + offset;
+            pos.y = 1.0f;
+
             GameObject cover = Instantiate(
                 rewardCoverPrefab,
-                center + offset,
+                pos,
                 Quaternion.identity,
                 context.mapRoot
             );
@@ -185,7 +233,6 @@ public class RewardZoneGenerator : MonoBehaviour
             cover.name = "RewardCover";
 
             Bounds bounds = BoundsUtility.GetObjectBounds(cover);
-
             context.occupiedBounds.Add(bounds);
         }
     }

@@ -34,6 +34,9 @@ public class BossSpawner : MonoBehaviour
 
     private Vector3 GetBossSpawnPosition(MapContext context)
     {
-        return context.bossRoomPosition;
+        Vector3 pos = context.bossRoomPosition;
+        pos.y = 0f;
+
+        return pos;
     }
 }

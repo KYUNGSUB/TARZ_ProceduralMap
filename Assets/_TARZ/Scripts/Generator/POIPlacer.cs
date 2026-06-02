@@ -134,7 +134,18 @@ public class POIPlacer : MonoBehaviour
     {
         foreach (Vector3 pos in context.secretPositions)
         {
-            Vector3 candidate = FindBetterPOIPosition(context, pos, secretRadius);
+            Vector3 candidate = pos;
+
+            // Stage 5에서는 Secret Room 중심에 Secret POI를 강제 배치
+            if (context.selectedStageType == StageNodeType.SecretRoomEntrance &&
+                context.secretRoomPosition != Vector3.zero)
+            {
+                candidate = context.secretRoomPosition;
+            }
+            else
+            {
+                candidate = FindBetterPOIPosition(context, pos, secretRadius);
+            }
 
             TryPlacePOI(
                 context,
@@ -143,7 +154,7 @@ public class POIPlacer : MonoBehaviour
                 candidate,
                 secretRadius,
                 "POI_Secret",
-                false
+                true   // 중요: SecretRoomEntrance에서는 강제 배치
             );
         }
     }

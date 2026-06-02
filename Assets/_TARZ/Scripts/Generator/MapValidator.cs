@@ -22,12 +22,6 @@ public class MapValidator : MonoBehaviour
 
         context.navMeshSurface.BuildNavMesh();
 
-        //if (!IsOnNavMesh(context.startPosition))
-        //{
-        //    Debug.LogWarning("[MapValidator] Start position is not on NavMesh.");
-        //    return false;
-        //}
-
         Vector3 targetPosition = GetValidationTargetPosition(context);
         string targetName = GetValidationTargetName(context);
 
@@ -52,6 +46,11 @@ public class MapValidator : MonoBehaviour
             return false;
         }
 
+        if (context.selectedStageType == StageNodeType.SecretRoomEntrance)
+        {
+            ValidateSecretRoomAccess(context, navStart);
+        }
+
         ValidateCombatZones(context);
 
         return true;
@@ -65,10 +64,12 @@ public class MapValidator : MonoBehaviour
                 return context.bossRoomPosition;
 
             case StageNodeType.SecretRoom:
-            case StageNodeType.SecretRoomEntrance:
                 if (context.secretRoomPosition != Vector3.zero)
                     return context.secretRoomPosition;
 
+                return context.exitPosition;
+
+            case StageNodeType.SecretRoomEntrance:
                 return context.exitPosition;
 
             default:
@@ -84,8 +85,10 @@ public class MapValidator : MonoBehaviour
                 return "Boss";
 
             case StageNodeType.SecretRoom:
+                return "SecretRoom";
+
             case StageNodeType.SecretRoomEntrance:
-                return "SecretRoom or Exit";
+                return "Exit";
 
             default:
                 return "Exit";
@@ -127,11 +130,26 @@ public class MapValidator : MonoBehaviour
             path
         );
 
+        Debug.Log(
+            $"Path Found={found}, Status={path.status}, Corners={path.corners.Length}"
+        );
+
         if (!found)
             return false;
 
         if (path.status != NavMeshPathStatus.PathComplete)
             return false;
+
+        Debug.Log(
+            $"Path Found={found}, " +
+            $"Status={path.status}, " +
+            $"Corners={path.corners.Length}"
+        );
+
+        for (int i = 0; i < path.corners.Length; i++)
+        {
+            Debug.Log($"Corner[{i}] = {path.corners[i]}");
+        }
 
         float distance = GetPathDistance(path);
 
@@ -164,5 +182,40 @@ public class MapValidator : MonoBehaviour
 
         navPosition = position;
         return false;
+    }
+
+    private void ValidateSecretRoomAccess(
+    MapContext context,
+    Vector3 navStart)
+    {
+        if (context.secretRoomPosition == Vector3.zero)
+            return;
+
+        Vector3[] candidates =
+        {
+        context.secretRoomPosition,
+        context.secretRoomPosition + new Vector3( 4f, 0f,  0f),
+        context.secretRoomPosition + new Vector3(-4f, 0f,  0f),
+        context.secretRoomPosition + new Vector3( 0f, 0f,  4f),
+        context.secretRoomPosition + new Vector3( 0f, 0f, -4f),
+        context.secretRoomPosition + new Vector3( 8f, 0f,  0f),
+        context.secretRoomPosition + new Vector3(-8f, 0f,  0f),
+        context.secretRoomPosition + new Vector3( 0f, 0f,  8f),
+        context.secretRoomPosition + new Vector3( 0f, 0f, -8f),
+    };
+
+        foreach (Vector3 candidate in candidates)
+        {
+            if (!TryGetNavMeshPosition(candidate, out Vector3 navSecret))
+                continue;
+
+            if (HasValidPath(navStart, navSecret))
+            {
+                Debug.Log("[MapValidator] Secret room access checked.");
+                return;
+            }
+        }
+
+        Debug.LogWarning("[MapValidator] Secret room access could not be confirmed, but Exit path is valid.");
     }
 }
