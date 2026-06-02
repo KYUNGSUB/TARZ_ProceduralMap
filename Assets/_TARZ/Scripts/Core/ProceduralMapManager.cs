@@ -262,14 +262,9 @@ public class ProceduralMapManager : MonoBehaviour
         if (combatZoneGenerator != null)
             combatZoneGenerator.Generate(currentContext);
 
-        if (combatZoneVisualizer != null)
-            combatZoneVisualizer.Visualize(currentContext);
-
         poiPlacer.Place(currentContext);
 
-        //        buildingPlacer.Place(currentContext);
-
-        if (currentContext.selectedStageType != StageNodeType.BossRoom)
+        if (buildingPlacer != null)
         {
             buildingPlacer.Place(currentContext);
         }
@@ -301,6 +296,9 @@ public class ProceduralMapManager : MonoBehaviour
 
         if (!valid)
             return false;
+
+        if (combatZoneVisualizer != null)
+            combatZoneVisualizer.Visualize(currentContext);
 
         if (combatCoverGenerator != null)
             combatCoverGenerator.Generate(currentContext);

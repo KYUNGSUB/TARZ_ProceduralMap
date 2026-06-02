@@ -80,10 +80,10 @@ public class RoadNetworkGenerator : MonoBehaviour
 
         forward.Normalize();
 
-        Vector3 side = Vector3.Cross(Vector3.up, forward).normalized;
+        Quaternion roadRotation =
+            Quaternion.LookRotation(forward, Vector3.up);
 
-        Quaternion roadRotation = Quaternion.LookRotation(forward, Vector3.up);
-
+        // 1. Road 생성 - 이 부분이 빠져 있었습니다.
         GameObject road = Instantiate(
             roadPrefab,
             position,
@@ -91,24 +91,39 @@ public class RoadNetworkGenerator : MonoBehaviour
             context.mapRoot
         );
 
-        road.name = $"Road_{Mathf.RoundToInt(position.x)}_{Mathf.RoundToInt(position.z)}";
+        road.name =
+            $"Road_{Mathf.RoundToInt(position.x)}_{Mathf.RoundToInt(position.z)}";
 
         context.roadWorldPositions.Add(position);
 
-        float sidewalkOffset = context.settings.tileSize * 0.55f;
+        // 2. 도로의 오른쪽 방향
+        Vector3 right =
+            roadRotation * Vector3.right;
+
+        float sidewalkOffset =
+            context.settings.tileSize * 0.65f;
 
         bool shouldCreateSidewalk =
             createSidewalk &&
-            context.selectedMapShape != StageMapShapeType.ObjectArena;
+            context.selectedStageType != StageNodeType.BossRoom &&
+            context.selectedMapShape != StageMapShapeType.ObjectArena &&
+            context.theme.sidewalkStraightPrefab != null;
 
-        if (shouldCreateSidewalk &&
-            context.theme.sidewalkStraightPrefab != null)
+        // 3. Sidewalk 생성
+        if (shouldCreateSidewalk)
         {
-            Vector3 leftSidewalkPos = position - side * sidewalkOffset;
-            Vector3 rightSidewalkPos = position + side * sidewalkOffset;
+            Vector3 leftSidewalkPos =
+                position - right * sidewalkOffset;
+
+            Vector3 rightSidewalkPos =
+                position + right * sidewalkOffset;
 
             Quaternion sidewalkRotation =
-                roadRotation * Quaternion.Euler(0f, sidewalkYawOffset, 0f);
+                roadRotation * Quaternion.Euler(
+                    0f,
+                    sidewalkYawOffset,
+                    0f
+                );
 
             GameObject left = Instantiate(
                 context.theme.sidewalkStraightPrefab,
@@ -119,14 +134,14 @@ public class RoadNetworkGenerator : MonoBehaviour
 
             left.name = "Sidewalk_Straight_Left";
 
-            GameObject right = Instantiate(
+            GameObject rightObj = Instantiate(
                 context.theme.sidewalkStraightPrefab,
                 rightSidewalkPos,
                 sidewalkRotation,
                 context.mapRoot
             );
 
-            right.name = "Sidewalk_Straight_Right";
+            rightObj.name = "Sidewalk_Straight_Right";
         }
 
         Bounds roadBounds = new Bounds(
@@ -447,24 +462,12 @@ public class RoadNetworkGenerator : MonoBehaviour
         Vector3 start = new Vector3(-35f, 0f, 0f);
         context.startPosition = start;
 
-        for (int i = 0; i < 6; i++)
-        {
-            Vector3 pos =
-                start + new Vector3(i * spacing, 0f, 0f);
-
-            PlaceRoadTile(context, pos, Quaternion.identity);
-        }
-
         Vector3 bossArenaCenter =
             start + new Vector3(6 * spacing, 0f, 0f);
 
-        Debug.Log(
-            $"LastRoad={start + new Vector3(5 * spacing, 0, 0)} " +
-            $"BossCenter={bossArenaCenter}"
-        );
-
-        // 1. Start에서 Boss Arena 중심까지 진입로 생성
-        for (int i = 0; i <= 6; i++)
+        // Start → BossArena 진입로
+        // 진입 통로
+        for (int i = 0; i <= 4; i++)
         {
             Vector3 pos =
                 start + new Vector3(i * spacing, 0f, 0f);
@@ -472,14 +475,34 @@ public class RoadNetworkGenerator : MonoBehaviour
             PlaceRoadTile(
                 context,
                 pos,
-                Quaternion.identity
+                Vector3.right,
+                false
             );
         }
 
-        // 2. Boss Arena 생성
-        for (int x = -3; x <= 3; x++)
+        // Arena 입구
+        for (int z = -1; z <= 1; z++)
         {
-            for (int z = -3; z <= 3; z++)
+            Vector3 pos =
+                start +
+                new Vector3(
+                    5 * spacing,
+                    0f,
+                    z * spacing
+                );
+
+            PlaceRoadTile(
+                context,
+                pos,
+                Vector3.right,
+                false
+            );
+        }
+
+        // Boss Arena 바닥
+        for (int x = -4; x <= 4; x++)
+        {
+            for (int z = -4; z <= 4; z++)
             {
                 Vector3 pos =
                     bossArenaCenter +
@@ -498,26 +521,16 @@ public class RoadNetworkGenerator : MonoBehaviour
             }
         }
 
-        context.bossRoomPosition = bossArenaCenter + new Vector3(0f, 0f, 12f);
+        context.bossRoomPosition =
+            bossArenaCenter + new Vector3(0f, 0f, 12f);
 
-        // 3. Exit 위치
         context.exitPosition =
             bossArenaCenter + new Vector3(4 * spacing, 0f, 0f);
 
-        // 4. Exit까지 연결 도로도 생성
-        for (int i = 1; i <= 4; i++)
-        {
-            Vector3 pos =
-                bossArenaCenter +
-                new Vector3(i * spacing, 0f, 0f);
-
-            PlaceRoadTile(
-                context,
-                pos,
-                Vector3.right,
-                false
-            );
-        }
+        Debug.Log(
+            $"LastRoad={start + new Vector3(5 * spacing, 0f, 0f)} " +
+            $"BossCenter={bossArenaCenter}"
+        );
 
         Debug.Log("[RoadNetworkGenerator] Generated Stage 6 BossArena.");
     }

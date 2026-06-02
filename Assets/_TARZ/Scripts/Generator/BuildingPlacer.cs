@@ -463,41 +463,187 @@ public class BuildingPlacer : MonoBehaviour
     // 보스 전투 공간이므로 보스룸 주변은 비워야 한다.
     private void PlaceBossArenaBuildings(MapContext context)
     {
-        if (context.roadWorldPositions == null || context.roadWorldPositions.Count == 0)
+        if (context.theme.buildingPrefabs == null ||
+            context.theme.buildingPrefabs.Count == 0)
             return;
 
         float tileSize = context.settings.tileSize;
-        float buildingOffset = tileSize * 2.8f;
-        float placementChance = context.theme.buildingDensity * 0.35f;
 
-        for (int i = 0; i < context.roadWorldPositions.Count; i++)
+        Vector3 center = context.bossRoomPosition;
+
+        int placed = 0;
+        int targetCount = 12;
+        int attempts = 0;
+        int maxAttempts = 80;
+
+        while (placed < targetCount && attempts < maxAttempts)
         {
-            Vector3 roadPos = context.roadWorldPositions[i];
+            attempts++;
 
-            if (Vector3.Distance(roadPos, context.bossRoomPosition) < tileSize * 4f)
+            Vector3 pos = GetBossArenaOuterPosition(
+                context,
+                center,
+                tileSize
+            );
+
+            if (!CanPlaceBossArenaBuilding(context, pos))
                 continue;
 
-            Vector3 forward = GetRoadForward(context, i);
-            Vector3 right = Vector3.Cross(Vector3.up, forward).normalized;
+            GameObject prefab = PickBuildingPrefab(context);
 
-            TryPlaceBuildingAtSide(
-                context,
-                roadPos + right * buildingOffset,
-                Quaternion.LookRotation(-right),
-                placementChance,
-                "BossStageBuilding_Right"
+            if (prefab == null)
+                continue;
+
+            Quaternion rot = Quaternion.Euler(
+                0f,
+                RandomRange(context, 0f, 360f),
+                0f
             );
 
-            TryPlaceBuildingAtSide(
-                context,
-                roadPos - right * buildingOffset,
-                Quaternion.LookRotation(right),
-                placementChance,
-                "BossStageBuilding_Left"
+            GameObject obj = Instantiate(
+                prefab,
+                pos,
+                rot,
+                context.mapRoot
             );
+
+            obj.name =
+                $"BossStageBuilding_{Mathf.RoundToInt(pos.x)}_{Mathf.RoundToInt(pos.z)}";
+
+            Bounds bounds = BoundsUtility.GetObjectBounds(obj);
+
+            context.occupiedBounds.Add(bounds);
+            context.buildingBounds.Add(bounds);
+
+            placed++;
         }
 
-        Debug.Log("[BuildingPlacer] Boss arena buildings placed.");
+        Debug.Log($"[BuildingPlacer] Boss arena buildings placed: {placed}");
+    }
+
+    // BossRoom 외곽 위치 계산 메소드 추가
+    private Vector3 GetBossArenaOuterPosition(
+    MapContext context,
+    Vector3 center,
+    float tileSize)
+    {
+        float arenaHalfX = tileSize * 2.8f;
+        float arenaHalfZ = tileSize * 2.8f;
+
+        int side = context.random.Next(0, 4);
+
+        float x = 0f;
+        float z = 0f;
+
+        switch (side)
+        {
+            // 위쪽 외곽
+            case 0:
+                x = RandomRange(context, -arenaHalfX, arenaHalfX);
+                z = arenaHalfZ;
+                break;
+
+            // 아래쪽 외곽
+            case 1:
+                x = RandomRange(context, -arenaHalfX, arenaHalfX);
+                z = -arenaHalfZ;
+                break;
+
+            // 오른쪽 외곽
+            case 2:
+                x = arenaHalfX;
+                z = RandomRange(context, -arenaHalfZ, arenaHalfZ);
+                break;
+
+            // 왼쪽 외곽
+            default:
+                x = -arenaHalfX;
+                z = RandomRange(context, -arenaHalfZ, arenaHalfZ);
+                break;
+        }
+
+        Vector3 pos =
+            center + new Vector3(x, 0f, z);
+
+        return pos;
+    }
+
+    // BossRoom 건물 배치 가능 여부 검사
+    private bool CanPlaceBossArenaBuilding(
+    MapContext context,
+    Vector3 pos)
+    {
+        float tileSize = context.settings.tileSize;
+
+        // 1. Boss 중앙 주변 비우기
+        if (Vector3.Distance(pos, context.bossRoomPosition) < tileSize * 1.8f)
+            return false;
+
+        // 2. Boss Spawn 위치 주변 비우기
+        if (Vector3.Distance(pos, context.bossRoomPosition) < tileSize * 2.0f)
+            return false;
+
+        // 3. Start 주변 비우기
+        if (Vector3.Distance(pos, context.startPosition) < tileSize * 2.0f)
+            return false;
+
+        // 4. Exit 주변 비우기
+        if (Vector3.Distance(pos, context.exitPosition) < tileSize * 2.0f)
+            return false;
+
+        // 5. 진입로 주변 비우기
+        if (IsNearBossEntrancePath(context, pos))
+            return false;
+
+        // 6. 기존 점유 영역과 겹침 방지
+        Bounds testBounds = new Bounds(
+            pos,
+            new Vector3(tileSize * 1.2f, 6f, tileSize * 1.2f)
+        );
+
+        foreach (Bounds occupied in context.occupiedBounds)
+        {
+            if (occupied.Intersects(testBounds))
+                return false;
+        }
+
+        return true;
+    }
+
+    // 진입로 보호 메소드
+    private bool IsNearBossEntrancePath(
+    MapContext context,
+    Vector3 pos)
+    {
+        float protectWidth = context.settings.tileSize * 1.5f;
+
+        Vector3 start = context.startPosition;
+        Vector3 boss = context.bossRoomPosition;
+
+        Vector3 closest =
+            GetClosestPointOnLineSegment(start, boss, pos);
+
+        float distance =
+            Vector3.Distance(pos, closest);
+
+        return distance < protectWidth;
+    }
+
+    // 선분에서 가장 가까운 점 계산 메소드
+    private Vector3 GetClosestPointOnLineSegment(
+    Vector3 a,
+    Vector3 b,
+    Vector3 p)
+    {
+        Vector3 ab = b - a;
+
+        float t =
+            Vector3.Dot(p - a, ab) /
+            Vector3.Dot(ab, ab);
+
+        t = Mathf.Clamp01(t);
+
+        return a + ab * t;
     }
 
     private bool TryPlaceLotBuilding(
@@ -866,6 +1012,20 @@ public class BuildingPlacer : MonoBehaviour
     {
         return min + (float)context.random.NextDouble() * (max - min);
     }
+    
+    /*
+    private float RandomRange(
+    MapContext context,
+    float min,
+    float max)
+    {
+        return Mathf.Lerp(
+            min,
+            max,
+            (float)context.random.NextDouble()
+        );
+    }
+    */
 
     private bool IsTooCloseToOtherBuildings(
     MapContext context,
