@@ -28,9 +28,9 @@ MonoBehaviour:
   sidewalkCornerPrefab: {fileID: 2069641427574889283, guid: 916141595d1d74e4e829f69ba2231cbe,
     type: 3}
   buildingPrefabs:
-  - {fileID: 6839820915021091992, guid: c3462ff718c03c3478d0752558d0b7f8, type: 3}
-  - {fileID: 6839820915021091992, guid: c3462ff718c03c3478d0752558d0b7f8, type: 3}
-  - {fileID: 6839820915021091992, guid: c3462ff718c03c3478d0752558d0b7f8, type: 3}
+  - {fileID: 1754605587894940570, guid: 418ef00eb2adda24e8f285784146e2cb, type: 3}
+  - {fileID: 1121737385989866733, guid: 0b03cddfe9057c64db271e5080b1c635, type: 3}
+  - {fileID: 2559432405022361438, guid: 1173cb49c557ae046835ce5285b8f371, type: 3}
   treePrefabs:
   - {fileID: 3727841032907832747, guid: 058f6996bc4df284eada2ae9afba9f0e, type: 3}
   facilityPrefabs:

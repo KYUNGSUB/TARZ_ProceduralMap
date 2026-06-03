@@ -14,6 +14,37 @@ public class BuildingPlacer : MonoBehaviour
             return;
         }
 
+        // Chapter 2 바다 마을 전용 건물 배치
+        if (IsSeaVillageChapter(context))
+        {
+            switch (context.selectedMapShape)
+            {
+                case StageMapShapeType.LinearLongRoad:
+                case StageMapShapeType.CurvedRoad:
+                case StageMapShapeType.CityCorridor:
+                    PlaceSeaVillageCorridorBuildings(context);
+                    break;
+
+                case StageMapShapeType.ObjectArena:
+                    PlaceSeaVillageCorridorBuildings(context);
+                    break;
+
+                case StageMapShapeType.BranchSecretPath:
+                    PlaceSeaVillageCorridorBuildings(context);
+                    break;
+
+                case StageMapShapeType.BossArena:
+                    PlaceBossArenaBuildings(context);
+                    break;
+
+                default:
+                    PlaceSeaVillageCorridorBuildings(context);
+                    break;
+            }
+
+            return;
+        }
+
         switch (context.selectedMapShape)
         {
             case StageMapShapeType.LinearLongRoad:
@@ -38,6 +69,166 @@ public class BuildingPlacer : MonoBehaviour
                 PlaceCorridorBuildings(context);
                 break;
         }
+    }
+
+    private bool IsSeaVillageChapter(MapContext context)
+    {
+        return context != null &&
+               context.theme != null &&
+               context.theme.chapterNumber == 2;
+    }
+
+    private void PlaceSeaVillageCorridorBuildings(MapContext context)
+    {
+        Debug.Log($"Road Count = {context.roadWorldPositions.Count}");
+
+        if (context.roadWorldPositions == null || context.roadWorldPositions.Count == 0)
+        {
+            Debug.LogWarning("[BuildingPlacer] No road positions for Sea Village.");
+            return;
+        }
+
+        if (context.theme.buildingPrefabs == null || context.theme.buildingPrefabs.Count == 0)
+        {
+            Debug.LogWarning("[BuildingPlacer] No building prefabs for Sea Village.");
+            return;
+        }
+
+        float tileSize = context.settings.tileSize;
+
+        // Chapter 2 바다 마을은 Chapter 1 폐허 도시보다 건물이 도로에 더 가깝고 밀집됨
+        float firstRowOffset = tileSize * 1.25f;
+        float secondRowOffset = tileSize * 2.05f;
+
+        float firstRowChance = 0.95f;
+        float secondRowChance = 0.45f;
+        float midBuildingChance = 0.50f;
+
+        int placedTryCount = 0;
+
+        for (int i = 0; i < context.roadWorldPositions.Count; i++)
+        {
+            Vector3 roadPos = context.roadWorldPositions[i];
+
+            Vector3 forward = GetRoadForward(context, i);
+
+            Debug.DrawLine(roadPos, roadPos + forward * 8f, Color.red, 60f);
+
+            if (forward == Vector3.zero)
+                forward = Vector3.forward;
+
+            Vector3 right = Vector3.Cross(Vector3.up, forward).normalized;
+
+            float rightRandomOffset = Mathf.Lerp(
+                -tileSize * 0.12f,
+                tileSize * 0.18f,
+                (float)context.random.NextDouble()
+            );
+
+            float leftRandomOffset = Mathf.Lerp(
+                -tileSize * 0.12f,
+                tileSize * 0.18f,
+                (float)context.random.NextDouble()
+            );
+
+            // 도로 오른쪽 1열 건물
+            Vector3 rightPos = roadPos + right * (firstRowOffset + rightRandomOffset);
+
+            Debug.DrawLine(
+                roadPos,
+                rightPos,
+                Color.green,
+                60f
+            );
+
+            TryPlaceBuildingAtSide(
+                context,
+                rightPos,
+                Quaternion.LookRotation(-right),
+                firstRowChance,
+                "SeaVillage_Building_Right"
+            );
+            placedTryCount++;
+
+            // 도로 왼쪽 1열 건물
+            Vector3 leftPos = roadPos - right * (firstRowOffset + leftRandomOffset);
+
+            Debug.DrawLine(
+                roadPos,
+                leftPos,
+                Color.yellow,
+                60f
+            );
+
+            TryPlaceBuildingAtSide(
+                context,
+                leftPos,
+                Quaternion.LookRotation(right),
+                firstRowChance,
+                "SeaVillage_Building_Left"
+            );
+            placedTryCount++;
+
+            // 2열 건물은 너무 빽빽해지지 않도록 일부 위치에만 배치
+            if (i % 2 == 0)
+            {
+                TryPlaceBuildingAtSide(
+                    context,
+                    roadPos + right * (secondRowOffset + rightRandomOffset),
+                    Quaternion.LookRotation(-right),
+                    secondRowChance,
+                    "SeaVillage_Building_Right_Row2"
+                );
+                placedTryCount++;
+
+                TryPlaceBuildingAtSide(
+                    context,
+                    roadPos - right * (secondRowOffset + leftRandomOffset),
+                    Quaternion.LookRotation(right),
+                    secondRowChance,
+                    "SeaVillage_Building_Left_Row2"
+                );
+                placedTryCount++;
+            }
+
+            // 도로와 도로 사이 중간 위치에도 소형 마을 건물 배치
+            if (i < context.roadWorldPositions.Count - 1)
+            {
+                Vector3 nextRoadPos = context.roadWorldPositions[i + 1];
+                Vector3 midRoadPos = Vector3.Lerp(roadPos, nextRoadPos, 0.5f);
+
+                Vector3 midForward = nextRoadPos - roadPos;
+
+                if (midForward.sqrMagnitude < 0.01f)
+                    continue;
+
+                midForward.Normalize();
+
+                Vector3 midRight = Vector3.Cross(Vector3.up, midForward).normalized;
+
+                TryPlaceBuildingAtSide(
+                    context,
+                    midRoadPos + midRight * firstRowOffset,
+                    Quaternion.LookRotation(-midRight),
+                    midBuildingChance,
+                    "SeaVillage_Building_Right_Mid"
+                );
+                placedTryCount++;
+
+                TryPlaceBuildingAtSide(
+                    context,
+                    midRoadPos - midRight * firstRowOffset,
+                    Quaternion.LookRotation(midRight),
+                    midBuildingChance,
+                    "SeaVillage_Building_Left_Mid"
+                );
+                placedTryCount++;
+            }
+
+            Debug.DrawLine(roadPos, roadPos + Vector3.up * 10, Color.blue, 60f);
+        }
+
+        Debug.Log($"[BuildingPlacer] Sea Village buildings placement tried: {placedTryCount}");
     }
 
     private void PlaceCorridorBuildings(MapContext context)
@@ -227,6 +418,8 @@ public class BuildingPlacer : MonoBehaviour
             Destroy(building);
             return;
         }
+
+        Debug.Log($"[BuildingPlacer] Building placed at {position}");
 
         context.buildingBounds.Add(bounds);
         context.occupiedBounds.Add(bounds);

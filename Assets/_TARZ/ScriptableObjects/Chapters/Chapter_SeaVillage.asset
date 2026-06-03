@@ -10,15 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b2ac6f6285cd6084dad2245cb165573b, type: 3}
-  m_Name: Chapter_Beach
+  m_Name: Chapter_SeaVillage
   m_EditorClassIdentifier: 
-  chapterId: chapter_02_beach
-  chapterName: "\uD574\uBCC0"
+  chapterId: chapter_02_sea_Village
+  chapterName: "\uBC14\uB2E4, \uB9C8\uC744"
   chapterNumber: 2
-  chapterDisplayName: "\uCC55\uD1302 \uBC14\uB2E4 \uB9C8\uC744 / \uD574\uBCC0"
-  chapterDescription: 
+  chapterDisplayName: "\uCC55\uD1302 \uBC14\uB2E4, \uB9C8\uC744"
+  chapterDescription: "\uD574\uC548 \uB9C8\uC744\uC758 \uC881\uC740 \uB3C4\uB85C\uC640
+    \uBC00\uC9D1\uB41C \uAC74\uBB3C \uC0AC\uC774\uB97C \uC774\uB3D9\uD558\uBA70 \uC804\uD22C\uD558\uB294
+    \uCC55\uD130"
   stageCount: 6
-  stageFlow: 000000000100000002000000030000000100000007000000
+  stageFlow: 010000000100000002000000030000000100000007000000
+  stageMapShapes: 020000000200000002000000030000000400000005000000
   roadPrefabs:
   - {fileID: 2027547638819069183, guid: a24140c04d86f0c43b44b92a531d94f1, type: 3}
   sidewalkStraightPrefab: {fileID: 0}
@@ -47,6 +50,8 @@ MonoBehaviour:
   - {fileID: 8147785111393225985, guid: b61ddf478b0e78a4bbc7017eba43942d, type: 3}
   bossPrefabs:
   - {fileID: 5048030741778686749, guid: 422c7820caad75b428f63126aedc85b0, type: 3}
+  exitPrefabs:
+  - {fileID: 5196264505289546108, guid: c8e3690bd9fd7834183bb6f54cafdfc0, type: 3}
   enemyPrefab: {fileID: 1979143788180314665, guid: c46ccbcb6afc8474387622b27fb4ae33,
     type: 3}
   enemySpawnRules: []

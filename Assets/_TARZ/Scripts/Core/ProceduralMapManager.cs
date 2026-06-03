@@ -75,15 +75,11 @@ public class ProceduralMapManager : MonoBehaviour
     [Header("Debris")]
     public DebrisClusterGenerator debrisClusterGenerator;
 
+    [Header("Chapter Specific Generators")]
+    public SeaVillageStageLayoutGenerator seaVillageStageLayoutGenerator;
+
     private MapContext currentContext;
     private bool isGenerating = false;
-
-//    [Header("Lot")]
-//    public LotPlacementRule lotPlacementRule;
-
-//    [Header("District")]
-//    public CityBlockGenerator cityBlockGenerator;
-//    public BlockBuildingPlacer blockBuildingPlacer;
 
     private void Start()
     {
@@ -257,10 +253,34 @@ public class ProceduralMapManager : MonoBehaviour
 
         CalculateMaxBuildingSize(currentContext);
 
-        roadNetworkGenerator.Generate(currentContext);
+        if (chapterTheme != null && chapterTheme.chapterNumber == 2)
+        {
+            if (seaVillageStageLayoutGenerator != null)
+            {
+                seaVillageStageLayoutGenerator.Generate(currentContext, selectedStage);
+            }
+            else
+            {
+                Debug.LogError("[ProceduralMapManager] SeaVillageStageLayoutGenerator is not assigned.");
+                return false;
+            }
+        }
+        else
+        {
+            roadNetworkGenerator.Generate(currentContext);
+        }
 
         if (combatZoneGenerator != null)
-            combatZoneGenerator.Generate(currentContext);
+        {
+            if (currentContext.theme != null && currentContext.theme.chapterNumber == 2)
+            {
+                Debug.Log("[ProceduralMapManager] CombatZoneGenerator skipped for Chapter 2 fixed layout.");
+            }
+            else
+            {
+                combatZoneGenerator.Generate(currentContext);
+            }
+        }
 
         poiPlacer.Place(currentContext);
 

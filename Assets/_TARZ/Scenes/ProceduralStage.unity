@@ -762,6 +762,7 @@ GameObject:
   - component: {fileID: 1582205451}
   - component: {fileID: 1582205452}
   - component: {fileID: 1582205453}
+  - component: {fileID: 1582205454}
   m_Layer: 0
   m_Name: ProceduralMapManager
   m_TagString: Untagged
@@ -843,6 +844,7 @@ MonoBehaviour:
     type: 2}
   maxGenerationRetry: 5
   debrisClusterGenerator: {fileID: 1582205449}
+  seaVillageStageLayoutGenerator: {fileID: 1582205454}
 --- !u!114 &1582205432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1180,6 +1182,20 @@ MonoBehaviour:
   radius: 5
   yOffset: 0.08
   parentToDebugRoot: 1
+--- !u!114 &1582205454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0aa4580a3a3ce44188a1ba8d33fc21d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roadSpacing: 8
+  roadWidth: 6
 --- !u!1 &1636845774
 GameObject:
   m_ObjectHideFlags: 0

@@ -34,6 +34,14 @@ public class POIPlacer : MonoBehaviour
 
         context.poiAreas.Clear();
 
+        // Chapter 2 바다 마을 전용 POI 배치
+        if (IsSeaVillageChapter(context))
+        {
+            PlaceSeaVillagePOI(context);
+            Debug.Log($"[POIPlacer] Sea Village POI placed for Stage={context.selectedStage}, StageType={context.selectedStageType}");
+            return;
+        }
+
         switch (context.selectedStageType)
         {
             case StageNodeType.Start:
@@ -99,6 +107,55 @@ public class POIPlacer : MonoBehaviour
         }
 
         Debug.Log($"[POIPlacer] POI placed for StageType={context.selectedStageType}");
+    }
+
+    private bool IsSeaVillageChapter(MapContext context)
+    {
+        return context != null &&
+               context.theme != null &&
+               context.theme.chapterNumber == 2;
+    }
+
+    private void PlaceSeaVillagePOI(MapContext context)
+    {
+        PlaceStart(context);
+
+        switch (context.selectedStageType)
+        {
+            case StageNodeType.NormalBattle:
+                PlaceCombatAreas(context);
+                PlaceRewardAreas(context);
+                PlaceExit(context);
+                break;
+
+            case StageNodeType.ObjectReward:
+                PlaceCombatAreas(context);
+                PlaceRewardAreas(context);
+                PlaceExit(context);
+                break;
+
+            case StageNodeType.Event:
+                PlaceCombatAreas(context);
+                PlaceRewardAreas(context);
+                PlaceExit(context);
+                break;
+
+            case StageNodeType.SecretRoomEntrance:
+                PlaceCombatAreas(context);
+                PlaceSecretAreas(context);
+                PlaceExit(context);
+                break;
+
+            case StageNodeType.BossRoom:
+                PlaceBoss(context);
+                PlaceExit(context);
+                break;
+
+            default:
+                PlaceCombatAreas(context);
+                PlaceExit(context);
+                break;
+        }
     }
 
     private void PlaceStart(MapContext context)
