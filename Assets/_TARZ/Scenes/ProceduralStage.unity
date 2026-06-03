@@ -763,6 +763,8 @@ GameObject:
   - component: {fileID: 1582205452}
   - component: {fileID: 1582205453}
   - component: {fileID: 1582205454}
+  - component: {fileID: 1582205455}
+  - component: {fileID: 1582205456}
   m_Layer: 0
   m_Name: ProceduralMapManager
   m_TagString: Untagged
@@ -845,6 +847,8 @@ MonoBehaviour:
   maxGenerationRetry: 5
   debrisClusterGenerator: {fileID: 1582205449}
   seaVillageStageLayoutGenerator: {fileID: 1582205454}
+  seaVillageRoadBuilder: {fileID: 1582205455}
+  seaVillageSidewalkBuilder: {fileID: 1582205456}
 --- !u!114 &1582205432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1196,6 +1200,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roadSpacing: 8
   roadWidth: 6
+--- !u!114 &1582205455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c234ff9c170c01145b5fdd47ddfba4f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roadPrefab: {fileID: 1723411073735479463, guid: c660c8333da5a8e479b84f40712f3a95,
+    type: 3}
+  roadY: 0.1
+  duplicateThreshold: 0.1
+--- !u!114 &1582205456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54ac9acbd53484e4a9ef0a530569f34a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sidewalkStraightPrefab: {fileID: 587217684021110009, guid: ee7ad8bbe0e4dc54d89dbc375f0578c2,
+    type: 3}
+  sidewalkOffset: 3
+  sidewalkY: 0.15
 --- !u!1 &1636845774
 GameObject:
   m_ObjectHideFlags: 0

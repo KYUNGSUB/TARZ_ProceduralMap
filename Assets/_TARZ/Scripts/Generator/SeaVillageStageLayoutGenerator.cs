@@ -108,7 +108,7 @@ public class SeaVillageStageLayoutGenerator : MonoBehaviour
     {
         if (count <= 1)
         {
-            context.roadWorldPositions.Add(from);
+            AddRoadPosition(context, from);
             return;
         }
 
@@ -116,7 +116,23 @@ public class SeaVillageStageLayoutGenerator : MonoBehaviour
         {
             float t = i / (float)(count - 1);
             Vector3 pos = Vector3.Lerp(from, to, t);
-            context.roadWorldPositions.Add(pos);
+
+            pos.x = Mathf.Round(pos.x * 100f) / 100f;
+            pos.y = 0f;
+            pos.z = Mathf.Round(pos.z * 100f) / 100f;
+
+            AddRoadPosition(context, pos);
         }
+    }
+
+    private void AddRoadPosition(MapContext context, Vector3 pos)
+    {
+        foreach (Vector3 existing in context.roadWorldPositions)
+        {
+            if (Vector3.Distance(existing, pos) < 0.1f)
+                return;
+        }
+
+        context.roadWorldPositions.Add(pos);
     }
 }

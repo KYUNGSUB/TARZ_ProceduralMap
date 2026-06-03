@@ -20,3 +20,8 @@ MemoryCaptures/
 # OS
 .DS_Store
 Thumbs.db
+
+# Large sample scenes from ColorfulCity asset
+Assets/Triangularity/ColorfulCity/Scenes/Buildings Showcase.unity
+Assets/Triangularity/ColorfulCity/Scenes/All Buildings Colors.unity
+Assets/Triangularity/ColorfulCity/Scenes/City (Main scene).unity

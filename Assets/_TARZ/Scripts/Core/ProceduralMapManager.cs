@@ -77,6 +77,8 @@ public class ProceduralMapManager : MonoBehaviour
 
     [Header("Chapter Specific Generators")]
     public SeaVillageStageLayoutGenerator seaVillageStageLayoutGenerator;
+    public SeaVillageRoadBuilder seaVillageRoadBuilder;
+    public SeaVillageSidewalkBuilder seaVillageSidewalkBuilder;
 
     private MapContext currentContext;
     private bool isGenerating = false;
@@ -263,6 +265,24 @@ public class ProceduralMapManager : MonoBehaviour
             {
                 Debug.LogError("[ProceduralMapManager] SeaVillageStageLayoutGenerator is not assigned.");
                 return false;
+            }
+
+            if (seaVillageRoadBuilder != null)
+            {
+                seaVillageRoadBuilder.Build(currentContext);
+            }
+            else
+            {
+                Debug.LogWarning("[ProceduralMapManager] SeaVillageRoadBuilder is not assigned.");
+            }
+
+            if (seaVillageSidewalkBuilder != null)
+            {
+                seaVillageSidewalkBuilder.Build(currentContext);
+            }
+            else
+            {
+                Debug.LogWarning("[ProceduralMapManager] SeaVillageSidewalkBuilder is not assigned.");
             }
         }
         else

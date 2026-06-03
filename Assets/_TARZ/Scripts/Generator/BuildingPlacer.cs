@@ -97,8 +97,8 @@ public class BuildingPlacer : MonoBehaviour
         float tileSize = context.settings.tileSize;
 
         // Chapter 2 바다 마을은 Chapter 1 폐허 도시보다 건물이 도로에 더 가깝고 밀집됨
-        float firstRowOffset = tileSize * 1.25f;
-        float secondRowOffset = tileSize * 2.05f;
+        float firstRowOffset = tileSize * 0.75f;
+        float secondRowOffset = tileSize * 1.35f;
 
         float firstRowChance = 0.95f;
         float secondRowChance = 0.45f;
@@ -112,7 +112,7 @@ public class BuildingPlacer : MonoBehaviour
 
             Vector3 forward = GetRoadForward(context, i);
 
-            Debug.DrawLine(roadPos, roadPos + forward * 8f, Color.red, 60f);
+//            Debug.DrawLine(roadPos, roadPos + forward * 8f, Color.red, 60f);
 
             if (forward == Vector3.zero)
                 forward = Vector3.forward;
@@ -134,12 +134,12 @@ public class BuildingPlacer : MonoBehaviour
             // 도로 오른쪽 1열 건물
             Vector3 rightPos = roadPos + right * (firstRowOffset + rightRandomOffset);
 
-            Debug.DrawLine(
-                roadPos,
-                rightPos,
-                Color.green,
-                60f
-            );
+//            Debug.DrawLine(
+//                roadPos,
+//                rightPos,
+//                Color.green,
+//                60f
+//            );
 
             TryPlaceBuildingAtSide(
                 context,
@@ -153,12 +153,12 @@ public class BuildingPlacer : MonoBehaviour
             // 도로 왼쪽 1열 건물
             Vector3 leftPos = roadPos - right * (firstRowOffset + leftRandomOffset);
 
-            Debug.DrawLine(
-                roadPos,
-                leftPos,
-                Color.yellow,
-                60f
-            );
+//            Debug.DrawLine(
+//                roadPos,
+//                leftPos,
+//                Color.yellow,
+//                60f
+//            );
 
             TryPlaceBuildingAtSide(
                 context,
@@ -225,7 +225,7 @@ public class BuildingPlacer : MonoBehaviour
                 placedTryCount++;
             }
 
-            Debug.DrawLine(roadPos, roadPos + Vector3.up * 10, Color.blue, 60f);
+//            Debug.DrawLine(roadPos, roadPos + Vector3.up * 10, Color.blue, 60f);
         }
 
         Debug.Log($"[BuildingPlacer] Sea Village buildings placement tried: {placedTryCount}");
@@ -405,7 +405,7 @@ public class BuildingPlacer : MonoBehaviour
             context.mapRoot
         );
 
-        float randomScale = Random.Range(0.85f, 1.15f);
+        float randomScale = Random.Range(0.75f, 0.95f);
 
         building.transform.localScale *= randomScale;
 
