@@ -419,7 +419,7 @@ public class BuildingPlacer : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[BuildingPlacer] Building placed at {position}");
+//        Debug.Log($"[BuildingPlacer] Building placed at {position}");
 
         context.buildingBounds.Add(bounds);
         context.occupiedBounds.Add(bounds);

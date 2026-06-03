@@ -81,7 +81,38 @@ public class SeaVillageStageLayoutGenerator : MonoBehaviour
 
     private void GenerateStage2(MapContext context)
     {
-        GenerateStage1(context);
+        context.roadWorldPositions.Clear();
+        context.combatPositions.Clear();
+        context.rewardPositions.Clear();
+        context.enemySpawnPositions.Clear();
+        context.combatZones.Clear();
+
+        Vector3 start = new Vector3(8, 0, -45);
+        Vector3 combat1 = new Vector3(-8, 0, -5);
+        Vector3 combat2 = new Vector3(10, 0, 25);
+        Vector3 reward = new Vector3(-22, 0, 18);
+        Vector3 exit = new Vector3(-28, 0, 45);
+
+        context.startPosition = start;
+        context.exitPosition = exit;
+
+        context.combatPositions.Add(combat1);
+        context.combatPositions.Add(combat2);
+
+        context.rewardPositions.Add(reward);
+
+        AddRoadLine(context, start, new Vector3(8, 0, -25), 5);
+        AddRoadLine(context, new Vector3(8, 0, -25), combat1, 5);
+        AddRoadLine(context, combat1, new Vector3(-18, 0, 20), 6);
+        AddRoadLine(context, new Vector3(-18, 0, 20), exit, 6);
+
+        AddRoadLine(context, combat1, new Vector3(25, 0, -5), 5);
+        AddRoadLine(context, new Vector3(-18, 0, 20), combat2, 5);
+        AddRoadLine(context, new Vector3(8, 0, -25), new Vector3(-25, 0, -25), 5);
+
+        Debug.Log("[SeaVillageStageLayoutGenerator] Chapter 2 Stage 2 layout generated.");
+        Debug.Log($"Combat Positions Count = {context.combatPositions.Count}");
+        Debug.Log($"Road Positions Count = {context.roadWorldPositions.Count}");
     }
 
     private void GenerateStage3(MapContext context)

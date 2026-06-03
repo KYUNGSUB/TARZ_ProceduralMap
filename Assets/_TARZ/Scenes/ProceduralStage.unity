@@ -765,6 +765,7 @@ GameObject:
   - component: {fileID: 1582205454}
   - component: {fileID: 1582205455}
   - component: {fileID: 1582205456}
+  - component: {fileID: 1582205457}
   m_Layer: 0
   m_Name: ProceduralMapManager
   m_TagString: Untagged
@@ -849,6 +850,7 @@ MonoBehaviour:
   seaVillageStageLayoutGenerator: {fileID: 1582205454}
   seaVillageRoadBuilder: {fileID: 1582205455}
   seaVillageSidewalkBuilder: {fileID: 1582205456}
+  seaVillageCombatZoneBuilder: {fileID: 1582205457}
 --- !u!114 &1582205432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1232,6 +1234,22 @@ MonoBehaviour:
     type: 3}
   sidewalkOffset: 3
   sidewalkY: 0.15
+  duplicateThreshold: 0.1
+--- !u!114 &1582205457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582205429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb585bf7a78e86441854c1021f042685, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  combatRadius: 10
+  enemySpawnRadius: 6
+  enemySpawnCountPerCombat: 4
 --- !u!1 &1636845774
 GameObject:
   m_ObjectHideFlags: 0
