@@ -1,7 +1,10 @@
 using UnityEngine;
 
-[System.Serializable]
-public class EnemySpawnRule
+[CreateAssetMenu(
+    fileName = "EnemySpawnRule",
+    menuName = "TARZ/Combat/Enemy Spawn Rule"
+)]
+public class EnemySpawnRule : ScriptableObject
 {
     public string enemyName;
     public GameObject enemyPrefab;

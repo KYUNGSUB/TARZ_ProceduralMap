@@ -31,6 +31,9 @@ public class ChapterThemeData : ScriptableObject
     [Header("Building Prefabs")]
     public List<GameObject> buildingPrefabs = new List<GameObject>();
 
+    [Header("Building Data For District Placement")]
+    public List<BuildingData> buildingDataList = new List<BuildingData>();
+
     [Header("Environment Prefabs")]
     public List<GameObject> treePrefabs = new List<GameObject>();
     public List<GameObject> facilityPrefabs = new List<GameObject>();
@@ -77,4 +80,14 @@ public class ChapterThemeData : ScriptableObject
     public List<GameObject> industrialBuildingPrefabs = new List<GameObject>();
     public List<GameObject> harborBuildingPrefabs = new List<GameObject>();
     public List<GameObject> beachBuildingPrefabs = new List<GameObject>();
+
+    [Header("Sea Village Environment Prefabs")]
+    public GameObject plazaPrefab;
+    public GameObject parkingLotPrefab;
+    public GameObject seaPlanePrefab;
+    public GameObject seaWallPrefab;
+    public GameObject boatPrefab;
+
+    [Header("Sea Village Harbor Props")]
+    public List<GameObject> harborObjectPrefabs = new List<GameObject>();
 }

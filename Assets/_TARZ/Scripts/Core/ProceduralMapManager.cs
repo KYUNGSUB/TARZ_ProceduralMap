@@ -80,6 +80,7 @@ public class ProceduralMapManager : MonoBehaviour
     public SeaVillageRoadBuilder seaVillageRoadBuilder;
     public SeaVillageSidewalkBuilder seaVillageSidewalkBuilder;
     public SeaVillageCombatZoneBuilder seaVillageCombatZoneBuilder;
+    public SeaVillageEnvironmentBuilder seaVillageEnvironmentBuilder;
 
     private MapContext currentContext;
     private bool isGenerating = false;
@@ -284,6 +285,15 @@ public class ProceduralMapManager : MonoBehaviour
             else
             {
                 Debug.LogWarning("[ProceduralMapManager] SeaVillageSidewalkBuilder is not assigned.");
+            }
+
+            if (seaVillageEnvironmentBuilder != null)
+            {
+                seaVillageEnvironmentBuilder.Build(currentContext);
+            }
+            else
+            {
+                Debug.LogWarning("[ProceduralMapManager] SeaVillageEnvironmentBuilder is not assigned.");
             }
 
             if (seaVillageCombatZoneBuilder != null)

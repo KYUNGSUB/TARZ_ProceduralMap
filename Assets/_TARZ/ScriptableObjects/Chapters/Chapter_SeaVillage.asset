@@ -24,12 +24,28 @@ MonoBehaviour:
   stageMapShapes: 020000000200000002000000030000000400000005000000
   roadPrefabs:
   - {fileID: 2027547638819069183, guid: a24140c04d86f0c43b44b92a531d94f1, type: 3}
-  sidewalkStraightPrefab: {fileID: 0}
-  sidewalkCornerPrefab: {fileID: 0}
+  sidewalkStraightPrefab: {fileID: 587217684021110009, guid: ee7ad8bbe0e4dc54d89dbc375f0578c2,
+    type: 3}
+  sidewalkCornerPrefab: {fileID: 2069641427574889283, guid: 916141595d1d74e4e829f69ba2231cbe,
+    type: 3}
   buildingPrefabs:
-  - {fileID: 2559432405022361438, guid: 1173cb49c557ae046835ce5285b8f371, type: 3}
-  - {fileID: 1121737385989866733, guid: 0b03cddfe9057c64db271e5080b1c635, type: 3}
-  - {fileID: 1754605587894940570, guid: 418ef00eb2adda24e8f285784146e2cb, type: 3}
+  - {fileID: 3499141963625227117, guid: ae2b626114c40634099e9e64b4cea904, type: 3}
+  - {fileID: 3499141963625227117, guid: e1f21fce57d77644a9bb8834fa583e27, type: 3}
+  - {fileID: 3499141963625227117, guid: 4ec0530cf26405f4e9a9cc202da711d0, type: 3}
+  - {fileID: 3499141963625227117, guid: 28314b0d4ba80764697c7993af00e592, type: 3}
+  - {fileID: 3499141963625227117, guid: 088d0b3f5d6d2524b9be99be994ff393, type: 3}
+  - {fileID: 3499141963625227117, guid: 5c7832dea08eedd49bf91f0166ef3042, type: 3}
+  - {fileID: 3499141963625227117, guid: 0151461e54c9f184a8162d71abc8afd0, type: 3}
+  - {fileID: 3499141963625227117, guid: 26b276818e3595c489a2c13d4d26f417, type: 3}
+  buildingDataList:
+  - {fileID: 11400000, guid: f2b18888918e82a4eb62b0c70899f75f, type: 2}
+  - {fileID: 11400000, guid: 4e9d880ef52357d48866116704f2e68c, type: 2}
+  - {fileID: 11400000, guid: 0a169a58668a97b4c8182a1cca406655, type: 2}
+  - {fileID: 11400000, guid: efa7cebf459bb6743a9c80ef28cd12d5, type: 2}
+  - {fileID: 11400000, guid: dcb50a52d70de6d459918fbeb7742c3d, type: 2}
+  - {fileID: 11400000, guid: 34de4ac7060024d4cbcd4d79b4a27c4c, type: 2}
+  - {fileID: 11400000, guid: ea3a3ad0c9c58b44fb53f2a9194d2b46, type: 2}
+  - {fileID: 11400000, guid: 17d7dd5904ad8f04a95397e9cf5bf782, type: 2}
   treePrefabs:
   - {fileID: 3727841032907832747, guid: 058f6996bc4df284eada2ae9afba9f0e, type: 3}
   facilityPrefabs:
@@ -54,7 +70,8 @@ MonoBehaviour:
   - {fileID: 5196264505289546108, guid: c8e3690bd9fd7834183bb6f54cafdfc0, type: 3}
   enemyPrefab: {fileID: 1979143788180314665, guid: c46ccbcb6afc8474387622b27fb4ae33,
     type: 3}
-  enemySpawnRules: []
+  enemySpawnRules:
+  - {fileID: 11400000, guid: 524ee31c9d6f1de4887f53be8c916a8a, type: 2}
   chapterBossPrefab: {fileID: 0}
   bossName: "\uB85C\uB4DC"
   bossDescription: 
@@ -73,3 +90,18 @@ MonoBehaviour:
   beachBuildingPrefabs:
   - {fileID: 2559432405022361438, guid: 1173cb49c557ae046835ce5285b8f371, type: 3}
   - {fileID: 1121737385989866733, guid: 0b03cddfe9057c64db271e5080b1c635, type: 3}
+  plazaPrefab: {fileID: 3019621764687109139, guid: e366cd939d35b824eb9e2b858e5e0e37,
+    type: 3}
+  parkingLotPrefab: {fileID: 5367720537743527138, guid: 6c4aaca4dedd61747ab0d44639d691b5,
+    type: 3}
+  seaPlanePrefab: {fileID: 5652472926635515470, guid: 3299fc6810e8ce04b86895b523705f39,
+    type: 3}
+  seaWallPrefab: {fileID: 957032425052155195, guid: 07f4d73bc28294d43aed0ecc5bfab746,
+    type: 3}
+  boatPrefab: {fileID: 7765718174459508369, guid: 77e12ed3ee595a440abd0ce4cb1d1468,
+    type: 3}
+  harborObjectPrefabs:
+  - {fileID: 5500769755271677639, guid: 47cf1b5daae234544b4d795808769f59, type: 3}
+  - {fileID: 6084106592768317465, guid: 0c9956daf7df3164d81b16074b5379ee, type: 3}
+  - {fileID: 5016049177940008104, guid: 5f72a0cac6948ec44b2b921db7c30500, type: 3}
+  - {fileID: 5907396657838041348, guid: 4ec7649920b70b546b3439a1a7947475, type: 3}

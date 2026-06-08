@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cdad3ce05694184b83fdb51c722d9c5, type: 3}
+  m_Name: EnemySpawnRule_SeaVillage_ZombieRanged
+  m_EditorClassIdentifier: 
+  enemyName: Zombie_Ranged
+  enemyPrefab: {fileID: 1979143788180314665, guid: b174f9aaaf0479c4b9675255c46403c2,
+    type: 3}
+  roleType: 3
+  spawnWeight: 0.4
+  minStage: 2
+  maxStage: 6
+  minCount: 1
+  maxCount: 3

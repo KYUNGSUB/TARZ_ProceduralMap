@@ -37,10 +37,29 @@ public class EnemySpawnRuleApplier : MonoBehaviour
     {
         ChapterThemeData theme = context.theme;
 
-        foreach (EnemySpawnRule rule in theme.enemySpawnRules)
+        if (theme.enemySpawnRules == null || theme.enemySpawnRules.Count == 0)
         {
+            Debug.LogWarning("[EnemySpawnRuleApplier] EnemySpawnRules are empty.");
+            return;
+        }
+
+        if (context.enemySpawnPositions == null || context.enemySpawnPositions.Count == 0)
+        {
+            Debug.LogWarning("[EnemySpawnRuleApplier] No enemy spawn positions.");
+            return;
+        }
+
+        int spawned = 0;
+
+        foreach (Vector3 spawnPos in context.enemySpawnPositions)
+        {
+            EnemySpawnRule rule = GetWeightedRule(theme, context.selectedStage);
+
             if (rule == null)
+            {
+                Debug.LogWarning("[EnemySpawnRuleApplier] No valid enemy rule for this stage.");
                 continue;
+            }
 
             if (rule.enemyPrefab == null)
             {
@@ -48,15 +67,18 @@ public class EnemySpawnRuleApplier : MonoBehaviour
                 continue;
             }
 
-            Debug.Log(
-                $"[EnemySpawnRuleApplier] " +
-                $"Enemy={rule.enemyName}, " +
-                $"Role={rule.roleType}, " +
-                $"Stage={rule.minStage}-{rule.maxStage}, " +
-                $"Count={rule.minCount}-{rule.maxCount}, " +
-                $"Weight={rule.spawnWeight}"
+            GameObject enemy = Instantiate(
+                rule.enemyPrefab,
+                spawnPos + Vector3.up,
+                Quaternion.identity,
+                context.runtimeRoot
             );
+
+            enemy.name = $"Enemy_{rule.enemyName}_{spawned}";
+            spawned++;
         }
+
+        Debug.Log($"[EnemySpawnRuleApplier] Normal enemies spawned: {spawned}");
     }
 
     private void SpawnTutorialEnemies(MapContext context)

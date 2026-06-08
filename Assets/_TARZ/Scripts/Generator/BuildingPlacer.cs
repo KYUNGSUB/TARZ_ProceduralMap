@@ -3,6 +3,13 @@ using UnityEngine;
 
 public class BuildingPlacer : MonoBehaviour
 {
+    private enum SeaVillageDistrictType
+    {
+        Residential,
+        Commercial,
+        Harbor
+    }
+
     [Header("Lot Rule")]
     public LotPlacementRule lotRule;
 
@@ -97,12 +104,12 @@ public class BuildingPlacer : MonoBehaviour
         float tileSize = context.settings.tileSize;
 
         // Chapter 2 바다 마을은 Chapter 1 폐허 도시보다 건물이 도로에 더 가깝고 밀집됨
-        float firstRowOffset = tileSize * 0.75f;
-        float secondRowOffset = tileSize * 1.35f;
+        float firstRowOffset = tileSize * 0.95f;
+        float secondRowOffset = tileSize * 1.65f;
 
-        float firstRowChance = 0.95f;
-        float secondRowChance = 0.45f;
-        float midBuildingChance = 0.50f;
+        float firstRowChance = 0.75f;
+        float secondRowChance = 0.25f;
+        float midBuildingChance = 0.25f;
 
         int placedTryCount = 0;
 
@@ -229,6 +236,31 @@ public class BuildingPlacer : MonoBehaviour
         }
 
         Debug.Log($"[BuildingPlacer] Sea Village buildings placement tried: {placedTryCount}");
+    }
+
+    private bool IsNearImportantSeaVillagePoint(MapContext context, Vector3 position)
+    {
+        float safeDistance = 12f;
+
+        if (Vector3.Distance(position, context.startPosition) < safeDistance)
+            return true;
+
+        if (Vector3.Distance(position, context.exitPosition) < safeDistance)
+            return true;
+
+        foreach (Vector3 combatPos in context.combatPositions)
+        {
+            if (Vector3.Distance(position, combatPos) < safeDistance)
+                return true;
+        }
+
+        foreach (Vector3 rewardPos in context.rewardPositions)
+        {
+            if (Vector3.Distance(position, rewardPos) < 8f)
+                return true;
+        }
+
+        return false;
     }
 
     private void PlaceCorridorBuildings(MapContext context)
@@ -385,10 +417,25 @@ public class BuildingPlacer : MonoBehaviour
     float chance,
     string namePrefix)
     {
+        if (IsSeaVillageChapter(context) && position.x > 42f)
+            return;
+
+        if (IsSeaVillageChapter(context) && IsNearImportantSeaVillagePoint(context, position))
+            return;
+
         if ((float)context.random.NextDouble() > chance)
             return;
 
-        GameObject prefab = PickBuildingPrefab(context);
+        GameObject prefab;
+
+        if (IsSeaVillageChapter(context))
+        {
+            prefab = PickSeaVillageBuildingPrefab(context, position);
+        }
+        else
+        {
+            prefab = PickBuildingPrefab(context);
+        }
 
         if (prefab == null)
             return;
@@ -435,6 +482,109 @@ public class BuildingPlacer : MonoBehaviour
 
         int index = context.random.Next(0, list.Count);
         return list[index];
+    }
+
+    private GameObject PickSeaVillageBuildingPrefab(MapContext context, Vector3 position)
+    {
+        if (context == null || context.theme == null)
+            return null;
+
+        if (context.theme.buildingDataList == null ||
+            context.theme.buildingDataList.Count == 0)
+        {
+            return PickBuildingPrefab(context);
+        }
+
+        List<BuildingData> candidates = new List<BuildingData>();
+
+        SeaVillageDistrictType district = GetSeaVillageDistrict(context, position);
+
+        foreach (BuildingData data in context.theme.buildingDataList)
+        {
+            if (data == null || data.prefab == null)
+                continue;
+
+            switch (district)
+            {
+                case SeaVillageDistrictType.Harbor:
+                    if (data.buildingType == SeaVillageBuildingType.Warehouse ||
+                        data.buildingType == SeaVillageBuildingType.HarborOffice ||
+                        data.buildingType == SeaVillageBuildingType.FishMarket)
+                    {
+                        candidates.Add(data);
+                    }
+                    break;
+
+                case SeaVillageDistrictType.Commercial:
+                    if (data.buildingType == SeaVillageBuildingType.Shop ||
+                        data.buildingType == SeaVillageBuildingType.Cafe ||
+                        data.buildingType == SeaVillageBuildingType.FishMarket)
+                    {
+                        candidates.Add(data);
+                    }
+                    break;
+
+                case SeaVillageDistrictType.Residential:
+                    if (data.buildingType == SeaVillageBuildingType.House ||
+                        data.buildingType == SeaVillageBuildingType.Shop)
+                    {
+                        candidates.Add(data);
+                    }
+                    break;
+            }
+        }
+
+        if (candidates.Count == 0)
+            return PickBuildingPrefab(context);
+
+        int index = context.random.Next(0, candidates.Count);
+
+        float harborDistance = context.hasHarborDistrictCenter ? Vector3.Distance(position, context.harborDistrictCenter) : -1f;
+
+//        Debug.Log(
+//            $"[BuildingPlacer] SeaVillage District={district}, HarborDistance={harborDistance:F1}, Selected={candidates[index].buildingType}"
+//        );
+
+        return candidates[index].prefab;
+    }
+
+    private SeaVillageDistrictType GetSeaVillageDistrict(MapContext context, Vector3 position)
+    {
+        if (IsHarborArea(context, position))
+            return SeaVillageDistrictType.Harbor;
+
+        if (IsNearPlaza(context, position))
+            return SeaVillageDistrictType.Commercial;
+
+        return SeaVillageDistrictType.Residential;
+    }
+
+    private bool IsHarborArea(MapContext context, Vector3 position)
+    {
+        if (context.hasHarborDistrictCenter)
+        {
+            float harborDistance =
+                Vector3.Distance(position, context.harborDistrictCenter);
+
+            if (harborDistance < 32f)
+                return true;
+        }
+
+        return position.x > 28f && position.x < 45f;
+    }
+
+    private bool IsNearPlaza(MapContext context, Vector3 position)
+    {
+        if (context.plazaPositions == null || context.plazaPositions.Count == 0)
+            return false;
+
+        foreach (Vector3 plazaPos in context.plazaPositions)
+        {
+            if (Vector3.Distance(position, plazaPos) < 25f)
+                return true;
+        }
+
+        return false;
     }
 
     private bool IsTooCloseToRoad(

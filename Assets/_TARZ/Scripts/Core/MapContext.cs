@@ -25,6 +25,12 @@ public class MapContext
     public Vector3 exitPosition;
     public Vector3 secretRoomPosition;
 
+    public Vector3 harborDistrictCenter;
+    public bool hasHarborDistrictCenter = false;
+
+    public Vector3 harborCenter;
+    public bool hasHarborCenter = false;
+
     public Bounds secretRoomBounds;
     public bool hasSecretRoomBounds = false;
 
@@ -35,6 +41,14 @@ public class MapContext
     public List<Vector3> secretPositions = new List<Vector3>();
     public List<Vector3> rewardPositions = new List<Vector3>();
     public List<Vector3> enemySpawnPositions = new List<Vector3>();
+
+    // Chapter 2 Sea Village 환경 배치용
+    public List<Vector3> plazaPositions = new List<Vector3>();
+    public List<Vector3> parkingPositions = new List<Vector3>();
+    public List<Vector3> seaWallPositions = new List<Vector3>();
+    public List<Vector3> boatPositions = new List<Vector3>();
+    public List<Vector3> harborObjectPositions = new List<Vector3>();
+    public List<Vector3> harborBuildingPositions = new List<Vector3>();
 
     public List<Bounds> occupiedBounds = new List<Bounds>();
     public List<Bounds> roadBounds = new List<Bounds>();
