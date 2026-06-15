@@ -41,6 +41,12 @@ public class ChapterThemeData : ScriptableObject
     public List<GameObject> treePrefabs = new List<GameObject>();
     public List<GameObject> facilityPrefabs = new List<GameObject>();
     public List<GameObject> debrisPrefabs = new List<GameObject>();
+    public GameObject seaPlanePrefab;
+    public GameObject plazaPrefab;
+    public GameObject parkingLotPrefab;
+    public GameObject seaWallPrefab;
+    public GameObject boatPrefab;
+    public List<GameObject> harborObjectPrefabs = new List<GameObject>();
 
     [Header("Throw Object Prefabs")]
     public List<GameObject> throwObjectPrefabs = new List<GameObject>();
@@ -83,6 +89,7 @@ public class ChapterThemeData : ScriptableObject
     public List<GameObject> industrialBuildingPrefabs = new List<GameObject>();
     public List<GameObject> harborBuildingPrefabs = new List<GameObject>();
     public List<GameObject> beachBuildingPrefabs = new List<GameObject>();
+
     public StageTemplateData GetStageTemplate(int stageNumber)
     {
         if (stageTemplates == null || stageTemplates.Count == 0)
