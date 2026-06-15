@@ -122,6 +122,10 @@ public class POIPlacer : MonoBehaviour
 
         switch (context.selectedStageType)
         {
+            case StageNodeType.Start:
+                PlaceExit(context);
+                break;
+
             case StageNodeType.NormalBattle:
                 PlaceCombatAreas(context);
                 PlaceRewardAreas(context);

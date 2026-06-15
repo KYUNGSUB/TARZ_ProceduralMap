@@ -8,9 +8,15 @@ public class SeaVillageRoadBuilder : MonoBehaviour
 
     [Header("Road Settings")]
     public float roadY = 0.1f;
+    public float roadBoundsHeight = 2f;
+    public float roadBoundsPadding = 0.5f;
 
     [Header("Duplicate Check")]
     public float duplicateThreshold = 0.1f;
+
+    [Header("Template Road Alignment")]
+    public bool alignToNeighborRoads = true;
+    public float neighborTolerance = 1.5f;
 
     public void Build(MapContext context)
     {
@@ -55,7 +61,9 @@ public class SeaVillageRoadBuilder : MonoBehaviour
 
             createdKeys.Add(key);
 
-            Vector3 forward = GetRoadForward(context, i);
+            Vector3 forward = alignToNeighborRoads
+                ? GetRoadForward(context, roadPos)
+                : GetRoadForward(context, i);
 
             Quaternion rotation = Quaternion.identity;
 
@@ -74,12 +82,29 @@ public class SeaVillageRoadBuilder : MonoBehaviour
             road.name =
                 $"Road_{Mathf.RoundToInt(pos.x)}_{Mathf.RoundToInt(pos.z)}";
 
+            RegisterRoadBounds(context, pos);
+
             count++;
         }
 
         Debug.Log(
             $"[SeaVillageRoadBuilder] Road Tiles Created = {count}, Skipped Duplicates = {skipped}"
         );
+    }
+
+    private void RegisterRoadBounds(MapContext context, Vector3 position)
+    {
+        if (context == null)
+            return;
+
+        float spacing = GetRoadSpacing(context);
+        Vector3 size = new Vector3(
+            spacing + roadBoundsPadding,
+            roadBoundsHeight,
+            spacing + roadBoundsPadding
+        );
+
+        context.roadBounds.Add(new Bounds(position, size));
     }
 
     private Vector3 GetRoadForward(MapContext context, int index)
@@ -113,6 +138,68 @@ public class SeaVillageRoadBuilder : MonoBehaviour
         }
 
         return Vector3.forward;
+    }
+
+    private Vector3 GetRoadForward(MapContext context, Vector3 current)
+    {
+        if (context.roadWorldPositions == null ||
+            context.roadWorldPositions.Count == 0)
+        {
+            return Vector3.forward;
+        }
+
+        float spacing = GetRoadSpacing(context);
+        bool hasLeft = HasRoadNear(context, current + Vector3.left * spacing, spacing);
+        bool hasRight = HasRoadNear(context, current + Vector3.right * spacing, spacing);
+        bool hasBack = HasRoadNear(context, current + Vector3.back * spacing, spacing);
+        bool hasForward = HasRoadNear(context, current + Vector3.forward * spacing, spacing);
+
+        int horizontalCount = (hasLeft ? 1 : 0) + (hasRight ? 1 : 0);
+        int verticalCount = (hasBack ? 1 : 0) + (hasForward ? 1 : 0);
+
+        if (horizontalCount > verticalCount)
+            return Vector3.right;
+
+        if (verticalCount > horizontalCount)
+            return Vector3.forward;
+
+        if (horizontalCount > 0)
+            return Vector3.right;
+
+        if (verticalCount > 0)
+            return Vector3.forward;
+
+        return Vector3.forward;
+    }
+
+    private bool HasRoadNear(MapContext context, Vector3 target, float spacing)
+    {
+        float tolerance = Mathf.Max(neighborTolerance, spacing * 0.25f);
+
+        for (int i = 0; i < context.roadWorldPositions.Count; i++)
+        {
+            Vector3 pos = context.roadWorldPositions[i];
+
+            if (Mathf.Abs(pos.x - target.x) <= tolerance &&
+                Mathf.Abs(pos.z - target.z) <= tolerance)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private float GetRoadSpacing(MapContext context)
+    {
+        if (context != null &&
+            context.settings != null &&
+            context.settings.tileSize > 0f)
+        {
+            return context.settings.tileSize;
+        }
+
+        return 8f;
     }
 
     private string GetRoadKey(Vector3 pos)

@@ -15,6 +15,9 @@ public class BuildingPlacer : MonoBehaviour
 
     public void Place(MapContext context)
     {
+        if (SeaVillageBuildingZonePlacer.TryPlaceFromTemplate(context))
+            return;
+
         if (context == null || context.theme == null)
         {
             Debug.LogWarning("[BuildingPlacer] Context or theme is null.");
