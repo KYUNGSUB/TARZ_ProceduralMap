@@ -4,6 +4,21 @@ public class EnemySpawnRuleApplier : MonoBehaviour
 {
     public void Apply(MapContext context)
     {
+
+        if (context == null ||
+        context.enemySpawnPositions == null ||
+        context.enemySpawnPositions.Count == 0)
+        {
+            Debug.Log("[EnemySpawnRuleApplier] No enemy spawn positions. Enemy spawn skipped.");
+            return;
+        }
+
+        if (context.theme == null)
+        {
+            Debug.LogWarning("[EnemySpawnRuleApplier] Context theme is null.");
+            return;
+        }
+
         if (context == null || context.theme == null)
         {
             Debug.LogWarning("[EnemySpawnRuleApplier] Context or theme is null.");

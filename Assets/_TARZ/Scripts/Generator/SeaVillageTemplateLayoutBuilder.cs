@@ -18,7 +18,9 @@ public static class SeaVillageTemplateLayoutBuilder
 
         template.ApplyTo(context);
 
+        BuildParkingZones(context, template);
         ApplyFallbackMapBounds(context);
+        BuildBoundaryVisual(context, template);
         ValidateTemplateResult(context, template);
 
         Debug.Log(
@@ -91,6 +93,107 @@ public static class SeaVillageTemplateLayoutBuilder
                 $"[SeaVillageTemplateLayoutBuilder] Start and Exit positions are identical. Template={template.name}"
             );
         }
+    }
+
+    private static void BuildParkingZones(MapContext context, StageTemplateData template)
+    {
+        if (context == null ||
+            context.theme == null ||
+            template == null ||
+            template.parkingZones == null ||
+            template.parkingZones.Count == 0)
+        {
+            return;
+        }
+
+        if (context.theme.parkingLotPrefab == null)
+        {
+            Debug.LogWarning("[SeaVillageTemplateLayoutBuilder] parkingLotPrefab is null.");
+            return;
+        }
+
+        int createdCount = 0;
+
+        for (int i = 0; i < template.parkingZones.Count; i++)
+        {
+            StageTemplateRectZone zone = template.parkingZones[i];
+
+            if (zone == null || !zone.enabled)
+                continue;
+
+            Bounds bounds = zone.rect.ToBounds();
+            Vector3 position = bounds.center;
+            position.y = 0.02f;
+
+            GameObject parkingLot = Object.Instantiate(
+                context.theme.parkingLotPrefab,
+                position,
+                Quaternion.identity,
+                context.mapRoot
+            );
+
+            parkingLot.name = string.IsNullOrEmpty(zone.zoneId)
+                ? $"SeaVillage_ParkingLot_{createdCount:00}"
+                : $"SeaVillage_ParkingLot_{zone.zoneId}";
+
+            parkingLot.transform.localScale = new Vector3(
+                bounds.size.x,
+                1f,
+                bounds.size.z
+            );
+
+            createdCount++;
+        }
+
+        Debug.Log($"[SeaVillageTemplateLayoutBuilder] Parking lots created: {createdCount}");
+    }
+
+    private static void BuildBoundaryVisual(MapContext context, StageTemplateData template)
+    {
+        if (context == null ||
+            template == null ||
+            !template.showBoundaryVisual ||
+            !context.hasMapBounds)
+        {
+            return;
+        }
+
+        Transform parent = context.debugRoot != null
+            ? context.debugRoot
+            : context.mapRoot;
+
+        if (parent == null)
+            return;
+
+        Bounds bounds = context.mapBounds;
+        float y = template.boundaryVisualY;
+
+        GameObject visual = new GameObject("StageTemplate_BoundaryVisual");
+        visual.transform.SetParent(parent);
+
+        LineRenderer line = visual.AddComponent<LineRenderer>();
+        line.useWorldSpace = true;
+        line.loop = true;
+        line.positionCount = 4;
+        line.startWidth = template.boundaryVisualWidth;
+        line.endWidth = template.boundaryVisualWidth;
+        line.startColor = template.boundaryVisualColor;
+        line.endColor = template.boundaryVisualColor;
+
+        Shader shader = Shader.Find("Sprites/Default");
+
+        if (shader != null)
+            line.material = new Material(shader);
+
+        line.SetPosition(0, new Vector3(bounds.min.x, y, bounds.min.z));
+        line.SetPosition(1, new Vector3(bounds.min.x, y, bounds.max.z));
+        line.SetPosition(2, new Vector3(bounds.max.x, y, bounds.max.z));
+        line.SetPosition(3, new Vector3(bounds.max.x, y, bounds.min.z));
+
+        Debug.Log(
+            $"[SeaVillageTemplateLayoutBuilder] Boundary visual created. " +
+            $"Center={bounds.center}, Size={bounds.size}"
+        );
     }
 
     private static int SafeCount<T>(System.Collections.Generic.List<T> list)

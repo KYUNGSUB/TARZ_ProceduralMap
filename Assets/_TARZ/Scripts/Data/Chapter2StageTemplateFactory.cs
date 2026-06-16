@@ -52,6 +52,7 @@ public static class Chapter2StageTemplateFactory
 
         template.useStageBounds = true;
         template.stageBounds = Rect(Vector2.zero, new Vector2(120f, 120f));
+        template.useSeaPlane = false;
 
         template.roadRects = new List<StageTemplateRectZone>
         {
@@ -107,6 +108,7 @@ public static class Chapter2StageTemplateFactory
 
         template.useStageBounds = true;
         template.stageBounds = Rect(Vector2.zero, new Vector2(120f, 120f));
+        template.useSeaPlane = false;
 
         template.roadRects = new List<StageTemplateRectZone>
         {

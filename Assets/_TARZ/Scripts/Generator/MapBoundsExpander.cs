@@ -13,6 +13,12 @@ public class MapBoundsExpander : MonoBehaviour
 
     public void Expand(MapContext context)
     {
+        if (UsesTemplateStageBounds(context))
+        {
+            Debug.Log("[MapBoundsExpander] Skipped because StageTemplateData.useStageBounds is true.");
+            return;
+        }
+
         if (context == null)
             return;
 
@@ -43,6 +49,16 @@ public class MapBoundsExpander : MonoBehaviour
         context.hasMapBounds = true;
 
         Debug.Log($"[MapBoundsExpander] Final MapBounds Center={bounds.center}, Size={bounds.size}");
+    }
+
+    private bool UsesTemplateStageBounds(MapContext context)
+    {
+        if (context == null || context.theme == null)
+            return false;
+
+        StageTemplateData template = context.theme.GetStageTemplate(context.selectedStage);
+
+        return template != null && template.useStageBounds;
     }
 
     private void AddBoundsList(ref Bounds bounds, ref bool hasBounds, System.Collections.Generic.List<Bounds> list)

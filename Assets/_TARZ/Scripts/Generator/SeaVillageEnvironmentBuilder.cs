@@ -17,7 +17,11 @@ public class SeaVillageEnvironmentBuilder : MonoBehaviour
             return;
         }
 
-        BuildSeaPlane(context);
+        StageTemplateData template = context != null && context.theme != null
+            ? context.theme.GetStageTemplate(context.selectedStage)
+            : null;
+
+        BuildSeaPlane(context, template);
         BuildPlazas(context);
         BuildParkingLots(context);
         BuildSeaWalls(context);
@@ -26,24 +30,35 @@ public class SeaVillageEnvironmentBuilder : MonoBehaviour
         BuildHarborBuildings(context);
     }
 
-    private void BuildSeaPlane(MapContext context)
+    private void BuildSeaPlane(MapContext context, StageTemplateData template)
     {
+        if (template == null || !template.useSeaPlane)
+        {
+            Debug.Log("[SeaVillageEnvironmentBuilder] Sea plane skipped by stage template.");
+            return;
+        }
+
         if (context.theme.seaPlanePrefab == null)
         {
             Debug.LogWarning("[SeaVillageEnvironmentBuilder] seaPlanePrefab is null.");
             return;
         }
 
-        Vector3 pos = new Vector3(75f, seaY, 0f);
+        Bounds seaBounds = template.seaPlaneRect.ToBounds();
 
         GameObject sea = Instantiate(
             context.theme.seaPlanePrefab,
-            pos,
+            seaBounds.center,
             Quaternion.identity,
             context.mapRoot
         );
 
-        sea.transform.localScale = new Vector3(8f, 1f, 15f);
+        sea.transform.localScale = new Vector3(
+            seaBounds.size.x,
+            1f,
+            seaBounds.size.z
+        );
+
         sea.name = "SeaVillage_SeaPlane";
     }
 

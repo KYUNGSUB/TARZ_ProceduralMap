@@ -47,12 +47,39 @@ public class StageTemplateData : ScriptableObject
     public bool hasBossArenaZone = false;
     public StageTemplateRectZone bossArenaZone = new StageTemplateRectZone();
 
+    [Header("Sea Environment")]
+    public bool useSeaPlane = false;
+    public StageTemplateRect seaPlaneRect = new StageTemplateRect(new Vector2(90f, 0f), new Vector2(80f, 140f));
+
+    [Header("Combat Zone Settings")]
+    public bool overrideCombatZoneSettings = false;
+    [Min(0f)] public float combatRadius = 10f;
+    [Min(0f)] public float enemySpawnRadius = 6f;
+    [Min(0)] public int enemySpawnCount = 4;
+
+    [Header("Boundary Visual")]
+    public bool showBoundaryVisual = true;
+    public Color boundaryVisualColor = Color.white;
+    [Min(0.01f)] public float boundaryVisualWidth = 0.25f;
+    public float boundaryVisualY = 0.05f;
+
     public void ApplyTo(MapContext context)
     {
         if (context == null)
             return;
 
         ClearLayout(context);
+
+        if (useStageBounds)
+        {
+            context.mapBounds = stageBounds.ToBounds();
+            context.hasMapBounds = true;
+
+            Debug.Log(
+                $"[StageTemplateData] StageBounds Applied. " +
+                $"Center={context.mapBounds.center}, Size={context.mapBounds.size}"
+            );
+        }
 
         context.selectedStage = stageNumber;
         context.selectedStageType = stageNodeType;
@@ -108,12 +135,6 @@ public class StageTemplateData : ScriptableObject
         context.secretRoomBounds = new Bounds();
         context.hasSecretRoomBounds = false;
         context.hasMapBounds = false;
-
-        if (useStageBounds)
-        {
-            context.mapBounds = stageBounds.ToBounds();
-            context.hasMapBounds = true;
-        }
     }
 
     private void AddResolvedPoints(
