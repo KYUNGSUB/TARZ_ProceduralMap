@@ -21,6 +21,9 @@ public class ChapterThemeData : ScriptableObject
     [Header("Stage Map Shape")]
     public List<StageMapShapeType> stageMapShapes = new List<StageMapShapeType>();
 
+    [Header("Stage Templates")]
+    public List<StageTemplateData> stageTemplates = new List<StageTemplateData>();
+
     [Header("Road Prefabs")]
     public List<GameObject> roadPrefabs = new List<GameObject>();
 
@@ -80,14 +83,19 @@ public class ChapterThemeData : ScriptableObject
     public List<GameObject> industrialBuildingPrefabs = new List<GameObject>();
     public List<GameObject> harborBuildingPrefabs = new List<GameObject>();
     public List<GameObject> beachBuildingPrefabs = new List<GameObject>();
+    public StageTemplateData GetStageTemplate(int stageNumber)
+    {
+        if (stageTemplates == null || stageTemplates.Count == 0)
+            return null;
 
-    [Header("Sea Village Environment Prefabs")]
-    public GameObject plazaPrefab;
-    public GameObject parkingLotPrefab;
-    public GameObject seaPlanePrefab;
-    public GameObject seaWallPrefab;
-    public GameObject boatPrefab;
+        for (int i = 0; i < stageTemplates.Count; i++)
+        {
+            StageTemplateData template = stageTemplates[i];
 
-    [Header("Sea Village Harbor Props")]
-    public List<GameObject> harborObjectPrefabs = new List<GameObject>();
+            if (template != null && template.stageNumber == stageNumber)
+                return template;
+        }
+
+        return null;
+    }
 }

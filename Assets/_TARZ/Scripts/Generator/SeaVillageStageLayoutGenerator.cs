@@ -16,6 +16,21 @@ public class SeaVillageStageLayoutGenerator : MonoBehaviour
             return;
         }
 
+        StageTemplateData template = context.theme != null
+            ? context.theme.GetStageTemplate(stageNumber)
+            : null;
+
+        if (template != null)
+        {
+            if (SeaVillageTemplateLayoutBuilder.Build(context, template))
+            {
+                Debug.Log($"[SeaVillageStageLayoutGenerator] Template layout generated. Stage={stageNumber}, Template={template.name}");
+                return;
+            }
+        }
+
+        Debug.LogWarning($"[SeaVillageStageLayoutGenerator] Stage template is missing. Using legacy layout. Stage={stageNumber}");
+
         switch (stageNumber)
         {
             case 1:

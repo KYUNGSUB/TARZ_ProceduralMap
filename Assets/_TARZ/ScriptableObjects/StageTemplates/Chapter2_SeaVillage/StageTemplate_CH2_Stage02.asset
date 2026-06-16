@@ -1,0 +1,151 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92fb4be739830164cb5a251b20722970, type: 3}
+  m_Name: StageTemplate_CH2_Stage02
+  m_EditorClassIdentifier: 
+  stageNumber: 2
+  templateId: chapter2_stage_02
+  templateName: Sea Village Stage 02
+  stageNodeType: 1
+  mapShapeType: 8
+  startPoint:
+    position: {x: 8, y: 0, z: -45}
+    randomRadius: 0
+  exitPoint:
+    position: {x: -28, y: 0, z: 45}
+    randomRadius: 0
+  combatPoints:
+  - position: {x: -8, y: 0, z: -5}
+    randomRadius: 2
+  - position: {x: 10, y: 0, z: 25}
+    randomRadius: 2
+  rewardPoints:
+  - position: {x: -22, y: 0, z: 18}
+    randomRadius: 2
+  secretPoints: []
+  enemySpawnPoints: []
+  hasMidBossPoint: 0
+  midBossPoint:
+    position: {x: 0, y: 0, z: 0}
+    randomRadius: 0
+  hasBossRoomPoint: 0
+  bossRoomPoint:
+    position: {x: 0, y: 0, z: 0}
+    randomRadius: 0
+  roadSegments: []
+  useStageBounds: 1
+  stageBounds:
+    center: {x: 0, y: 0}
+    size: {x: 120, y: 120}
+  roadRects:
+  - enabled: 1
+    zoneId: road_start
+    rect:
+      center: {x: -35, y: -20}
+      size: {x: 35, y: 10}
+    randomJitter: 0
+  - enabled: 1
+    zoneId: road_south
+    rect:
+      center: {x: 0, y: -20}
+      size: {x: 70, y: 10}
+    randomJitter: 0
+  - enabled: 1
+    zoneId: road_east
+    rect:
+      center: {x: 38, y: -5}
+      size: {x: 10, y: 45}
+    randomJitter: 0
+  - enabled: 1
+    zoneId: road_center
+    rect:
+      center: {x: 0, y: 8}
+      size: {x: 70, y: 10}
+    randomJitter: 0
+  - enabled: 1
+    zoneId: road_parking_west
+    rect:
+      center: {x: -20, y: 24}
+      size: {x: 10, y: 34}
+    randomJitter: 0
+  - enabled: 1
+    zoneId: road_parking_east
+    rect:
+      center: {x: 18, y: 24}
+      size: {x: 10, y: 34}
+    randomJitter: 0
+  buildingZones:
+  - enabled: 1
+    zoneId: build_west
+    rect:
+      center: {x: -48, y: 20}
+      size: {x: 18, y: 45}
+    randomJitter: 0
+  - enabled: 1
+    zoneId: build_south_west
+    rect:
+      center: {x: -20, y: -42}
+      size: {x: 40, y: 18}
+    randomJitter: 0
+  - enabled: 1
+    zoneId: build_south_east
+    rect:
+      center: {x: 20, y: -42}
+      size: {x: 40, y: 18}
+    randomJitter: 0
+  - enabled: 1
+    zoneId: build_east
+    rect:
+      center: {x: 48, y: 28}
+      size: {x: 18, y: 38}
+    randomJitter: 0
+  - enabled: 1
+    zoneId: build_north
+    rect:
+      center: {x: 0, y: 45}
+      size: {x: 80, y: 16}
+    randomJitter: 0
+  blockedZones:
+  - enabled: 1
+    zoneId: block_start
+    rect:
+      center: {x: -48, y: -22}
+      size: {x: 14, y: 14}
+    randomJitter: 0
+  - enabled: 1
+    zoneId: block_exit
+    rect:
+      center: {x: 42, y: -6}
+      size: {x: 14, y: 14}
+    randomJitter: 0
+  - enabled: 1
+    zoneId: block_parking
+    rect:
+      center: {x: -4, y: 24}
+      size: {x: 36, y: 24}
+    randomJitter: 0
+  parkingZones:
+  - enabled: 1
+    zoneId: parking_main
+    rect:
+      center: {x: -4, y: 24}
+      size: {x: 32, y: 20}
+    randomJitter: 0
+  decorZones: []
+  hasBossArenaZone: 0
+  bossArenaZone:
+    enabled: 1
+    zoneId: 
+    rect:
+      center: {x: 0, y: 0}
+      size: {x: 10, y: 10}
+    randomJitter: 0

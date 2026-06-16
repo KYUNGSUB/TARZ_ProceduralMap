@@ -22,6 +22,11 @@ MonoBehaviour:
   stageCount: 6
   stageFlow: 010000000100000002000000030000000100000007000000
   stageMapShapes: 020000000200000002000000030000000400000005000000
+  stageTemplates:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 2dc9e86ed03402c4097c70e492c3ab4e, type: 2}
+  - {fileID: 11400000, guid: ac81719b1fb8c6d46a594d30f3aaca94, type: 2}
   roadPrefabs:
   - {fileID: 2027547638819069183, guid: a24140c04d86f0c43b44b92a531d94f1, type: 3}
   sidewalkStraightPrefab: {fileID: 587217684021110009, guid: ee7ad8bbe0e4dc54d89dbc375f0578c2,
