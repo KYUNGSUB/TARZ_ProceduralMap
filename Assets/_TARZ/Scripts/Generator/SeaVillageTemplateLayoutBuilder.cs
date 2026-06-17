@@ -19,6 +19,7 @@ public static class SeaVillageTemplateLayoutBuilder
         template.ApplyTo(context);
 
         BuildParkingZones(context, template);
+        BuildDecorZones(context, template);
         ApplyFallbackMapBounds(context);
         BuildBoundaryVisual(context, template);
         ValidateTemplateResult(context, template);
@@ -33,6 +34,59 @@ public static class SeaVillageTemplateLayoutBuilder
         );
 
         return true;
+    }
+
+    private static void BuildDecorZones(MapContext context, StageTemplateData template)
+    {
+        if (context == null ||
+            context.theme == null ||
+            template == null ||
+            template.decorZones == null ||
+            template.decorZones.Count == 0)
+        {
+            return;
+        }
+
+        if (context.theme.plazaPrefab == null)
+        {
+            Debug.LogWarning("[SeaVillageTemplateLayoutBuilder] plazaPrefab is null.");
+            return;
+        }
+
+        int createdCount = 0;
+
+        for (int i = 0; i < template.decorZones.Count; i++)
+        {
+            StageTemplateRectZone zone = template.decorZones[i];
+
+            if (zone == null || !zone.enabled)
+                continue;
+
+            Bounds bounds = zone.rect.ToBounds();
+            Vector3 position = bounds.center;
+            position.y = 0.015f;
+
+            GameObject plaza = Object.Instantiate(
+                context.theme.plazaPrefab,
+                position,
+                Quaternion.identity,
+                context.mapRoot
+            );
+
+            plaza.name = string.IsNullOrEmpty(zone.zoneId)
+                ? $"SeaVillage_DecorZone_{createdCount:00}"
+                : $"SeaVillage_DecorZone_{zone.zoneId}";
+
+            plaza.transform.localScale = new Vector3(
+                bounds.size.x,
+                1f,
+                bounds.size.z
+            );
+
+            createdCount++;
+        }
+
+        Debug.Log($"[SeaVillageTemplateLayoutBuilder] Decor zones created: {createdCount}");
     }
 
     private static void ApplyFallbackMapBounds(MapContext context)

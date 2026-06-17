@@ -70,15 +70,29 @@ public class SeaVillageBuildingZonePlacer : MonoBehaviour
         }
 
         int placedCount = 0;
+        BuildingPlacementSettings resolvedSettings = ResolvePlacementSettings(template);
 
-        for (int i = 0; i < template.buildingZones.Count; i++)
+        if (template.includeManualBuildingZones)
         {
-            StageTemplateRectZone zone = template.buildingZones[i];
+            for (int i = 0; i < template.buildingZones.Count; i++)
+            {
+                StageTemplateRectZone zone = template.buildingZones[i];
 
-            if (zone == null || !zone.enabled)
-                continue;
+                if (zone == null || !zone.enabled)
+                    continue;
 
-            placedCount += PlaceInZone(context, zone, prefabs);
+                placedCount += PlaceInZone(context, zone, prefabs, resolvedSettings);
+            }
+        }
+
+        if (template.generateRoadAdjacentBuildingZones)
+        {
+            placedCount += PlaceInRoadAdjacentZones(
+                context,
+                template,
+                prefabs,
+                resolvedSettings
+            );
         }
 
         Debug.Log($"[SeaVillageBuildingZonePlacer] Buildings placed: {placedCount}");
@@ -87,29 +101,30 @@ public class SeaVillageBuildingZonePlacer : MonoBehaviour
     private int PlaceInZone(
         MapContext context,
         StageTemplateRectZone zone,
-        List<GameObject> prefabs
+        List<GameObject> prefabs,
+        BuildingPlacementSettings resolvedSettings
     )
     {
         int count = 0;
-        float spacing = Mathf.Max(1f, placementSpacing);
+        float spacing = Mathf.Max(1f, resolvedSettings.spacing);
 
         foreach (Vector3 basePosition in zone.rect.EnumeratePoints(spacing))
         {
-            if (context.random.NextDouble() > placementChance)
+            if (context.random.NextDouble() > resolvedSettings.chance)
                 continue;
 
             Vector3 position = ApplyJitter(basePosition, zone.randomJitter, context.random);
             position.y = buildingY;
 
-            GameObject prefab = PrefabPicker.Pick(prefabs, context.random);
+            GameObject prefab = FindPlaceablePrefab(
+                context,
+                prefabs,
+                position,
+                resolvedSettings,
+                out Bounds candidateBounds
+            );
 
             if (prefab == null)
-                continue;
-
-            Bounds candidateBounds = EstimateBounds(prefab, position);
-            candidateBounds.Expand(boundsPadding);
-
-            if (!CanPlace(context, candidateBounds))
                 continue;
 
             Quaternion rotation = faceNearestRoad
@@ -120,7 +135,7 @@ public class SeaVillageBuildingZonePlacer : MonoBehaviour
             building.name = $"SeaVillage_Building_{count:00}";
 
             Bounds actualBounds = BoundsUtility.GetObjectBounds(building);
-            actualBounds.Expand(boundsPadding);
+            actualBounds.Expand(resolvedSettings.boundsPadding);
 
             context.buildingBounds.Add(actualBounds);
             context.occupiedBounds.Add(actualBounds);
@@ -129,6 +144,149 @@ public class SeaVillageBuildingZonePlacer : MonoBehaviour
         }
 
         return count;
+    }
+
+    private int PlaceInRoadAdjacentZones(
+        MapContext context,
+        StageTemplateData template,
+        List<GameObject> prefabs,
+        BuildingPlacementSettings resolvedSettings
+    )
+    {
+        if (template.roadRects == null || template.roadRects.Count == 0)
+            return 0;
+
+        int placedCount = 0;
+
+        for (int i = 0; i < template.roadRects.Count; i++)
+        {
+            StageTemplateRectZone roadZone = template.roadRects[i];
+
+            if (roadZone == null || !roadZone.enabled || roadZone.rect == null)
+                continue;
+
+            StageTemplateRect roadRect = roadZone.rect;
+            float width = Mathf.Abs(roadRect.size.x);
+            float height = Mathf.Abs(roadRect.size.y);
+
+            if (width >= height)
+            {
+                placedCount += PlaceRoadSideZone(
+                    context,
+                    prefabs,
+                    resolvedSettings,
+                    CreateRectZone(
+                        $"{roadZone.zoneId}_north_buildings",
+                        new Vector2(
+                            roadRect.center.x,
+                            roadRect.center.y + height * 0.5f + template.roadAdjacentBuildingGap + template.roadAdjacentBuildingDepth * 0.5f
+                        ),
+                        new Vector2(width, template.roadAdjacentBuildingDepth)
+                    )
+                );
+
+                placedCount += PlaceRoadSideZone(
+                    context,
+                    prefabs,
+                    resolvedSettings,
+                    CreateRectZone(
+                        $"{roadZone.zoneId}_south_buildings",
+                        new Vector2(
+                            roadRect.center.x,
+                            roadRect.center.y - height * 0.5f - template.roadAdjacentBuildingGap - template.roadAdjacentBuildingDepth * 0.5f
+                        ),
+                        new Vector2(width, template.roadAdjacentBuildingDepth)
+                    )
+                );
+            }
+            else
+            {
+                placedCount += PlaceRoadSideZone(
+                    context,
+                    prefabs,
+                    resolvedSettings,
+                    CreateRectZone(
+                        $"{roadZone.zoneId}_east_buildings",
+                        new Vector2(
+                            roadRect.center.x + width * 0.5f + template.roadAdjacentBuildingGap + template.roadAdjacentBuildingDepth * 0.5f,
+                            roadRect.center.y
+                        ),
+                        new Vector2(template.roadAdjacentBuildingDepth, height)
+                    )
+                );
+
+                placedCount += PlaceRoadSideZone(
+                    context,
+                    prefabs,
+                    resolvedSettings,
+                    CreateRectZone(
+                        $"{roadZone.zoneId}_west_buildings",
+                        new Vector2(
+                            roadRect.center.x - width * 0.5f - template.roadAdjacentBuildingGap - template.roadAdjacentBuildingDepth * 0.5f,
+                            roadRect.center.y
+                        ),
+                        new Vector2(template.roadAdjacentBuildingDepth, height)
+                    )
+                );
+            }
+        }
+
+        return placedCount;
+    }
+
+    private int PlaceRoadSideZone(
+        MapContext context,
+        List<GameObject> prefabs,
+        BuildingPlacementSettings resolvedSettings,
+        StageTemplateRectZone zone
+    )
+    {
+        return PlaceInZone(context, zone, prefabs, resolvedSettings);
+    }
+
+    private StageTemplateRectZone CreateRectZone(string zoneId, Vector2 center, Vector2 size)
+    {
+        return new StageTemplateRectZone
+        {
+            enabled = true,
+            zoneId = zoneId,
+            rect = new StageTemplateRect(center, size),
+            randomJitter = 0f
+        };
+    }
+
+    private BuildingPlacementSettings ResolvePlacementSettings(StageTemplateData template)
+    {
+        BuildingPlacementSettings settings = new BuildingPlacementSettings
+        {
+            spacing = placementSpacing,
+            chance = placementChance,
+            boundsPadding = boundsPadding,
+            checkRoadBounds = true,
+            checkOccupiedBounds = true,
+            checkExistingBuildingBounds = true,
+            prefabTryCount = 1,
+            preferSmallerBuildings = false
+        };
+
+        if (template != null && template.overrideBuildingPlacementSettings)
+        {
+            settings.spacing = template.buildingPlacementSpacing;
+            settings.chance = template.buildingPlacementChance;
+            settings.boundsPadding = template.buildingBoundsPadding;
+            settings.checkRoadBounds = template.checkRoadBoundsForBuildings;
+            settings.checkOccupiedBounds = template.checkOccupiedBoundsForBuildings;
+            settings.checkExistingBuildingBounds = template.checkExistingBuildingBounds;
+            settings.prefabTryCount = template.buildingPrefabTryCount;
+            settings.preferSmallerBuildings = template.preferSmallerBuildings;
+        }
+
+        settings.spacing = Mathf.Max(1f, settings.spacing);
+        settings.chance = Mathf.Clamp01(settings.chance);
+        settings.boundsPadding = Mathf.Max(0f, settings.boundsPadding);
+        settings.prefabTryCount = Mathf.Max(1, settings.prefabTryCount);
+
+        return settings;
     }
 
     private List<GameObject> GetBuildingPrefabs(MapContext context)
@@ -156,6 +314,94 @@ public class SeaVillageBuildingZonePlacer : MonoBehaviour
         }
 
         return context.theme.buildingPrefabs;
+    }
+
+    private GameObject FindPlaceablePrefab(
+        MapContext context,
+        List<GameObject> prefabs,
+        Vector3 position,
+        BuildingPlacementSettings settings,
+        out Bounds candidateBounds
+    )
+    {
+        candidateBounds = new Bounds(position, Vector3.zero);
+
+        if (prefabs == null || prefabs.Count == 0)
+            return null;
+
+        int tryCount = Mathf.Max(1, settings.prefabTryCount);
+        List<GameObject> candidates = settings.preferSmallerBuildings
+            ? GetPrefabsSortedByFootprint(prefabs)
+            : prefabs;
+
+        for (int attempt = 0; attempt < tryCount; attempt++)
+        {
+            GameObject prefab = settings.preferSmallerBuildings
+                ? PickSmallPrefabCandidate(candidates, attempt, context.random)
+                : PrefabPicker.Pick(candidates, context.random);
+
+            if (prefab == null)
+                continue;
+
+            Bounds bounds = EstimateBounds(prefab, position);
+            bounds.Expand(settings.boundsPadding);
+
+            if (!CanPlace(context, bounds, settings))
+                continue;
+
+            candidateBounds = bounds;
+            return prefab;
+        }
+
+        return null;
+    }
+
+    private GameObject PickSmallPrefabCandidate(
+        List<GameObject> sortedPrefabs,
+        int attempt,
+        System.Random random
+    )
+    {
+        if (sortedPrefabs == null || sortedPrefabs.Count == 0)
+            return null;
+
+        int expandingWindow = Mathf.Clamp(attempt + 1, 1, sortedPrefabs.Count);
+        int index = random != null
+            ? random.Next(0, expandingWindow)
+            : Random.Range(0, expandingWindow);
+
+        return sortedPrefabs[index];
+    }
+
+    private List<GameObject> GetPrefabsSortedByFootprint(List<GameObject> prefabs)
+    {
+        List<GameObject> sorted = new List<GameObject>();
+
+        for (int i = 0; i < prefabs.Count; i++)
+        {
+            if (prefabs[i] != null)
+                sorted.Add(prefabs[i]);
+        }
+
+        sorted.Sort((a, b) =>
+            GetPrefabFootprint(a).CompareTo(GetPrefabFootprint(b))
+        );
+
+        return sorted;
+    }
+
+    private float GetPrefabFootprint(GameObject prefab)
+    {
+        if (prefab == null)
+            return float.MaxValue;
+
+        Renderer renderer = prefab.GetComponentInChildren<Renderer>();
+
+        if (renderer == null)
+            return float.MaxValue;
+
+        Bounds bounds = renderer.bounds;
+        return Mathf.Abs(bounds.size.x * bounds.size.z);
     }
 
     private Vector3 ApplyJitter(Vector3 position, float radius, System.Random random)
@@ -189,24 +435,33 @@ public class SeaVillageBuildingZonePlacer : MonoBehaviour
         return bounds;
     }
 
-    private bool CanPlace(MapContext context, Bounds candidate)
+    private bool CanPlace(MapContext context, Bounds candidate, BuildingPlacementSettings settings)
     {
-        for (int i = 0; i < context.roadBounds.Count; i++)
+        if (settings.checkRoadBounds)
         {
-            if (candidate.Intersects(context.roadBounds[i]))
-                return false;
+            for (int i = 0; i < context.roadBounds.Count; i++)
+            {
+                if (candidate.Intersects(context.roadBounds[i]))
+                    return false;
+            }
         }
 
-        for (int i = 0; i < context.occupiedBounds.Count; i++)
+        if (settings.checkOccupiedBounds)
         {
-            if (candidate.Intersects(context.occupiedBounds[i]))
-                return false;
+            for (int i = 0; i < context.occupiedBounds.Count; i++)
+            {
+                if (candidate.Intersects(context.occupiedBounds[i]))
+                    return false;
+            }
         }
 
-        for (int i = 0; i < context.buildingBounds.Count; i++)
+        if (settings.checkExistingBuildingBounds)
         {
-            if (candidate.Intersects(context.buildingBounds[i]))
-                return false;
+            for (int i = 0; i < context.buildingBounds.Count; i++)
+            {
+                if (candidate.Intersects(context.buildingBounds[i]))
+                    return false;
+            }
         }
 
         return true;
@@ -248,5 +503,17 @@ public class SeaVillageBuildingZonePlacer : MonoBehaviour
             : Random.Range(0, 4);
 
         return step * 90f;
+    }
+
+    private struct BuildingPlacementSettings
+    {
+        public float spacing;
+        public float chance;
+        public float boundsPadding;
+        public bool checkRoadBounds;
+        public bool checkOccupiedBounds;
+        public bool checkExistingBuildingBounds;
+        public int prefabTryCount;
+        public bool preferSmallerBuildings;
     }
 }

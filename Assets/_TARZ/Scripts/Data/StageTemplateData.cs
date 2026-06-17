@@ -63,6 +63,29 @@ public class StageTemplateData : ScriptableObject
     [Min(0.01f)] public float boundaryVisualWidth = 0.25f;
     public float boundaryVisualY = 0.05f;
 
+    [Header("Building Placement Settings")]
+    public bool overrideBuildingPlacementSettings = false;
+    [Min(1f)] public float buildingPlacementSpacing = 8f;
+    [Range(0f, 1f)] public float buildingPlacementChance = 0.95f;
+    [Min(0f)] public float buildingBoundsPadding = 1f;
+    public bool checkRoadBoundsForBuildings = true;
+    public bool checkOccupiedBoundsForBuildings = true;
+    public bool checkExistingBuildingBounds = true;
+    [Min(1)] public int buildingPrefabTryCount = 1;
+    public bool preferSmallerBuildings = false;
+    public bool generateRoadAdjacentBuildingZones = false;
+    public bool includeManualBuildingZones = true;
+    [Min(1f)] public float roadAdjacentBuildingDepth = 14f;
+    [Min(0f)] public float roadAdjacentBuildingGap = 2f;
+
+    [Header("Harbor Environment")]
+    public bool usePlazas = false;
+    public bool useParkingLots = false;
+    public bool useSeaWalls = false;
+    public bool useBoats = false;
+    public bool useHarborObjects = false;
+    public bool useHarborBuildings = false;
+
     public void ApplyTo(MapContext context)
     {
         if (context == null)

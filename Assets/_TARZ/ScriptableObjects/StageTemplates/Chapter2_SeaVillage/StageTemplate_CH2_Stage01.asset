@@ -39,7 +39,7 @@ MonoBehaviour:
   useStageBounds: 1
   stageBounds:
     center: {x: 0, y: 0}
-    size: {x: 120, y: 120}
+    size: {x: 150, y: 150}
   roadRects:
   - enabled: 1
     zoneId: road_south
@@ -179,9 +179,21 @@ MonoBehaviour:
   decorZones: []
   hasBossArenaZone: 0
   bossArenaZone:
-    enabled: 1
+    enabled: 0
     zoneId: 
     rect:
       center: {x: 0, y: 0}
       size: {x: 10, y: 10}
     randomJitter: 0
+  useSeaPlane: 0
+  seaPlaneRect:
+    center: {x: 90, y: 0}
+    size: {x: 80, y: 140}
+  overrideCombatZoneSettings: 0
+  combatRadius: 10
+  enemySpawnRadius: 6
+  enemySpawnCount: 4
+  showBoundaryVisual: 1
+  boundaryVisualColor: {r: 1, g: 1, b: 1, a: 1}
+  boundaryVisualWidth: 0.25
+  boundaryVisualY: 0.05

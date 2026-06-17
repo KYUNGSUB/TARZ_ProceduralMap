@@ -17,17 +17,33 @@ public class SeaVillageEnvironmentBuilder : MonoBehaviour
             return;
         }
 
-        StageTemplateData template = context != null && context.theme != null
-            ? context.theme.GetStageTemplate(context.selectedStage)
-            : null;
+        StageTemplateData template = context.theme.GetStageTemplate(context.selectedStage);
+
+        if (template == null)
+        {
+            Debug.LogWarning("[SeaVillageEnvironmentBuilder] Stage template is null. Environment skipped.");
+            return;
+        }
 
         BuildSeaPlane(context, template);
-        BuildPlazas(context);
-        BuildParkingLots(context);
-        BuildSeaWalls(context);
-        BuildBoats(context);
-        BuildHarborObjects(context);
-        BuildHarborBuildings(context);
+
+        if (template.usePlazas)
+            BuildPlazas(context);
+
+        if (template.useParkingLots)
+            BuildParkingLots(context);
+
+        if (template.useSeaWalls)
+            BuildSeaWalls(context);
+
+        if (template.useBoats)
+            BuildBoats(context);
+
+        if (template.useHarborObjects)
+            BuildHarborObjects(context);
+
+        if (template.useHarborBuildings)
+            BuildHarborBuildings(context);
     }
 
     private void BuildSeaPlane(MapContext context, StageTemplateData template)

@@ -10,25 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 92fb4be739830164cb5a251b20722970, type: 3}
-  m_Name: StageTemplate_CH2_Stage02
+  m_Name: StageTemplate_CH2_Stage04
   m_EditorClassIdentifier: 
-  stageNumber: 2
-  templateId: chapter2_stage_02
-  templateName: Sea Village Stage 02
-  stageNodeType: 1
+  stageNumber: 3
+  templateId: chapter2_stage_03
+  templateName: Sea Village Stage 03
+  stageNodeType: 2
   mapShapeType: 8
   startPoint:
-    position: {x: 8, y: 0, z: -45}
+    position: {x: -28, y: 0, z: -42}
     randomRadius: 0
   exitPoint:
-    position: {x: -28, y: 0, z: 45}
+    position: {x: -2, y: 0, z: 42}
     randomRadius: 0
   combatPoints:
-  - position: {x: 0, y: 0, z: -2}
+  - position: {x: -6, y: 0, z: -12}
     randomRadius: 0
   rewardPoints:
-  - position: {x: -22, y: 0, z: 18}
-    randomRadius: 2
+  - position: {x: -2, y: 0, z: 34}
+    randomRadius: 0
   secretPoints: []
   enemySpawnPoints: []
   hasMidBossPoint: 0
@@ -46,99 +46,99 @@ MonoBehaviour:
     size: {x: 150, y: 150}
   roadRects:
   - enabled: 1
-    zoneId: road_start
+    zoneId: road_left_vertical
     rect:
-      center: {x: -35, y: -20}
-      size: {x: 35, y: 10}
+      center: {x: -30, y: 0}
+      size: {x: 10, y: 90}
     randomJitter: 0
   - enabled: 1
-    zoneId: road_south
+    zoneId: road_right_vertical
     rect:
-      center: {x: 0, y: -20}
+      center: {x: 28, y: 0}
+      size: {x: 10, y: 75}
+    randomJitter: 0
+  - enabled: 1
+    zoneId: road_bottom
+    rect:
+      center: {x: 0, y: -35}
       size: {x: 70, y: 10}
     randomJitter: 0
   - enabled: 1
-    zoneId: road_east
+    zoneId: road_top
     rect:
-      center: {x: 38, y: -5}
-      size: {x: 10, y: 45}
+      center: {x: 0, y: 35}
+      size: {x: 55, y: 10}
     randomJitter: 0
   - enabled: 1
-    zoneId: road_center
+    zoneId: road_center_connector
     rect:
-      center: {x: 0, y: 8}
-      size: {x: 70, y: 10}
-    randomJitter: 0
-  - enabled: 1
-    zoneId: road_parking_west
-    rect:
-      center: {x: -20, y: 24}
-      size: {x: 10, y: 34}
-    randomJitter: 0
-  - enabled: 1
-    zoneId: road_parking_east
-    rect:
-      center: {x: 18, y: 24}
-      size: {x: 10, y: 34}
+      center: {x: -2, y: 0}
+      size: {x: 10, y: 70}
     randomJitter: 0
   buildingZones:
   - enabled: 1
     zoneId: build_west
     rect:
-      center: {x: -48, y: 20}
-      size: {x: 18, y: 45}
+      center: {x: -48, y: 0}
+      size: {x: 20, y: 75}
     randomJitter: 0
   - enabled: 1
-    zoneId: build_south_west
+    zoneId: build_west_north
     rect:
-      center: {x: -20, y: -42}
-      size: {x: 40, y: 18}
+      center: {x: -22, y: 30}
+      size: {x: 24, y: 24}
     randomJitter: 0
   - enabled: 1
-    zoneId: build_south_east
+    zoneId: build_west_center
     rect:
-      center: {x: 20, y: -42}
-      size: {x: 40, y: 18}
+      center: {x: -22, y: 10}
+      size: {x: 24, y: 28}
     randomJitter: 0
   - enabled: 1
     zoneId: build_east
     rect:
-      center: {x: 48, y: 28}
-      size: {x: 18, y: 38}
+      center: {x: 45, y: 20}
+      size: {x: 20, y: 50}
     randomJitter: 0
   - enabled: 1
-    zoneId: build_north
+    zoneId: build_east_south
     rect:
-      center: {x: 0, y: 45}
-      size: {x: 80, y: 16}
+      center: {x: 42, y: -35}
+      size: {x: 24, y: 24}
+    randomJitter: 0
+  - enabled: 1
+    zoneId: build_south
+    rect:
+      center: {x: 0, y: -52}
+      size: {x: 70, y: 14}
     randomJitter: 0
   blockedZones:
   - enabled: 1
     zoneId: block_start
     rect:
-      center: {x: -48, y: -22}
-      size: {x: 14, y: 14}
+      center: {x: -28, y: -42}
+      size: {x: 16, y: 16}
     randomJitter: 0
   - enabled: 1
     zoneId: block_exit
     rect:
-      center: {x: 42, y: -6}
-      size: {x: 14, y: 14}
+      center: {x: -2, y: 42}
+      size: {x: 16, y: 16}
     randomJitter: 0
   - enabled: 1
-    zoneId: block_parking
+    zoneId: block_center_plaza
     rect:
-      center: {x: -4, y: 24}
-      size: {x: 36, y: 24}
+      center: {x: 12, y: 2}
+      size: {x: 18, y: 34}
     randomJitter: 0
-  parkingZones:
+  parkingZones: []
+  decorZones:
   - enabled: 1
-    zoneId: parking_main
+    zoneId: decor_center_plaza
     rect:
-      center: {x: -4, y: 24}
-      size: {x: 32, y: 20}
+      center: {x: 12, y: 2}
+      size: {x: 16, y: 32}
     randomJitter: 0
-  decorZones: []
   hasBossArenaZone: 0
   bossArenaZone:
     enabled: 1
